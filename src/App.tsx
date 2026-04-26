@@ -8,6 +8,7 @@ import AgentProfilePage from './AgentProfilePage';
 import SchedulePage from './SchedulePage';
 import AIChatPage from './AIChatPage';
 import CustomerDetailPage from './CustomerDetailPage';
+import ScheduleCalendarPage from './ScheduleCalendarPage';
 import { customers } from './data';
 
 const tools = [
@@ -192,7 +193,7 @@ const aiScenarios = [
 ];
 
 export default function App() {
-  const [currentPage, setCurrentPage] = useState<'home' | 'more-dimensions' | 'customer-list' | 'customer-search' | 'unified-search' | 'agent-profile' | 'schedule' | 'chat' | 'ai-chat' | 'customer-detail'>('home');
+  const [currentPage, setCurrentPage] = useState<'home' | 'more-dimensions' | 'customer-list' | 'customer-search' | 'unified-search' | 'agent-profile' | 'schedule' | 'chat' | 'ai-chat' | 'customer-detail' | 'schedule-calendar'>('home');
   const [selectedCustomer, setSelectedCustomer] = useState<any>(null);
   const [activeFilter, setActiveFilter] = useState('全部');
   const [activeTab, setActiveTab] = useState('做经营');
@@ -204,7 +205,6 @@ export default function App() {
   const [metricFilterTemp, setMetricFilterTemp] = useState('全部温度');
   const [showMoreTools, setShowMoreTools] = useState(false);
   const [aiScenarioIndex, setAiScenarioIndex] = useState(0);
-  const [isAiExpanded, setIsAiExpanded] = useState(false);
   const [showStrategySheet, setShowStrategySheet] = useState(false);
   const [showReviewSheet, setShowReviewSheet] = useState(false);
   const [taskStatus, setTaskStatus] = useState<Record<string, string>>({});
@@ -291,6 +291,7 @@ export default function App() {
   if (currentPage === 'schedule') return <SchedulePage onBack={() => setCurrentPage('home')} />;
   if (currentPage === 'ai-chat') return <AIChatPage onBack={() => setCurrentPage('home')} />;
   if (currentPage === 'customer-detail') return <CustomerDetailPage customer={selectedCustomer} onBack={() => setCurrentPage('home')} />;
+  if (currentPage === 'schedule-calendar') return <ScheduleCalendarPage onBack={() => setCurrentPage('home')} />;
 
   const handleAiAction = (scenario: any) => {
     if (scenario.type === 'strategy') setShowStrategySheet(true);
@@ -517,9 +518,8 @@ export default function App() {
 
               {/* AI 大脑区 */}
               <div className="px-4 mt-2">
-                <motion.div layout initial={false} className={`relative overflow-hidden rounded-3xl shadow-lg shadow-blue-500/10 transition-all duration-500 ${isAiExpanded ? 'h-[420px]' : 'h-28'}`} style={{ background: 'linear-gradient(135deg, #0076F5 0%, #00F2FE 100%)' }}>
+                <motion.div layout initial={false} className="relative overflow-hidden rounded-3xl shadow-lg shadow-blue-500/10 h-28" style={{ background: 'linear-gradient(135deg, #0076F5 0%, #00F2FE 100%)' }}>
                   <motion.div animate={{ opacity: [0.1, 0.4, 0.1] }} transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }} className="absolute inset-0 bg-white/30 pointer-events-none" />
-                  <div className="absolute top-1.5 left-1/2 -translate-x-1/2 w-8 h-1 bg-white/30 rounded-full cursor-pointer z-20" onClick={() => setIsAiExpanded(!isAiExpanded)} />
                   <div className="relative z-10 h-full flex flex-col">
                     <div className="flex-1 flex items-center px-4 py-2">
                       <div onClick={(e) => { e.stopPropagation(); setCurrentPage('ai-chat'); }} className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center flex-shrink-0 backdrop-blur-sm border border-white/30 relative cursor-pointer hover:bg-white/30 transition-colors active:scale-95 z-20">
@@ -582,11 +582,11 @@ export default function App() {
               <div className="px-4 mt-6">
                 <div className="flex items-center justify-between mb-3 px-1">
                   <h3 className="text-[17px] font-bold text-gray-900">今日日程</h3>
-                  <button className="text-xs text-blue-600 font-medium">查看全部日程</button>
+                  <button onClick={() => setCurrentPage('schedule-calendar')} className="text-xs text-blue-600 font-medium">查看全部日程</button>
                 </div>
                 <div className="space-y-3">
                   {[
-                    { id: 'task-1', time: '10:00', title: '徐岩 - 面访家医权益', type: '面访', highlight: true },
+                    { id: 'task-1', time: '10:00', title: '邓逵 - 面访介绍康养会员权益', type: '面访', highlight: true },
                     { id: 'task-6', time: '14:30', title: '刘敏 - 保单递送', type: '服务' },
                     { id: 'task-7', time: '16:00', title: '陈静 - 入盟促成', type: '增员' },
                   ].map((task, idx) => (
