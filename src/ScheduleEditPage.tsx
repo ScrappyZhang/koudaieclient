@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ChevronLeft, MoreHorizontal, Briefcase, Flag, Circle, Bell, Repeat, Clock, Focus, List, Users, Image as ImageIcon, MessageCircle, Plus, Calendar } from 'lucide-react';
+import { ChevronLeft, MoreHorizontal, Briefcase, Bell, Repeat, Clock, List, Image as ImageIcon, MessageCircle, Plus, Calendar } from 'lucide-react';
 
 export default function ScheduleEditPage({ onBack, onSave }: { onBack: () => void, onSave?: (data: any) => void }) {
   const [title, setTitle] = useState('');
@@ -137,17 +137,6 @@ export default function ScheduleEditPage({ onBack, onSave }: { onBack: () => voi
             </div>
           </div>
 
-          {/* 专注 */}
-          <div className="bg-white mt-3 mx-3 rounded-2xl overflow-hidden">
-            <div className="flex items-center justify-between p-4 active:bg-gray-50">
-              <div className="flex items-center gap-3">
-                <Focus className="w-5 h-5 text-gray-400" />
-                <span className="text-gray-700">专注</span>
-              </div>
-              <ChevronRightIcon className="w-4 h-4 text-gray-300" />
-            </div>
-          </div>
-
           {/* 子任务 */}
           <div className="bg-white mt-3 mx-3 p-4 rounded-2xl">
             <div className="flex items-center gap-3 mb-3">
@@ -157,17 +146,6 @@ export default function ScheduleEditPage({ onBack, onSave }: { onBack: () => voi
             <button className="flex items-center gap-2 text-gray-400 text-sm">
               <Plus className="w-4 h-4" />
               添加子任务
-            </button>
-          </div>
-
-          {/* 协作成员 */}
-          <div className="bg-white mt-3 mx-3 p-4 rounded-2xl flex items-center justify-between active:bg-gray-50">
-            <div className="flex items-center gap-3">
-              <Users className="w-5 h-5 text-gray-400" />
-              <span className="text-gray-700">协作成员</span>
-            </div>
-            <button className="w-8 h-8 bg-orange-50 rounded-full flex items-center justify-center">
-              <Plus className="w-4 h-4 text-orange-500" />
             </button>
           </div>
 
