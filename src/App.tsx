@@ -9,6 +9,7 @@ import SchedulePage from './SchedulePage';
 import AIChatPage from './AIChatPage';
 import CustomerDetailPage from './CustomerDetailPage';
 import ScheduleCalendarPage from './ScheduleCalendarPage';
+import ScheduleEditPage from './ScheduleEditPage';
 import { customers } from './data';
 
 const tools = [
@@ -193,8 +194,9 @@ const aiScenarios = [
 ];
 
 export default function App() {
-  const [currentPage, setCurrentPage] = useState<'home' | 'more-dimensions' | 'customer-list' | 'customer-search' | 'unified-search' | 'agent-profile' | 'schedule' | 'chat' | 'ai-chat' | 'customer-detail' | 'schedule-calendar'>('home');
+  const [currentPage, setCurrentPage] = useState<'home' | 'more-dimensions' | 'customer-list' | 'customer-search' | 'unified-search' | 'agent-profile' | 'schedule' | 'chat' | 'ai-chat' | 'customer-detail' | 'schedule-calendar' | 'schedule-edit'>('home');
   const [selectedCustomer, setSelectedCustomer] = useState<any>(null);
+  const [editingSchedule, setEditingSchedule] = useState<{ id: string; title: string; time: string; type: string } | null>(null);
   const [activeFilter, setActiveFilter] = useState('全部');
   const [activeTab, setActiveTab] = useState('做经营');
   const [activeBottomNav, setActiveBottomNav] = useState('首页');
@@ -292,6 +294,12 @@ export default function App() {
   if (currentPage === 'ai-chat') return <AIChatPage onBack={() => setCurrentPage('home')} />;
   if (currentPage === 'customer-detail') return <CustomerDetailPage customer={selectedCustomer} onBack={() => setCurrentPage('home')} />;
   if (currentPage === 'schedule-calendar') return <ScheduleCalendarPage onBack={() => setCurrentPage('home')} />;
+  if (currentPage === 'schedule-edit') return <ScheduleEditPage
+    onBack={() => { setCurrentPage('home'); setEditingSchedule(null); }}
+    onSave={(data) => { console.log('保存日程', data); setCurrentPage('home'); setEditingSchedule(null); }}
+    onDelete={() => { console.log('删除日程', editingSchedule?.id); setCurrentPage('home'); setEditingSchedule(null); }}
+    schedule={editingSchedule}
+  />;
 
   const handleAiAction = (scenario: any) => {
     if (scenario.type === 'strategy') setShowStrategySheet(true);
@@ -590,7 +598,14 @@ export default function App() {
                     { id: 'task-6', time: '14:30', title: '刘敏 - 保单递送', type: '服务' },
                     { id: 'task-7', time: '16:00', title: '陈静 - 入盟促成', type: '增员' },
                   ].map((task, idx) => (
-                    <div key={idx} className={`bg-white p-4 rounded-2xl flex items-center shadow-sm border transition-all ${task.highlight ? 'border-blue-100 ring-4 ring-blue-500/5' : 'border-transparent'}`}>
+                    <div
+                      key={idx}
+                      onClick={() => {
+                        setEditingSchedule(task);
+                        setCurrentPage('schedule-edit');
+                      }}
+                      className={`bg-white p-4 rounded-2xl flex items-center shadow-sm border transition-all cursor-pointer active:scale-[0.98] ${task.highlight ? 'border-blue-100 ring-4 ring-blue-500/5' : 'border-transparent'}`}
+                    >
                       <div className="flex flex-col items-center justify-center mr-4 pr-4 border-r border-gray-100 min-w-[50px]">
                         <span className="text-sm font-bold text-gray-900">{task.time}</span>
                         <span className="text-[10px] text-gray-400">{task.type}</span>
