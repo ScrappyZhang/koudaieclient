@@ -29,7 +29,7 @@ export default function ScheduleEditPage({ onBack, onSave }: { onBack: () => voi
           <button onClick={onBack} className="p-2 -ml-2 text-gray-600 hover:bg-gray-100 rounded-full">
             <ChevronLeft className="w-6 h-6" />
           </button>
-          <h1 className="text-lg font-bold text-gray-900">编辑日程</h1>
+          <h1 className="text-lg font-bold text-gray-900">新建日程</h1>
           <button className="p-2 text-gray-600 hover:bg-gray-100 rounded-full">
             <MoreHorizontal className="w-6 h-6" />
           </button>
