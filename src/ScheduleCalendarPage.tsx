@@ -89,6 +89,7 @@ export default function ScheduleCalendarPage({ onBack }: { onBack: () => void })
   const [selectedDate, setSelectedDate] = useState({ year: 2026, month: 4, day: 24 }); // 选中 4月24日
   const [isCalendarExpanded, setIsCalendarExpanded] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
+  const [editingSchedule, setEditingSchedule] = useState<{ id: string; title: string; time: string; type: string } | null>(null);
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth() + 1;
@@ -106,7 +107,12 @@ export default function ScheduleCalendarPage({ onBack }: { onBack: () => void })
   };
 
   if (isEditing) {
-    return <ScheduleEditPage onBack={() => setIsEditing(false)} onSave={(data) => { console.log('保存日程', data); setIsEditing(false); }} />;
+    return <ScheduleEditPage
+      onBack={() => { setIsEditing(false); setEditingSchedule(null); }}
+      onSave={(data) => { console.log('保存日程', data); setIsEditing(false); setEditingSchedule(null); }}
+      onDelete={() => { console.log('删除日程', editingSchedule?.id); setIsEditing(false); setEditingSchedule(null); }}
+      schedule={editingSchedule}
+    />;
   }
 
   return (
@@ -245,7 +251,11 @@ export default function ScheduleCalendarPage({ onBack }: { onBack: () => void })
               {scheduleTasks.map((task, idx) => (
                 <div
                   key={task.id}
-                  className={`bg-white p-4 rounded-2xl flex items-center shadow-sm border transition-all ${
+                  onClick={() => {
+                    setEditingSchedule(task);
+                    setIsEditing(true);
+                  }}
+                  className={`bg-white p-4 rounded-2xl flex items-center shadow-sm border transition-all cursor-pointer active:scale-[0.98] ${
                     task.highlight ? 'border-orange-100 ring-4 ring-orange-500/5' : 'border-gray-100'
                   }`}
                 >

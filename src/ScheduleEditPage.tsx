@@ -1,23 +1,33 @@
 import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { ChevronLeft, MoreHorizontal, Briefcase, Bell, Repeat, Clock, List, Image as ImageIcon, MessageCircle, Plus, Calendar } from 'lucide-react';
 
-export default function ScheduleEditPage({ onBack, onSave }: { onBack: () => void, onSave?: (data: any) => void }) {
-  const [title, setTitle] = useState('');
+export default function ScheduleEditPage({ onBack, onSave, onDelete, schedule }: {
+  onBack: () => void,
+  onSave?: (data: any) => void,
+  onDelete?: () => void,
+  schedule?: {
+    id: string;
+    title: string;
+    time: string;
+    type: string;
+  }
+}) {
+  const isEditing = !!schedule;
+
+  const [title, setTitle] = useState(schedule?.title || '');
   const [category, setCategory] = useState('工作');
   const [priority, setPriority] = useState('IV');
   const [bgColor, setBgColor] = useState('blue');
   const [startDate, setStartDate] = useState('04-26');
-  const [startTime, setStartTime] = useState('15:30');
+  const [startTime, setStartTime] = useState(schedule?.time || '15:30');
   const [endDate, setEndDate] = useState('04-26');
   const [endTime, setEndTime] = useState('22:00');
   const [reminder, setReminder] = useState('提前 1 小时');
   const [repeat, setRepeat] = useState('无');
   const [autoExtend, setAutoExtend] = useState(false);
   const [notes, setNotes] = useState('');
-
-  const categories = ['工作', '生活', '家庭', '健康', '学习'];
-  const priorities = ['I', 'II', 'III', 'IV'];
-  const bgColors = ['blue', 'green', 'orange', 'purple', 'red'];
+  const [showMenu, setShowMenu] = useState(false);
 
   const isToday = startDate === '04-26';
 
@@ -29,8 +39,8 @@ export default function ScheduleEditPage({ onBack, onSave }: { onBack: () => voi
           <button onClick={onBack} className="p-2 -ml-2 text-gray-600 hover:bg-gray-100 rounded-full">
             <ChevronLeft className="w-6 h-6" />
           </button>
-          <h1 className="text-lg font-bold text-gray-900">新建日程</h1>
-          <button className="p-2 text-gray-600 hover:bg-gray-100 rounded-full">
+          <h1 className="text-lg font-bold text-gray-900">{isEditing ? '编辑日程' : '新建日程'}</h1>
+          <button onClick={() => setShowMenu(true)} className="p-2 text-gray-600 hover:bg-gray-100 rounded-full">
             <MoreHorizontal className="w-6 h-6" />
           </button>
         </div>
@@ -43,7 +53,7 @@ export default function ScheduleEditPage({ onBack, onSave }: { onBack: () => voi
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="邓逵 - 面访介绍康养会员权益"
+              placeholder="输入日程标题..."
               className="w-full text-lg font-bold text-gray-900 placeholder-gray-300 outline-none"
             />
             <div className="flex gap-2 mt-3">
@@ -187,6 +197,59 @@ export default function ScheduleEditPage({ onBack, onSave }: { onBack: () => voi
             保存
           </button>
         </div>
+
+        {/* 底部菜单弹出 */}
+        <AnimatePresence>
+          {showMenu && (
+            <>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setShowMenu(false)}
+                className="fixed inset-0 bg-black/40 z-50"
+              />
+              <motion.div
+                initial={{ y: '100%' }}
+                animate={{ y: 0 }}
+                exit={{ y: '100%' }}
+                transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                className="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white rounded-t-[24px] z-[60] p-4 pb-8"
+              >
+                <div className="w-10 h-1 bg-gray-300 rounded-full mx-auto mb-4" />
+                {/* 创建副本 */}
+                <button
+                  onClick={() => {
+                    setShowMenu(false);
+                    onSave?.({ ...schedule, title: title + '（副本）', id: undefined });
+                  }}
+                  className="w-full py-4 text-center text-gray-700 font-medium border-b border-gray-100 active:bg-gray-50"
+                >
+                  创建副本
+                </button>
+                {/* 删除日程 */}
+                {isEditing && (
+                  <button
+                    onClick={() => {
+                      setShowMenu(false);
+                      onDelete?.();
+                    }}
+                    className="w-full py-4 text-center text-red-500 font-medium border-b border-gray-100 active:bg-gray-50"
+                  >
+                    删除日程
+                  </button>
+                )}
+                {/* 取消 */}
+                <button
+                  onClick={() => setShowMenu(false)}
+                  className="w-full py-4 text-center text-gray-500 font-medium active:bg-gray-50"
+                >
+                  取消
+                </button>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );
