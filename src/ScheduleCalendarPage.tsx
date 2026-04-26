@@ -4,6 +4,27 @@ import { motion, AnimatePresence } from 'motion/react';
 
 const weekDays = ['日', '一', '二', '三', '四', '五', '六'];
 
+// 获取当前日期所在的一周
+function getWeekDays(year: number, month: number, day: number) {
+  const current = new Date(year, month - 1, day);
+  const dayOfWeek = current.getDay(); // 0 = 周日
+
+  const weekDaysList: { day: number; month: number; year: number; isToday: boolean; isHoliday?: boolean; holidayName?: string }[] = [];
+
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(year, month - 1, day - dayOfWeek + i);
+    const isToday = d.getFullYear() === year && d.getMonth() + 1 === month && d.getDate() === day;
+    weekDaysList.push({
+      year: d.getFullYear(),
+      month: d.getMonth() + 1,
+      day: d.getDate(),
+      isToday,
+    });
+  }
+
+  return weekDaysList;
+}
+
 // 生成日历数据
 function getCalendarDays(year: number, month: number) {
   const firstDay = new Date(year, month - 1, 1);
@@ -59,11 +80,17 @@ function getCalendarDays(year: number, month: number) {
 export default function ScheduleCalendarPage({ onBack }: { onBack: () => void }) {
   const [currentDate, setCurrentDate] = useState(new Date(2026, 3)); // 2026 年 4 月
   const [isCalendarExpanded, setIsCalendarExpanded] = useState(true);
-  const [viewMode, setViewMode] = useState<'week' | 'month'>('month');
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth() + 1;
   const calendarDays = getCalendarDays(year, month);
+
+  // 获取今天所在的一周
+  const today = new Date();
+  const todayYear = today.getFullYear();
+  const todayMonth = today.getMonth() + 1;
+  const todayDay = today.getDate();
+  const weekDaysList = getWeekDays(todayYear, todayMonth, todayDay);
 
   const handlePrevMonth = () => setCurrentDate(new Date(year, month - 2));
   const handleNextMonth = () => setCurrentDate(new Date(year, month));
@@ -111,7 +138,7 @@ export default function ScheduleCalendarPage({ onBack }: { onBack: () => void })
             ))}
           </div>
 
-          {/* 日历网格 */}
+          {/* 日历网格 - 月视图 */}
           <div
             className={`overflow-hidden transition-all duration-300 ${isCalendarExpanded ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}`}
           >
@@ -133,6 +160,42 @@ export default function ScheduleCalendarPage({ onBack }: { onBack: () => void })
                           : 'text-gray-900'
                         : 'text-gray-300'
                     } ${!item.isToday && item.isCurrentMonth ? 'hover:bg-gray-50' : ''} cursor-pointer transition-colors`}
+                  >
+                    <span className={`text-sm ${item.isToday ? 'text-base' : ''}`}>{item.day}</span>
+                    {holiday && (
+                      <span className={`text-[8px] mt-0.5 ${item.isToday ? 'text-orange-100' : 'text-orange-500'}`}>
+                        {holiday}
+                      </span>
+                    )}
+                    {item.isToday && (
+                      <span className="text-[8px] opacity-80">初十</span>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* 日历网格 - 周视图（折叠时显示） */}
+          <div
+            className={`overflow-hidden transition-all duration-300 ${isCalendarExpanded ? 'max-h-0 opacity-0' : 'max-h-[100px] opacity-100'}`}
+          >
+            <div className="grid grid-cols-7 gap-1">
+              {weekDaysList.map((item, idx) => {
+                const dateKey = `${item.month}-${item.day}`;
+                const holiday = holidays[dateKey];
+                const isWeekend = idx === 0 || idx === 6;
+
+                return (
+                  <div
+                    key={idx}
+                    className={`relative aspect-square flex flex-col items-center justify-center rounded-full ${
+                      item.isToday
+                        ? 'bg-orange-500 text-white font-bold'
+                        : item.isHoliday || isWeekend
+                          ? 'text-orange-500'
+                          : 'text-gray-900'
+                    } ${!item.isToday ? 'hover:bg-gray-50' : ''} cursor-pointer transition-colors`}
                   >
                     <span className={`text-sm ${item.isToday ? 'text-base' : ''}`}>{item.day}</span>
                     {holiday && (
