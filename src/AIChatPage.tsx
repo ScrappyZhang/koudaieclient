@@ -7,13 +7,10 @@ import {
   MoreVertical,
   Send,
   Bot,
-  Sparkles,
   Trash2,
   Settings,
   Copy,
   Mic,
-  Image,
-  Paperclip
 } from 'lucide-react';
 
 // 模拟 AI 响应
@@ -49,12 +46,12 @@ export default function AIChatPage({ onBack }: { onBack: () => void }) {
   const [conversations, setConversations] = useState<Conversation[]>([
     {
       id: '1',
-      title: '客户经营建议',
+      title: '新对话',
       messages: [
         {
           id: '1',
           role: 'assistant',
-          content: '你好！我是 AskBob，您的智能保险助手。我可以帮您分析客户、推荐产品、生成话术。有什么我可以帮您的吗？',
+          content: '你好，我是 AskBob，你的销售助手，说说你今天想干嘛？\n\n• 有个客户想搞定？\n\n• 某个产品讲不明白？\n\n• 还是想聊聊这个月的经营计划？\n\n我在这儿等你开口。',
           time: '10:00'
         }
       ],
@@ -134,7 +131,7 @@ export default function AIChatPage({ onBack }: { onBack: () => void }) {
         {
           id: '1',
           role: 'assistant',
-          content: '你好！我是 AskBob，您的智能保险助手。我可以帮您分析客户、推荐产品、生成话术。有什么我可以帮您的吗？',
+          content: '你好，我是 AskBob，你的销售助手，说说你今天想干嘛？\n\n• 有个客户想搞定？\n\n• 某个产品讲不明白？\n\n• 还是想聊聊这个月的经营计划？\n\n我在这儿等你开口。',
           time: timeStr
         }
       ],
@@ -305,7 +302,7 @@ export default function AIChatPage({ onBack }: { onBack: () => void }) {
               animate={{ opacity: 1, y: 0 }}
               className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
             >
-              <div className={`flex items-start gap-2 max-w-[85%] ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
+              <div className={`flex items-start gap-2 max-w-[90%] ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
                 {/* Avatar */}
                 <div className={`w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center ${
                   msg.role === 'user'
@@ -370,19 +367,21 @@ export default function AIChatPage({ onBack }: { onBack: () => void }) {
 
         {/* Input Area */}
         <div className="sticky bottom-0 bg-white border-t border-gray-100 px-4 py-3">
-          {/* Quick Actions */}
-          <div className="flex space-x-2 mb-3 overflow-x-auto scrollbar-hide">
+          {/* Quick Actions - 快捷话题 */}
+          <div className="flex flex-wrap gap-2 mb-3">
             {[
-              { icon: Sparkles, label: '智能推荐', color: 'text-indigo-500' },
-              { icon: Image, label: '图片', color: 'text-gray-500' },
-              { icon: Paperclip, label: '附件', color: 'text-gray-500' },
-            ].map((action, idx) => (
+              '有个客户想搞定',
+              '某个产品讲不明白',
+              '聊聊这个月的经营计划',
+            ].map((topic, idx) => (
               <button
                 key={idx}
-                className="flex items-center space-x-1 px-3 py-1.5 bg-gray-100 rounded-full text-xs font-medium hover:bg-gray-200 transition-colors flex-shrink-0"
+                onClick={() => {
+                  setInputValue(topic);
+                }}
+                className="flex items-center space-x-1 px-3 py-1.5 bg-indigo-50 rounded-full text-xs font-medium hover:bg-indigo-100 transition-colors flex-shrink-0 border border-indigo-100"
               >
-                <action.icon className={`w-3.5 h-3.5 ${action.color}`} />
-                <span className="text-gray-600">{action.label}</span>
+                <span className="text-indigo-600">{topic}</span>
               </button>
             ))}
           </div>
