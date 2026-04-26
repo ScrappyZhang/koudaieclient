@@ -87,7 +87,7 @@ function getCalendarDays(year: number, month: number, selectedDay?: { year: numb
 export default function ScheduleCalendarPage({ onBack }: { onBack: () => void }) {
   const [currentDate, setCurrentDate] = useState(new Date(2026, 3)); // 2026 年 4 月
   const [selectedDate, setSelectedDate] = useState({ year: 2026, month: 4, day: 24 }); // 选中 4月24日
-  const [isCalendarExpanded, setIsCalendarExpanded] = useState(true);
+  const [isCalendarExpanded, setIsCalendarExpanded] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editingSchedule, setEditingSchedule] = useState<{ id: string; title: string; time: string; type: string } | null>(null);
 
