@@ -304,7 +304,7 @@ export default function ScheduleCalendarPage({ onBack }: { onBack: () => void })
         </div>
 
         {/* 右下角浮动按钮 */}
-        <button className="fixed bottom-20 right-8 w-14 h-14 bg-orange-500 rounded-full shadow-lg shadow-orange-500/30 flex items-center justify-center hover:bg-orange-600 active:scale-95 transition-all z-40">
+        <button className="absolute bottom-20 right-4 w-14 h-14 bg-orange-500 rounded-full shadow-lg shadow-orange-500/30 flex items-center justify-center hover:bg-orange-600 active:scale-95 transition-all z-40">
           <Plus className="w-7 h-7 text-white" />
         </button>
       </div>
