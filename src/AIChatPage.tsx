@@ -300,9 +300,10 @@ export default function AIChatPage({ onBack }: { onBack: () => void }) {
               key={msg.id}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+              className={`flex flex-col ${msg.role === 'user' ? 'items-end' : 'items-start'}`}
             >
-              <div className={`flex items-start gap-2 max-w-[90%] ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
+              {/* Time - 在上方，和头像平齐 */}
+              <div className={`flex items-center gap-2 mb-1 ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
                 {/* Avatar */}
                 <div className={`w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center ${
                   msg.role === 'user'
@@ -314,18 +315,18 @@ export default function AIChatPage({ onBack }: { onBack: () => void }) {
                     : <Bot className="w-5 h-5 text-white" />
                   }
                 </div>
+                <span className={`text-xs ${msg.role === 'user' ? 'text-gray-400' : 'text-gray-400'}`}>
+                  {msg.time}
+                </span>
+              </div>
 
-                {/* Message Bubble */}
-                <div className={`px-4 py-3 rounded-2xl ${
-                  msg.role === 'user'
-                    ? 'bg-indigo-600 text-white rounded-br-md'
-                    : 'bg-white text-gray-800 rounded-bl-md shadow-sm border border-gray-100'
-                }`}>
-                  <p className="text-[15px] leading-relaxed whitespace-pre-wrap">{msg.content}</p>
-                  <p className={`text-xs mt-2 ${msg.role === 'user' ? 'text-indigo-200' : 'text-gray-400'}`}>
-                    {msg.time}
-                  </p>
-                </div>
+              {/* Message Bubble - 宽度100% */}
+              <div className={`px-4 py-3 rounded-2xl w-full ${
+                msg.role === 'user'
+                  ? 'bg-indigo-600 text-white rounded-br-md'
+                  : 'bg-white text-gray-800 rounded-bl-md shadow-sm border border-gray-100'
+              }`}>
+                <p className="text-[15px] leading-relaxed whitespace-pre-wrap">{msg.content}</p>
               </div>
             </motion.div>
           ))}
@@ -370,9 +371,10 @@ export default function AIChatPage({ onBack }: { onBack: () => void }) {
           {/* Quick Actions - 快捷话题 */}
           <div className="flex flex-wrap gap-2 mb-3">
             {[
-              '有个客户想搞定',
-              '某个产品讲不明白',
-              '聊聊这个月的经营计划',
+              '月末盘客',
+              '访前锦囊',
+              '访后总结',
+              '产品知识陪练',
             ].map((topic, idx) => (
               <button
                 key={idx}
