@@ -112,51 +112,42 @@ export default function ScheduleCalendarPage({ onBack }: { onBack: () => void })
           </div>
 
           {/* 日历网格 */}
-          <AnimatePresence initial={false}>
-            {isCalendarExpanded && (
-              <motion.div
-                key="calendar-grid"
-                initial={{ maxHeight: 0, opacity: 0 }}
-                animate={{ maxHeight: 500, opacity: 1 }}
-                exit={{ maxHeight: 0, opacity: 0 }}
-                transition={{ duration: 0.2 }}
-                className="overflow-hidden"
-              >
-                <div className="grid grid-cols-7 gap-1">
-                  {calendarDays.map((item, idx) => {
-                    const dateKey = `${month}-${item.day}`;
-                    const holiday = holidays[dateKey];
-                    const isWeekend = idx % 7 === 0 || idx % 7 === 6;
+          <div
+            className={`overflow-hidden transition-all duration-300 ${isCalendarExpanded ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}`}
+          >
+            <div className="grid grid-cols-7 gap-1">
+              {calendarDays.map((item, idx) => {
+                const dateKey = `${month}-${item.day}`;
+                const holiday = holidays[dateKey];
+                const isWeekend = idx % 7 === 0 || idx % 7 === 6;
 
-                    return (
-                      <div
-                        key={idx}
-                        className={`relative aspect-square flex flex-col items-center justify-center rounded-full ${
-                          item.isToday
-                            ? 'bg-orange-500 text-white font-bold'
-                            : item.isCurrentMonth
-                            ? item.isHoliday || isWeekend
-                              ? 'text-orange-500'
-                              : 'text-gray-900'
-                            : 'text-gray-300'
-                        } ${!item.isToday && item.isCurrentMonth ? 'hover:bg-gray-50' : ''} cursor-pointer transition-colors`}
-                      >
-                        <span className={`text-sm ${item.isToday ? 'text-base' : ''}`}>{item.day}</span>
-                        {holiday && (
-                          <span className={`text-[8px] mt-0.5 ${item.isToday ? 'text-orange-100' : 'text-orange-500'}`}>
-                            {holiday}
-                          </span>
-                        )}
-                        {item.isToday && (
-                          <span className="text-[8px] opacity-80">初十</span>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+                return (
+                  <div
+                    key={idx}
+                    className={`relative aspect-square flex flex-col items-center justify-center rounded-full ${
+                      item.isToday
+                        ? 'bg-orange-500 text-white font-bold'
+                        : item.isCurrentMonth
+                        ? item.isHoliday || isWeekend
+                          ? 'text-orange-500'
+                          : 'text-gray-900'
+                        : 'text-gray-300'
+                    } ${!item.isToday && item.isCurrentMonth ? 'hover:bg-gray-50' : ''} cursor-pointer transition-colors`}
+                  >
+                    <span className={`text-sm ${item.isToday ? 'text-base' : ''}`}>{item.day}</span>
+                    {holiday && (
+                      <span className={`text-[8px] mt-0.5 ${item.isToday ? 'text-orange-100' : 'text-orange-500'}`}>
+                        {holiday}
+                      </span>
+                    )}
+                    {item.isToday && (
+                      <span className="text-[8px] opacity-80">初十</span>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
 
           {/* 展开/收起按钮 */}
           <div className="flex justify-center mt-3">
