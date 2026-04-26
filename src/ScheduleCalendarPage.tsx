@@ -1,24 +1,31 @@
 import React, { useState } from 'react';
-import { ChevronLeft, ChevronDown, ChevronUp, Plus, Menu, ArrowUpDown, ChevronRight } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
+import { ChevronLeft, ChevronDown, ChevronUp, Plus, Menu, ArrowUpDown, ChevronRight, Clock } from 'lucide-react';
+import { motion } from 'motion/react';
 
 const weekDays = ['日', '一', '二', '三', '四', '五', '六'];
+
+// 4月24日的日程数据
+const scheduleTasks = [
+  { id: 'task-1', time: '10:00', title: '邓逵 - 面访介绍康养会员权益', type: '面访', highlight: true },
+  { id: 'task-2', time: '14:30', title: '刘敏 - 保单递送', type: '服务', highlight: false },
+  { id: 'task-3', time: '16:00', title: '陈静 - 入盟促成', type: '增员', highlight: false },
+];
 
 // 获取当前日期所在的一周
 function getWeekDays(year: number, month: number, day: number) {
   const current = new Date(year, month - 1, day);
   const dayOfWeek = current.getDay(); // 0 = 周日
 
-  const weekDaysList: { day: number; month: number; year: number; isToday: boolean; isHoliday?: boolean; holidayName?: string }[] = [];
+  const weekDaysList: { day: number; month: number; year: number; isSelected: boolean; isHoliday?: boolean; holidayName?: string }[] = [];
 
   for (let i = 0; i < 7; i++) {
     const d = new Date(year, month - 1, day - dayOfWeek + i);
-    const isToday = d.getFullYear() === year && d.getMonth() + 1 === month && d.getDate() === day;
+    const isSelected = d.getFullYear() === year && d.getMonth() + 1 === month && d.getDate() === day;
     weekDaysList.push({
       year: d.getFullYear(),
       month: d.getMonth() + 1,
       day: d.getDate(),
-      isToday,
+      isSelected,
     });
   }
 
@@ -26,13 +33,13 @@ function getWeekDays(year: number, month: number, day: number) {
 }
 
 // 生成日历数据
-function getCalendarDays(year: number, month: number) {
+function getCalendarDays(year: number, month: number, selectedDay?: { year: number; month: number; day: number }) {
   const firstDay = new Date(year, month - 1, 1);
   const lastDay = new Date(year, month, 0);
   const startDay = firstDay.getDay(); // 0 = 周日
   const daysInMonth = lastDay.getDate();
 
-  const days: { day: number; isCurrentMonth: boolean; isToday?: boolean; isHoliday?: boolean; holidayName?: string }[] = [];
+  const days: { day: number; isCurrentMonth: boolean; isSelected?: boolean; isHoliday?: boolean; holidayName?: string }[] = [];
 
   // 上个月的日期
   const prevMonthLastDay = new Date(year, month - 1, 0).getDate();
@@ -41,12 +48,11 @@ function getCalendarDays(year: number, month: number) {
   }
 
   // 当前月的日期
-  const today = new Date();
   for (let i = 1; i <= daysInMonth; i++) {
     days.push({
       day: i,
       isCurrentMonth: true,
-      isToday: today.getFullYear() === year && today.getMonth() + 1 === month && i === today.getDate(),
+      isSelected: selectedDay && selectedDay.year === year && selectedDay.month === month && selectedDay.day === i,
     });
   }
 
@@ -79,18 +85,15 @@ function getCalendarDays(year: number, month: number) {
 
 export default function ScheduleCalendarPage({ onBack }: { onBack: () => void }) {
   const [currentDate, setCurrentDate] = useState(new Date(2026, 3)); // 2026 年 4 月
+  const [selectedDate, setSelectedDate] = useState({ year: 2026, month: 4, day: 24 }); // 选中 4月24日
   const [isCalendarExpanded, setIsCalendarExpanded] = useState(true);
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth() + 1;
-  const calendarDays = getCalendarDays(year, month);
+  const calendarDays = getCalendarDays(year, month, selectedDate);
 
-  // 获取今天所在的一周
-  const today = new Date();
-  const todayYear = today.getFullYear();
-  const todayMonth = today.getMonth() + 1;
-  const todayDay = today.getDate();
-  const weekDaysList = getWeekDays(todayYear, todayMonth, todayDay);
+  // 获取选中日期所在的一周
+  const weekDaysList = getWeekDays(selectedDate.year, selectedDate.month, selectedDate.day);
 
   const handlePrevMonth = () => setCurrentDate(new Date(year, month - 2));
   const handleNextMonth = () => setCurrentDate(new Date(year, month));
@@ -151,24 +154,26 @@ export default function ScheduleCalendarPage({ onBack }: { onBack: () => void })
                 return (
                   <div
                     key={idx}
+                    onClick={() => {
+                      if (item.isCurrentMonth) {
+                        setSelectedDate({ year, month, day: item.day });
+                      }
+                    }}
                     className={`relative aspect-square flex flex-col items-center justify-center rounded-full ${
-                      item.isToday
+                      item.isSelected
                         ? 'bg-orange-500 text-white font-bold'
                         : item.isCurrentMonth
                         ? item.isHoliday || isWeekend
                           ? 'text-orange-500'
                           : 'text-gray-900'
                         : 'text-gray-300'
-                    } ${!item.isToday && item.isCurrentMonth ? 'hover:bg-gray-50' : ''} cursor-pointer transition-colors`}
+                    } ${!item.isSelected && item.isCurrentMonth ? 'hover:bg-gray-50' : ''} cursor-pointer transition-colors`}
                   >
-                    <span className={`text-sm ${item.isToday ? 'text-base' : ''}`}>{item.day}</span>
+                    <span className={`text-sm ${item.isSelected ? 'text-base' : ''}`}>{item.day}</span>
                     {holiday && (
-                      <span className={`text-[8px] mt-0.5 ${item.isToday ? 'text-orange-100' : 'text-orange-500'}`}>
+                      <span className={`text-[8px] mt-0.5 ${item.isSelected ? 'text-orange-100' : 'text-orange-500'}`}>
                         {holiday}
                       </span>
-                    )}
-                    {item.isToday && (
-                      <span className="text-[8px] opacity-80">初十</span>
                     )}
                   </div>
                 );
@@ -189,22 +194,20 @@ export default function ScheduleCalendarPage({ onBack }: { onBack: () => void })
                 return (
                   <div
                     key={idx}
+                    onClick={() => setSelectedDate({ year: item.year, month: item.month, day: item.day })}
                     className={`relative aspect-square flex flex-col items-center justify-center rounded-full ${
-                      item.isToday
+                      item.isSelected
                         ? 'bg-orange-500 text-white font-bold'
                         : item.isHoliday || isWeekend
                           ? 'text-orange-500'
                           : 'text-gray-900'
-                    } ${!item.isToday ? 'hover:bg-gray-50' : ''} cursor-pointer transition-colors`}
+                    } ${!item.isSelected ? 'hover:bg-gray-50' : ''} cursor-pointer transition-colors`}
                   >
-                    <span className={`text-sm ${item.isToday ? 'text-base' : ''}`}>{item.day}</span>
+                    <span className={`text-sm ${item.isSelected ? 'text-base' : ''}`}>{item.day}</span>
                     {holiday && (
-                      <span className={`text-[8px] mt-0.5 ${item.isToday ? 'text-orange-100' : 'text-orange-500'}`}>
+                      <span className={`text-[8px] mt-0.5 ${item.isSelected ? 'text-orange-100' : 'text-orange-500'}`}>
                         {holiday}
                       </span>
-                    )}
-                    {item.isToday && (
-                      <span className="text-[8px] opacity-80">初十</span>
                     )}
                   </div>
                 );
@@ -223,51 +226,81 @@ export default function ScheduleCalendarPage({ onBack }: { onBack: () => void })
           </div>
         </div>
 
-        {/* 空状态区域 */}
-        <div className="flex-1 flex flex-col items-center justify-center px-8 pt-10">
-          {/* 插图 */}
-          <div className="w-40 h-40 mb-6 relative">
-            <svg viewBox="0 0 200 200" className="w-full h-full">
-              {/* 文件夹 */}
-              <path
-                d="M40 60 L90 60 L100 50 L160 50 L160 150 L40 150 Z"
-                fill="#F3F4F6"
-                stroke="#E5E7EB"
-                strokeWidth="2"
-              />
-              <path
-                d="M40 70 L160 70 L160 150 L40 150 Z"
-                fill="#FFFFFF"
-              />
-              {/* 文件 */}
-              <rect x="60" y="80" width="60" height="50" rx="4" fill="#F9FAFB" stroke="#E5E7EB" strokeWidth="2" />
-              <line x1="70" y1="95" x2="110" y2="95" stroke="#E5E7EB" strokeWidth="2" strokeLinecap="round" />
-              <line x1="70" y1="105" x2="100" y2="105" stroke="#E5E7EB" strokeWidth="2" strokeLinecap="round" />
-              <line x1="70" y1="115" x2="105" y2="115" stroke="#E5E7EB" strokeWidth="2" strokeLinecap="round" />
-              {/* 动态线条 */}
-              <motion.path
-                d="M170 60 Q180 50 175 40"
-                stroke="#F3F4F6"
-                strokeWidth="3"
-                strokeLinecap="round"
-                fill="none"
-                animate={{ opacity: [0.3, 1, 0.3], pathLength: [0, 1, 0] }}
-                transition={{ duration: 2, repeat: Infinity }}
-              />
-              <motion.path
-                d="M165 55 Q175 45 170 35"
-                stroke="#F3F4F6"
-                strokeWidth="3"
-                strokeLinecap="round"
-                fill="none"
-                animate={{ opacity: [0.3, 1, 0.3], pathLength: [0, 1, 0] }}
-                transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
-              />
-            </svg>
-          </div>
+        {/* 日程列表区域 */}
+        <div className="flex-1 px-4 pt-4 overflow-y-auto">
+          {/* 判断是否是4月24日 */}
+          {selectedDate.month === 4 && selectedDate.day === 24 ? (
+            <div className="space-y-3">
+              {/* 日期标题 */}
+              <div className="text-sm font-bold text-gray-900 mb-4">
+                4月24日 · 星期四
+              </div>
+              {/* 日程卡片 */}
+              {scheduleTasks.map((task, idx) => (
+                <div
+                  key={task.id}
+                  className={`bg-white p-4 rounded-2xl flex items-center shadow-sm border transition-all ${
+                    task.highlight ? 'border-orange-100 ring-4 ring-orange-500/5' : 'border-gray-100'
+                  }`}
+                >
+                  <div className="flex flex-col items-center justify-center mr-4 pr-4 border-r border-gray-100 min-w-[50px]">
+                    <span className="text-sm font-bold text-gray-900">{task.time}</span>
+                    <span className="text-[10px] text-gray-400">{task.type}</span>
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="text-sm font-bold text-gray-800">{task.title}</h4>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-gray-300" />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center py-20">
+              {/* 插图 */}
+              <div className="w-40 h-40 mb-6 relative">
+                <svg viewBox="0 0 200 200" className="w-full h-full">
+                  {/* 文件夹 */}
+                  <path
+                    d="M40 60 L90 60 L100 50 L160 50 L160 150 L40 150 Z"
+                    fill="#F3F4F6"
+                    stroke="#E5E7EB"
+                    strokeWidth="2"
+                  />
+                  <path
+                    d="M40 70 L160 70 L160 150 L40 150 Z"
+                    fill="#FFFFFF"
+                  />
+                  {/* 文件 */}
+                  <rect x="60" y="80" width="60" height="50" rx="4" fill="#F9FAFB" stroke="#E5E7EB" strokeWidth="2" />
+                  <line x1="70" y1="95" x2="110" y2="95" stroke="#E5E7EB" strokeWidth="2" strokeLinecap="round" />
+                  <line x1="70" y1="105" x2="100" y2="105" stroke="#E5E7EB" strokeWidth="2" strokeLinecap="round" />
+                  <line x1="70" y1="115" x2="105" y2="115" stroke="#E5E7EB" strokeWidth="2" strokeLinecap="round" />
+                  {/* 动态线条 */}
+                  <motion.path
+                    d="M170 60 Q180 50 175 40"
+                    stroke="#F3F4F6"
+                    strokeWidth="3"
+                    strokeLinecap="round"
+                    fill="none"
+                    animate={{ opacity: [0.3, 1, 0.3], pathLength: [0, 1, 0] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  />
+                  <motion.path
+                    d="M165 55 Q175 45 170 35"
+                    stroke="#F3F4F6"
+                    strokeWidth="3"
+                    strokeLinecap="round"
+                    fill="none"
+                    animate={{ opacity: [0.3, 1, 0.3], pathLength: [0, 1, 0] }}
+                    transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
+                  />
+                </svg>
+              </div>
 
-          <h2 className="text-xl font-medium text-gray-900 mb-2">今天没有任务哟</h2>
-          <p className="text-sm text-gray-400">点击"+"创建任务</p>
+              <h2 className="text-xl font-medium text-gray-900 mb-2">今天没有任务哟</h2>
+              <p className="text-sm text-gray-400">点击"+"创建任务</p>
+            </div>
+          )}
         </div>
 
         {/* 右下角浮动按钮 */}
