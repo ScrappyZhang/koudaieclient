@@ -1,0 +1,5 @@
+{
+  "name": "代理人客户资源页",
+  "description": "移动端客户管理界面，包含AI搜索、快捷工具及客户分布矩阵",
+  "requestFramePermissions": []
+}
