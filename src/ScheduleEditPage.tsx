@@ -28,6 +28,11 @@ export default function ScheduleEditPage({ onBack, onSave, onDelete, schedule }:
   const [autoExtend, setAutoExtend] = useState(false);
   const [notes, setNotes] = useState('');
   const [showMenu, setShowMenu] = useState(false);
+  const [showReminderPicker, setShowReminderPicker] = useState(false);
+  const [showRepeatPicker, setShowRepeatPicker] = useState(false);
+
+  const reminderOptions = ['无', '准时', '提前 5 分钟', '提前 30 分钟', '提前 1 小时', '提前 1 天', '自定义', '持续提醒'];
+  const repeatOptions = ['无', '每天', '每个工作日', '每周', '每月', '每年', '农历每月', '农历每年', '自定义'];
 
   const isToday = startDate === '04-26';
 
@@ -108,7 +113,10 @@ export default function ScheduleEditPage({ onBack, onSave, onDelete, schedule }:
           {/* 提醒、重复、顺延 */}
           <div className="bg-white mt-3 mx-3 rounded-2xl overflow-hidden">
             {/* 提醒 */}
-            <div className="flex items-center justify-between p-4 border-b border-gray-50 active:bg-gray-50">
+            <div
+              onClick={() => setShowReminderPicker(true)}
+              className="flex items-center justify-between p-4 border-b border-gray-50 active:bg-gray-50 cursor-pointer"
+            >
               <div className="flex items-center gap-3">
                 <Bell className="w-5 h-5 text-gray-400" />
                 <span className="text-gray-700">提醒</span>
@@ -119,7 +127,10 @@ export default function ScheduleEditPage({ onBack, onSave, onDelete, schedule }:
               </div>
             </div>
             {/* 重复 */}
-            <div className="flex items-center justify-between p-4 border-b border-gray-50 active:bg-gray-50">
+            <div
+              onClick={() => setShowRepeatPicker(true)}
+              className="flex items-center justify-between p-4 border-b border-gray-50 active:bg-gray-50 cursor-pointer"
+            >
               <div className="flex items-center gap-3">
                 <Repeat className="w-5 h-5 text-gray-400" />
                 <span className="text-gray-700">重复</span>
@@ -243,6 +254,98 @@ export default function ScheduleEditPage({ onBack, onSave, onDelete, schedule }:
                 <button
                   onClick={() => setShowMenu(false)}
                   className="w-full py-4 text-center text-gray-500 font-medium active:bg-gray-50"
+                >
+                  取消
+                </button>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
+
+        {/* 提醒选择器弹出 */}
+        <AnimatePresence>
+          {showReminderPicker && (
+            <>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setShowReminderPicker(false)}
+                className="fixed inset-0 bg-black/40 z-50"
+              />
+              <motion.div
+                initial={{ y: '100%' }}
+                animate={{ y: 0 }}
+                exit={{ y: '100%' }}
+                transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                className="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white rounded-t-[24px] z-[60] p-4 pb-8"
+              >
+                <div className="w-10 h-1 bg-gray-300 rounded-full mx-auto mb-4" />
+                <div className="text-center text-gray-500 text-sm mb-4">提醒</div>
+                {reminderOptions.map((option) => (
+                  <button
+                    key={option}
+                    onClick={() => {
+                      setReminder(option);
+                      setShowReminderPicker(false);
+                    }}
+                    className={`w-full py-3.5 text-center font-medium border-b border-gray-100 active:bg-gray-50 ${
+                      reminder === option ? 'text-orange-500' : 'text-gray-700'
+                    }`}
+                  >
+                    {option}
+                    {reminder === option && <span className="ml-2">✓</span>}
+                  </button>
+                ))}
+                <button
+                  onClick={() => setShowReminderPicker(false)}
+                  className="w-full py-4 text-center text-gray-500 font-medium mt-2 active:bg-gray-50"
+                >
+                  取消
+                </button>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
+
+        {/* 重复选择器弹出 */}
+        <AnimatePresence>
+          {showRepeatPicker && (
+            <>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setShowRepeatPicker(false)}
+                className="fixed inset-0 bg-black/40 z-50"
+              />
+              <motion.div
+                initial={{ y: '100%' }}
+                animate={{ y: 0 }}
+                exit={{ y: '100%' }}
+                transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                className="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white rounded-t-[24px] z-[60] p-4 pb-8 max-h-[70vh] overflow-y-auto"
+              >
+                <div className="w-10 h-1 bg-gray-300 rounded-full mx-auto mb-4" />
+                <div className="text-center text-gray-500 text-sm mb-4">重复</div>
+                {repeatOptions.map((option) => (
+                  <button
+                    key={option}
+                    onClick={() => {
+                      setRepeat(option);
+                      setShowRepeatPicker(false);
+                    }}
+                    className={`w-full py-3.5 text-center font-medium border-b border-gray-100 active:bg-gray-50 ${
+                      repeat === option ? 'text-orange-500' : 'text-gray-700'
+                    }`}
+                  >
+                    {option}
+                    {repeat === option && <span className="ml-2">✓</span>}
+                  </button>
+                ))}
+                <button
+                  onClick={() => setShowRepeatPicker(false)}
+                  className="w-full py-4 text-center text-gray-500 font-medium mt-2 active:bg-gray-50"
                 >
                   取消
                 </button>
