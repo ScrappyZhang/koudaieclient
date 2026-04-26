@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ChevronLeft, ChevronDown, ChevronUp, Plus, Menu, ArrowUpDown, ChevronRight, Clock } from 'lucide-react';
 import { motion } from 'motion/react';
+import ScheduleEditPage from './ScheduleEditPage';
 
 const weekDays = ['日', '一', '二', '三', '四', '五', '六'];
 
@@ -87,6 +88,7 @@ export default function ScheduleCalendarPage({ onBack }: { onBack: () => void })
   const [currentDate, setCurrentDate] = useState(new Date(2026, 3)); // 2026 年 4 月
   const [selectedDate, setSelectedDate] = useState({ year: 2026, month: 4, day: 24 }); // 选中 4月24日
   const [isCalendarExpanded, setIsCalendarExpanded] = useState(true);
+  const [isEditing, setIsEditing] = useState(false);
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth() + 1;
@@ -102,6 +104,10 @@ export default function ScheduleCalendarPage({ onBack }: { onBack: () => void })
     '4-5': '清明节',
     '5-1': '劳动节',
   };
+
+  if (isEditing) {
+    return <ScheduleEditPage onBack={() => setIsEditing(false)} onSave={(data) => { console.log('保存日程', data); setIsEditing(false); }} />;
+  }
 
   return (
     <div className="min-h-screen bg-white flex justify-center font-sans">
@@ -304,7 +310,10 @@ export default function ScheduleCalendarPage({ onBack }: { onBack: () => void })
         </div>
 
         {/* 右下角浮动按钮 */}
-        <button className="absolute bottom-20 right-4 w-14 h-14 bg-orange-500 rounded-full shadow-lg shadow-orange-500/30 flex items-center justify-center hover:bg-orange-600 active:scale-95 transition-all z-40">
+        <button
+          onClick={() => setIsEditing(true)}
+          className="absolute bottom-20 right-4 w-14 h-14 bg-orange-500 rounded-full shadow-lg shadow-orange-500/30 flex items-center justify-center hover:bg-orange-600 active:scale-95 transition-all z-40"
+        >
           <Plus className="w-7 h-7 text-white" />
         </button>
       </div>
