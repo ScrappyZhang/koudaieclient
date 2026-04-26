@@ -293,12 +293,67 @@ export default function App() {
   if (currentPage === 'schedule') return <SchedulePage onBack={() => setCurrentPage('home')} />;
   if (currentPage === 'ai-chat') return <AIChatPage onBack={() => setCurrentPage('home')} />;
   if (currentPage === 'customer-detail') return <CustomerDetailPage customer={selectedCustomer} onBack={() => setCurrentPage('home')} />;
-  if (currentPage === 'schedule-calendar') return <ScheduleCalendarPage onBack={() => setCurrentPage('home')} />;
+  if (currentPage === 'schedule-calendar') return <ScheduleCalendarPage
+    onBack={() => setCurrentPage('home')}
+    onCustomerDetail={() => {
+      setCurrentPage('customer-detail');
+      setSelectedCustomer({
+        id: 100,
+        name: '邓逵',
+        avatar: '邓',
+        phone: '139****5678',
+        gender: 'M',
+        age: 36,
+        maritalStatus: '已婚',
+        birthday: '1990-03-01',
+        customerType: '寿险客户',
+        temperature: '高温',
+        value: 'A4',
+        vipLevel: '铂金',
+        serviceLevel: '康养会员',
+        remark: '近期浏览了养老社区专题页，对高端养老资源感兴趣。',
+        familyMembers: [
+          { relationship: '配偶', name: '邓太太', age: 34, phone: '138****8888' },
+          { relationship: '女儿', name: '小邓', age: 6, phone: '-' }
+        ]
+      });
+    }}
+    onStrategySheet={() => setShowStrategySheet(true)}
+  />;
   if (currentPage === 'schedule-edit') return <ScheduleEditPage
     onBack={() => { setCurrentPage('home'); setEditingSchedule(null); }}
     onSave={(data) => { console.log('保存日程', data); setCurrentPage('home'); setEditingSchedule(null); }}
     onDelete={() => { console.log('删除日程', editingSchedule?.id); setCurrentPage('home'); setEditingSchedule(null); }}
     schedule={editingSchedule}
+    showAskBob={editingSchedule?.id === 'task-1'}
+    onCustomerDetail={() => {
+      setCurrentPage('customer-detail');
+      setSelectedCustomer({
+        id: 100,
+        name: '邓逵',
+        avatar: '邓',
+        phone: '139****5678',
+        gender: 'M',
+        age: 36,
+        maritalStatus: '已婚',
+        birthday: '1990-03-01',
+        customerType: '寿险客户',
+        temperature: '高温',
+        value: 'A4',
+        vipLevel: '铂金',
+        serviceLevel: '康养会员',
+        remark: '近期浏览了养老社区专题页，对高端养老资源感兴趣。',
+        familyMembers: [
+          { relationship: '配偶', name: '邓太太', age: 34, phone: '138****8888' },
+          { relationship: '女儿', name: '小邓', age: 6, phone: '-' }
+        ]
+      });
+    }}
+    onStrategySheet={() => {
+      setCurrentPage('home');
+      setEditingSchedule(null);
+      setShowStrategySheet(true);
+    }}
   />;
 
   const handleAiAction = (scenario: any) => {

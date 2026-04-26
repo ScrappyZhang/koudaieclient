@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ChevronLeft, MoreHorizontal, Briefcase, Bell, Repeat, Clock, List, Image as ImageIcon, MessageCircle, Plus, Calendar } from 'lucide-react';
+import { ChevronLeft, MoreHorizontal, Briefcase, Bell, Repeat, Clock, List, Image as ImageIcon, MessageCircle, Plus, Calendar, Sparkles, User, FileText } from 'lucide-react';
 
-export default function ScheduleEditPage({ onBack, onSave, onDelete, schedule }: {
+export default function ScheduleEditPage({ onBack, onSave, onDelete, schedule, showAskBob, onCustomerDetail, onStrategySheet }: {
   onBack: () => void,
   onSave?: (data: any) => void,
   onDelete?: () => void,
@@ -12,6 +12,9 @@ export default function ScheduleEditPage({ onBack, onSave, onDelete, schedule }:
     time: string;
     type: string;
   }
+  showAskBob?: boolean,
+  onCustomerDetail?: () => void,
+  onStrategySheet?: () => void,
 }) {
   const isEditing = !!schedule;
 
@@ -109,6 +112,38 @@ export default function ScheduleEditPage({ onBack, onSave, onDelete, schedule }:
               </div>
             </div>
           </div>
+
+          {/* AskBob 区域 - 仅特定日程显示 */}
+          {showAskBob && (
+            <div className="bg-gradient-to-r from-blue-50 to-cyan-50 mt-3 mx-3 p-4 rounded-2xl border border-blue-100">
+              <div className="flex items-center gap-2 mb-3">
+                <Sparkles className="w-5 h-5 text-blue-600" />
+                <span className="font-bold text-gray-900">AskBob</span>
+              </div>
+              <div className="space-y-2">
+                <button
+                  onClick={onCustomerDetail}
+                  className="w-full flex items-center justify-between p-3 bg-white rounded-xl active:bg-gray-50 transition-colors"
+                >
+                  <div className="flex items-center gap-3">
+                    <User className="w-5 h-5 text-blue-600" />
+                    <span className="text-gray-700 font-medium">查看客户详情</span>
+                  </div>
+                  <ChevronRightIcon className="w-4 h-4 text-gray-400" />
+                </button>
+                <button
+                  onClick={onStrategySheet}
+                  className="w-full flex items-center justify-between p-3 bg-white rounded-xl active:bg-gray-50 transition-colors"
+                >
+                  <div className="flex items-center gap-3">
+                    <FileText className="w-5 h-5 text-blue-600" />
+                    <span className="text-gray-700 font-medium">访前锦囊</span>
+                  </div>
+                  <ChevronRightIcon className="w-4 h-4 text-gray-400" />
+                </button>
+              </div>
+            </div>
+          )}
 
           {/* 提醒、重复、顺延 */}
           <div className="bg-white mt-3 mx-3 rounded-2xl overflow-hidden">
