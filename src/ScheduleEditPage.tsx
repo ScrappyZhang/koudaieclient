@@ -90,7 +90,7 @@ export default function ScheduleEditPage({ onBack, onSave, onDelete, schedule }:
               <div className="flex items-center gap-3 flex-1">
                 <Calendar className="w-5 h-5 text-gray-400" />
                 <div>
-                  <div className="text-orange-500 font-bold text-sm">
+                  <div className="text-blue-600 font-bold text-sm">
                     {startDate}{isToday && ',今天'}
                   </div>
                   <div className="text-gray-400 text-sm">{startTime}</div>
@@ -101,7 +101,7 @@ export default function ScheduleEditPage({ onBack, onSave, onDelete, schedule }:
               {/* 结束时间 */}
               <div className="flex items-center gap-3 flex-1 justify-end">
                 <div className="text-right">
-                  <div className="text-orange-500 font-bold text-sm">
+                  <div className="text-blue-600 font-bold text-sm">
                     {endDate}{isToday && ',今天'}
                   </div>
                   <div className="text-gray-400 text-sm">{endTime}</div>
@@ -151,7 +151,7 @@ export default function ScheduleEditPage({ onBack, onSave, onDelete, schedule }:
               </div>
               <button
                 onClick={() => setAutoExtend(!autoExtend)}
-                className={`w-12 h-6 rounded-full transition-colors ${autoExtend ? 'bg-orange-500' : 'bg-gray-200'}`}
+                className={`w-12 h-6 rounded-full transition-colors ${autoExtend ? 'bg-blue-600' : 'bg-gray-200'}`}
               >
                 <div className={`w-5 h-5 bg-white rounded-full shadow-md transform transition-transform ${autoExtend ? 'translate-x-6' : 'translate-x-0.5'}`} />
               </button>
@@ -203,7 +203,7 @@ export default function ScheduleEditPage({ onBack, onSave, onDelete, schedule }:
             onClick={() => {
               onSave?.({ title, category, priority, bgColor, startDate, startTime, endDate, endTime, reminder, repeat, autoExtend, notes });
             }}
-            className="w-full bg-orange-500 text-white font-bold text-lg py-4 rounded-full shadow-lg shadow-orange-500/30 active:scale-[0.98] transition-all"
+            className="w-full bg-blue-600 text-white font-bold text-lg py-4 rounded-full shadow-lg shadow-blue-600/30 active:scale-[0.98] transition-all"
           >
             保存
           </button>
@@ -290,7 +290,7 @@ export default function ScheduleEditPage({ onBack, onSave, onDelete, schedule }:
                       setShowReminderPicker(false);
                     }}
                     className={`w-full py-3.5 text-center font-medium border-b border-gray-100 active:bg-gray-50 ${
-                      reminder === option ? 'text-orange-500' : 'text-gray-700'
+                      reminder === option ? 'text-blue-600' : 'text-gray-700'
                     }`}
                   >
                     {option}
@@ -336,7 +336,7 @@ export default function ScheduleEditPage({ onBack, onSave, onDelete, schedule }:
                       setShowRepeatPicker(false);
                     }}
                     className={`w-full py-3.5 text-center font-medium border-b border-gray-100 active:bg-gray-50 ${
-                      repeat === option ? 'text-orange-500' : 'text-gray-700'
+                      repeat === option ? 'text-blue-600' : 'text-gray-700'
                     }`}
                   >
                     {option}

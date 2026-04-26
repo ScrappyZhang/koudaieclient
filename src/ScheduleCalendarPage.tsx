@@ -173,7 +173,7 @@ export default function ScheduleCalendarPage({ onBack }: { onBack: () => void })
                     }}
                     className={`relative aspect-square flex flex-col items-center justify-center rounded-full ${
                       item.isSelected
-                        ? 'bg-orange-500 text-white font-bold'
+                        ? 'bg-blue-600 text-white font-bold'
                         : item.isCurrentMonth
                         ? item.isHoliday || isWeekend
                           ? 'text-orange-500'
@@ -183,7 +183,7 @@ export default function ScheduleCalendarPage({ onBack }: { onBack: () => void })
                   >
                     <span className={`text-sm ${item.isSelected ? 'text-base' : ''}`}>{item.day}</span>
                     {holiday && (
-                      <span className={`text-[8px] mt-0.5 ${item.isSelected ? 'text-orange-100' : 'text-orange-500'}`}>
+                      <span className={`text-[8px] mt-0.5 ${item.isSelected ? 'text-blue-100' : 'text-orange-500'}`}>
                         {holiday}
                       </span>
                     )}
@@ -209,7 +209,7 @@ export default function ScheduleCalendarPage({ onBack }: { onBack: () => void })
                     onClick={() => setSelectedDate({ year: item.year, month: item.month, day: item.day })}
                     className={`relative aspect-square flex flex-col items-center justify-center rounded-full ${
                       item.isSelected
-                        ? 'bg-orange-500 text-white font-bold'
+                        ? 'bg-blue-600 text-white font-bold'
                         : item.isHoliday || isWeekend
                           ? 'text-orange-500'
                           : 'text-gray-900'
@@ -217,7 +217,7 @@ export default function ScheduleCalendarPage({ onBack }: { onBack: () => void })
                   >
                     <span className={`text-sm ${item.isSelected ? 'text-base' : ''}`}>{item.day}</span>
                     {holiday && (
-                      <span className={`text-[8px] mt-0.5 ${item.isSelected ? 'text-orange-100' : 'text-orange-500'}`}>
+                      <span className={`text-[8px] mt-0.5 ${item.isSelected ? 'text-blue-100' : 'text-orange-500'}`}>
                         {holiday}
                       </span>
                     )}
@@ -256,7 +256,7 @@ export default function ScheduleCalendarPage({ onBack }: { onBack: () => void })
                     setIsEditing(true);
                   }}
                   className={`bg-white p-4 rounded-2xl flex items-center shadow-sm border transition-all cursor-pointer active:scale-[0.98] ${
-                    task.highlight ? 'border-orange-100 ring-4 ring-orange-500/5' : 'border-gray-100'
+                    task.highlight ? 'border-blue-100 ring-4 ring-blue-500/5' : 'border-gray-100'
                   }`}
                 >
                   <div className="flex flex-col items-center justify-center mr-4 pr-4 border-r border-gray-100 min-w-[50px]">
@@ -322,7 +322,7 @@ export default function ScheduleCalendarPage({ onBack }: { onBack: () => void })
         {/* 右下角浮动按钮 */}
         <button
           onClick={() => setIsEditing(true)}
-          className="absolute bottom-20 right-4 w-14 h-14 bg-orange-500 rounded-full shadow-lg shadow-orange-500/30 flex items-center justify-center hover:bg-orange-600 active:scale-95 transition-all z-40"
+          className="absolute bottom-20 right-4 w-14 h-14 bg-blue-600 rounded-full shadow-lg shadow-blue-600/30 flex items-center justify-center hover:bg-blue-700 active:scale-95 transition-all z-40"
         >
           <Plus className="w-7 h-7 text-white" />
         </button>
