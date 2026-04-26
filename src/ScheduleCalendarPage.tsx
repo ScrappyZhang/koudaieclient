@@ -297,8 +297,8 @@ export default function ScheduleCalendarPage({ onBack }: { onBack: () => void })
                 </svg>
               </div>
 
-              <h2 className="text-xl font-medium text-gray-900 mb-2">今天没有任务哟</h2>
-              <p className="text-sm text-gray-400">点击"+"创建任务</p>
+              <h2 className="text-xl font-medium text-gray-900 mb-2">今天没有日程哟</h2>
+              <p className="text-sm text-gray-400">点击"+"创建日程</p>
             </div>
           )}
         </div>
