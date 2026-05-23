@@ -8,8 +8,8 @@ const weekDays = ['日', '一', '二', '三', '四', '五', '六'];
 // 4月24日的日程数据
 const scheduleTasks = [
   { id: 'task-1', time: '10:00', title: '邓逵 - 面访介绍康养会员权益', type: '面访', highlight: true },
-  { id: 'task-2', time: '14:30', title: '刘敏 - 保单递送', type: '服务', highlight: false },
-  { id: 'task-3', time: '16:00', title: '陈静 - 入盟促成', type: '增员', highlight: false },
+  { id: 'task-2', time: '14:30', title: '刘敏 - 生日祝福提醒', type: '服务', highlight: false },
+  { id: 'task-3', time: '16:00', title: '陈静 - 生日祝福提醒（农历）', type: '服务', highlight: false },
 ];
 
 // 获取当前日期所在的一周

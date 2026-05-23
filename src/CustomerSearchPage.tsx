@@ -3,6 +3,7 @@ import { ChevronLeft, ChevronRight, Search, Trash2, Mic, Sparkles, ChevronDown, 
 import { motion, AnimatePresence } from 'motion/react';
 import { customers } from './data';
 import CustomerDetailPage from './CustomerDetailPage';
+import FilterSheet, { FilterState } from './FilterSheet';
 
 type SearchState = 'initial' | 'typing' | 'understanding' | 'results' | 'unrecognized';
 
@@ -19,6 +20,19 @@ export default function CustomerSearchPage({ onBack }: { onBack: () => void }) {
   const [selectedReason, setSelectedReason] = useState<string | null>(null);
   const [individualFeedback, setIndividualFeedback] = useState<Record<number, boolean>>({});
   const [filteredCustomers, setFilteredCustomers] = useState(customers);
+  const [showFilterSheet, setShowFilterSheet] = useState(false);
+  const [filters, setFilters] = useState<FilterState>({});
+  const [showAITip, setShowAITip] = useState(() => {
+    // 首次进入时显示提示，用户关闭后不再显示
+    const hasSeenTip = localStorage.getItem('customer_search_ai_tip_seen');
+    return !hasSeenTip;
+  });
+
+  // 关闭提示并记住
+  const closeAITip = () => {
+    setShowAITip(false);
+    localStorage.setItem('customer_search_ai_tip_seen', 'true');
+  };
 
   // Helper to highlight matching text
   const highlightText = (text: string | number | undefined, query: string) => {
@@ -319,9 +333,24 @@ export default function CustomerSearchPage({ onBack }: { onBack: () => void }) {
             />
             <div className="flex justify-between items-center mt-1">
               {/* AI Toggle */}
-              <div 
-                onClick={() => setIsAISearch(!isAISearch)}
-                className="flex items-center space-x-2 cursor-pointer group"
+              <motion.div
+                onClick={() => {
+                  setIsAISearch(!isAISearch);
+                  if (showAITip) closeAITip();
+                }}
+                animate={showAITip ? {
+                  boxShadow: [
+                    '0 0 0 0 rgba(59, 130, 246, 0)',
+                    '0 0 0 8px rgba(59, 130, 246, 0.3)',
+                    '0 0 0 0 rgba(59, 130, 246, 0)'
+                  ]
+                } : {}}
+                transition={{
+                  duration: 1.5,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+                className="flex items-center space-x-2 cursor-pointer group rounded-lg px-1 py-1 -mx-1"
               >
                 <div className={`w-9 h-5 rounded-full relative transition-colors duration-200 ${isAISearch ? 'bg-blue-500' : 'bg-gray-200'}`}>
                   <div className={`absolute top-1 w-3 h-3 rounded-full bg-white transition-all duration-200 ${isAISearch ? 'translate-x-5' : 'translate-x-1'}`} />
@@ -330,9 +359,9 @@ export default function CustomerSearchPage({ onBack }: { onBack: () => void }) {
                   AI 搜索
                 </span>
                 {isAISearch && <Sparkles className="w-3 h-3 text-blue-400 animate-pulse" />}
-              </div>
+              </motion.div>
 
-              <button 
+              <button
                 onClick={() => handleSearch()}
                 className="bg-blue-600 text-white px-6 py-1.5 rounded-lg text-[14px] font-medium shadow-md active:scale-95 transition-transform"
               >
@@ -340,6 +369,69 @@ export default function CustomerSearchPage({ onBack }: { onBack: () => void }) {
               </button>
             </div>
           </div>
+
+          {/* AI 搜索提示气泡 */}
+          <AnimatePresence>
+            {showAITip && searchState === 'initial' && (
+              <motion.div
+                initial={{ opacity: 0, y: 5 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 5 }}
+                className="relative mt-1 flex justify-start"
+              >
+                <motion.div
+                  animate={{
+                    y: [0, -3, 0],
+                  }}
+                  transition={{
+                    duration: 1.5,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                  className="bg-gradient-to-r from-blue-500 to-indigo-500 rounded-xl px-3 py-2 text-white shadow-lg inline-flex relative"
+                >
+                  <div className="flex items-center gap-2">
+                    <motion.div
+                      animate={{
+                        scale: [1, 1.2, 1],
+                        opacity: [0.8, 1, 0.8]
+                      }}
+                      transition={{
+                        duration: 1.5,
+                        repeat: Infinity,
+                        ease: "easeInOut"
+                      }}
+                    >
+                      <Sparkles className="w-4 h-4 text-white" />
+                    </motion.div>
+                    <p className="text-[13px] text-white/90">
+                      点击此处可<span className="font-bold text-white">开启或关闭AI搜索</span>
+                    </p>
+                    <button
+                      onClick={closeAITip}
+                      className="text-white/70 hover:text-white"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                  {/* 气泡尖角指向 AI 开关 */}
+                  <motion.div
+                    animate={{
+                      opacity: [0.7, 1, 0.7]
+                    }}
+                    transition={{
+                      duration: 1.5,
+                      repeat: Infinity,
+                      ease: "easeInOut"
+                    }}
+                    className="absolute -top-1.5 left-8"
+                  >
+                    <div className="w-2.5 h-2.5 bg-blue-500 rotate-45 transform origin-center"></div>
+                  </motion.div>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
         <div className="flex-1 overflow-y-auto">
@@ -538,11 +630,22 @@ export default function CustomerSearchPage({ onBack }: { onBack: () => void }) {
                 {/* Filters */}
                 {isAISearch && (
                   <div className="px-4 flex space-x-2 mb-4">
-                    {['客户价值', '客户温度', '更多筛选'].map(f => (
+                    {['客户价值', '客户温度'].map(f => (
                       <button key={f} className="flex items-center px-3 py-1.5 bg-gray-50 rounded-lg text-[12px] text-gray-600 font-medium">
                         {f} <ChevronDown className="w-3 h-3 ml-1 text-gray-400" />
                       </button>
                     ))}
+                    <button
+                      onClick={() => setShowFilterSheet(true)}
+                      className="flex items-center px-3 py-1.5 bg-gray-50 rounded-lg text-[12px] text-gray-600 font-medium relative"
+                    >
+                      更多筛选 <ChevronDown className="w-3 h-3 ml-1 text-gray-400" />
+                      {Object.values(filters).some(v => v) && (
+                        <span className="absolute -top-1 -right-1 w-4 h-4 bg-blue-600 text-white text-[9px] rounded-full flex items-center justify-center">
+                          {Object.values(filters).filter(v => v).length}
+                        </span>
+                      )}
+                    </button>
                   </div>
                 )}
 
@@ -840,6 +943,14 @@ export default function CustomerSearchPage({ onBack }: { onBack: () => void }) {
             </>
           )}
         </AnimatePresence>
+
+        {/* Filter Sheet */}
+        <FilterSheet
+          visible={showFilterSheet}
+          onClose={() => setShowFilterSheet(false)}
+          filters={filters}
+          onApply={(newFilters) => setFilters(newFilters)}
+        />
       </div>
     </div>
   );

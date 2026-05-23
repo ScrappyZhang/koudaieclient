@@ -10,6 +10,7 @@ import AIChatPage from './AIChatPage';
 import CustomerDetailPage from './CustomerDetailPage';
 import ScheduleCalendarPage from './ScheduleCalendarPage';
 import ScheduleEditPage from './ScheduleEditPage';
+import SharedCustomerListPage from './SharedCustomerListPage';
 import { customers } from './data';
 
 const tools = [
@@ -194,7 +195,7 @@ const aiScenarios = [
 ];
 
 export default function App() {
-  const [currentPage, setCurrentPage] = useState<'home' | 'more-dimensions' | 'customer-list' | 'customer-search' | 'unified-search' | 'agent-profile' | 'schedule' | 'chat' | 'ai-chat' | 'customer-detail' | 'schedule-calendar' | 'schedule-edit'>('home');
+  const [currentPage, setCurrentPage] = useState<'home' | 'more-dimensions' | 'customer-list' | 'customer-search' | 'unified-search' | 'agent-profile' | 'schedule' | 'chat' | 'ai-chat' | 'customer-detail' | 'schedule-calendar' | 'schedule-edit' | 'shared-customer-list'>('home');
   const [selectedCustomer, setSelectedCustomer] = useState<any>(null);
   const [editingSchedule, setEditingSchedule] = useState<{ id: string; title: string; time: string; type: string } | null>(null);
   const [activeFilter, setActiveFilter] = useState('全部');
@@ -210,6 +211,8 @@ export default function App() {
   const [showStrategySheet, setShowStrategySheet] = useState(false);
   const [showReviewSheet, setShowReviewSheet] = useState(false);
   const [taskStatus, setTaskStatus] = useState<Record<string, string>>({});
+  const [aiInitialMessage, setAiInitialMessage] = useState<string | undefined>(undefined);
+  const [sharedCustomerDefaultTab, setSharedCustomerDefaultTab] = useState<'incoming' | 'outgoing'>('outgoing');
   const [messages, setMessages] = useState<{role: 'user' | 'assistant', content: string, time: string}[]>([
     { role: 'assistant', content: '嘿！我是 AskBob，您的智能保险助手。有什么我可以帮您的吗？', time: '04-20 13:37' }
   ]);
@@ -286,13 +289,45 @@ export default function App() {
   const metrics = getMetrics();
 
   if (currentPage === 'more-dimensions') return <MoreDimensionsPage onBack={() => setCurrentPage('home')} />;
-  if (currentPage === 'customer-list') return <CustomerListPage onBack={() => setCurrentPage('home')} onSearch={() => setCurrentPage('customer-search')} />;
+  if (currentPage === 'customer-list') return <CustomerListPage onBack={() => setCurrentPage('home')} onSearch={() => setCurrentPage('customer-search')} onSharedCustomerList={() => { setSharedCustomerDefaultTab('outgoing'); setCurrentPage('shared-customer-list'); }} />;
   if (currentPage === 'customer-search') return <CustomerSearchPage onBack={() => setCurrentPage('home')} />;
   if (currentPage === 'unified-search') return <UnifiedSearchPage onBack={() => setCurrentPage('home')} />;
   if (currentPage === 'agent-profile') return <AgentProfilePage onBack={() => setCurrentPage('home')} />;
   if (currentPage === 'schedule') return <SchedulePage onBack={() => setCurrentPage('home')} />;
-  if (currentPage === 'ai-chat') return <AIChatPage onBack={() => setCurrentPage('home')} />;
-  if (currentPage === 'customer-detail') return <CustomerDetailPage customer={selectedCustomer} onBack={() => setCurrentPage('home')} />;
+  if (currentPage === 'ai-chat') return <AIChatPage
+    onBack={() => { setCurrentPage('home'); setAiInitialMessage(undefined); }}
+    initialMessage={aiInitialMessage}
+    onCustomerClick={(customerName) => {
+      const customer = customers.find(c => c.name === customerName);
+      if (customer) {
+        setSelectedCustomer(customer);
+      } else {
+        // 如果找不到客户（如邓逵），创建一个默认客户对象
+        setSelectedCustomer({
+          id: 100,
+          name: '邓逵',
+          avatar: '邓',
+          phone: '139****5678',
+          gender: 'M',
+          age: 36,
+          maritalStatus: '已婚',
+          birthday: '1990-03-01',
+          customerType: '寿险客户',
+          temperature: '高温',
+          value: 'A4',
+          vipLevel: '铂金',
+          serviceLevel: '康养会员',
+          remark: '近期浏览了养老社区专题页，对高端养老资源感兴趣。',
+          familyMembers: [
+            { relationship: '配偶', name: '邓太太', age: 34, phone: '138****8888' },
+            { relationship: '女儿', name: '小邓', age: 6, phone: '-' }
+          ]
+        });
+      }
+      setCurrentPage('customer-detail');
+    }}
+  />;
+  if (currentPage === 'customer-detail') return <CustomerDetailPage customer={selectedCustomer} onBack={() => setCurrentPage('home')} onSharedCustomerList={() => { setSharedCustomerDefaultTab('outgoing'); setCurrentPage('shared-customer-list'); }} />;
   if (currentPage === 'schedule-calendar') return <ScheduleCalendarPage
     onBack={() => setCurrentPage('home')}
     onCustomerDetail={() => {
@@ -355,10 +390,19 @@ export default function App() {
       setShowStrategySheet(true);
     }}
   />;
+  if (currentPage === 'shared-customer-list') return <SharedCustomerListPage onBack={() => setCurrentPage('customer-list')} defaultTab={sharedCustomerDefaultTab} />;
 
   const handleAiAction = (scenario: any) => {
-    if (scenario.type === 'strategy') setShowStrategySheet(true);
-    else if (scenario.type === 'review_list') setShowReviewSheet(true);
+    if (scenario.type === 'strategy') {
+      // 跳转到AI聊天页面，自动发送访前锦囊请求
+      setAiInitialMessage(`帮我整理下面访前的信息与资料，我要去面访${scenario.customer}`);
+      setCurrentPage('ai-chat');
+    }
+    else if (scenario.type === 'review_list') {
+      // 跳转到AI聊天页面，自动发送消息获取客户列表
+      setAiInitialMessage(scenario.text);
+      setCurrentPage('ai-chat');
+    }
     setTaskStatus(prev => ({ ...prev, [scenario.taskId]: '进行中' }));
   };
 
@@ -650,8 +694,8 @@ export default function App() {
                 <div className="space-y-3">
                   {[
                     { id: 'task-1', time: '10:00', title: '邓逵 - 面访介绍康养会员权益', type: '面访', highlight: true },
-                    { id: 'task-6', time: '14:30', title: '刘敏 - 保单递送', type: '服务' },
-                    { id: 'task-7', time: '16:00', title: '陈静 - 入盟促成', type: '增员' },
+                    { id: 'task-6', time: '14:30', title: '刘敏 - 生日祝福提醒', type: '服务' },
+                    { id: 'task-7', time: '16:00', title: '陈静 - 生日祝福提醒（农历）', type: '服务' },
                   ].map((task, idx) => (
                     <div
                       key={idx}

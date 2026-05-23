@@ -1,7 +1,8 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
-import { ChevronLeft, MoreHorizontal, Copy, Eye, EyeOff, Edit3, Plus, MapPin, Info, CheckCircle2, Shield, Calendar, Heart, Activity, FileText, Briefcase, Users, MessageSquare, ChevronDown, ChevronRight, Menu, X, Phone, Cake, UserPlus, ShieldCheck, Clock, Send, ExternalLink, Search, Sparkles, Plane } from 'lucide-react';
+import { ChevronLeft, MoreHorizontal, Copy, Eye, EyeOff, Edit3, Plus, MapPin, Info, CheckCircle2, Shield, Calendar, Heart, Activity, FileText, Briefcase, Users, MessageSquare, ChevronDown, ChevronRight, Menu, X, Phone, Cake, UserPlus, ShieldCheck, Clock, Send, ExternalLink, Search, Sparkles, Plane, Share2, RotateCcw } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 
-export default function CustomerDetailPage({ customer, onBack }: { customer: any, onBack: () => void }) {
+export default function CustomerDetailPage({ customer, onBack, onSharedCustomerList }: { customer: any, onBack: () => void, onSharedCustomerList?: () => void }) {
   const [activeTab, setActiveTab] = useState('客户画像');
   const [showSensitive, setShowSensitive] = useState(false);
   const [showAllTabs, setShowAllTabs] = useState(false);
@@ -23,8 +24,111 @@ export default function CustomerDetailPage({ customer, onBack }: { customer: any
   const [selectedFamilyMember, setSelectedFamilyMember] = useState('本人');
   const [selectedPolicyCategory, setSelectedPolicyCategory] = useState('全部');
   const [showInvalidPolicies, setShowInvalidPolicies] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
+  const [showShareSheet, setShowShareSheet] = useState(false);
+  const [shareAgentId, setShareAgentId] = useState('');
+  const [foundAgentName, setFoundAgentName] = useState('');
+  const [foundAgentTenure, setFoundAgentTenure] = useState<number | null>(null); // 接收代理人司龄（月）
+  const [isSearchingAgent, setIsSearchingAgent] = useState(false);
+  const [showInheritanceChoice, setShowInheritanceChoice] = useState(false);
+  const [shareType, setShareType] = useState<'share' | 'inherit' | null>(null);
+  const [showSignAgreement, setShowSignAgreement] = useState(false);
+  const [showSignatureScreen, setShowSignatureScreen] = useState(false);
+  const [hasSigned, setHasSigned] = useState(false); // 传承人是否已签署协议
+  const [showAgreementView, setShowAgreementView] = useState(false); // 查看已签署的协议
   const scrollRef = useRef<HTMLDivElement>(null);
+  const signatureCanvasRef = useRef<HTMLCanvasElement>(null);
+  const isSigningRef = useRef(false);
+  const lastPosRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
   const latestHistoryRef = useRef<HTMLDivElement>(null);
+
+  // 签字画布初始化与事件监听
+  useEffect(() => {
+    if (!showSignatureScreen) return;
+    const canvas = signatureCanvasRef.current;
+    if (!canvas) return;
+
+    // 清空画布
+    const ctx = canvas.getContext('2d');
+    if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    const container = canvas.parentElement;
+    if (!container) return;
+
+    // 设置画布尺寸匹配容器
+    const resizeCanvas = () => {
+      const rect = container.getBoundingClientRect();
+      canvas.width = rect.width;
+      canvas.height = rect.height;
+    };
+    resizeCanvas();
+
+    // 获取画笔位置（支持触摸和鼠标）
+    const getPos = (e: MouseEvent | TouchEvent) => {
+      const rect = canvas.getBoundingClientRect();
+      if ('touches' in e) {
+        return {
+          x: e.touches[0].clientX - rect.left,
+          y: e.touches[0].clientY - rect.top,
+        };
+      }
+      return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+    };
+
+    // 绘制线条
+    const draw = (e: MouseEvent | TouchEvent) => {
+      if (!isSigningRef.current) return;
+      e.preventDefault();
+      const pos = getPos(e);
+      const context = canvas.getContext('2d');
+      if (!context) return;
+      context.strokeStyle = '#1a1a1a';
+      context.lineWidth = 3;
+      context.lineCap = 'round';
+      context.lineJoin = 'round';
+      context.beginPath();
+      context.moveTo(lastPosRef.current.x, lastPosRef.current.y);
+      context.lineTo(pos.x, pos.y);
+      context.stroke();
+      lastPosRef.current = pos;
+    };
+
+    const startDraw = (e: MouseEvent | TouchEvent) => {
+      e.preventDefault();
+      isSigningRef.current = true;
+      const pos = getPos(e);
+      lastPosRef.current = pos;
+    };
+
+    const stopDraw = () => {
+      isSigningRef.current = false;
+    };
+
+    // 鼠标事件
+    canvas.addEventListener('mousedown', startDraw);
+    canvas.addEventListener('mousemove', draw);
+    canvas.addEventListener('mouseup', stopDraw);
+    canvas.addEventListener('mouseleave', stopDraw);
+    // 触摸事件
+    canvas.addEventListener('touchstart', startDraw, { passive: false });
+    canvas.addEventListener('touchmove', draw, { passive: false });
+    canvas.addEventListener('touchend', stopDraw);
+    canvas.addEventListener('touchcancel', stopDraw);
+    window.addEventListener('resize', resizeCanvas);
+
+    return () => {
+      canvas.removeEventListener('mousedown', startDraw);
+      canvas.removeEventListener('mousemove', draw);
+      canvas.removeEventListener('mouseup', stopDraw);
+      canvas.removeEventListener('mouseleave', stopDraw);
+      canvas.removeEventListener('touchstart', startDraw);
+      canvas.removeEventListener('touchmove', draw);
+      canvas.removeEventListener('touchend', stopDraw);
+      canvas.removeEventListener('touchcancel', stopDraw);
+      window.removeEventListener('resize', resizeCanvas);
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showSignatureScreen]);
   const tabsRef = useRef<HTMLDivElement>(null);
 
   const copyToClipboard = (text: string) => {
@@ -581,10 +685,44 @@ export default function CustomerDetailPage({ customer, onBack }: { customer: any
             <button onClick={onBack} className="w-8 h-8 bg-gray-50 rounded-full flex items-center justify-center text-gray-800 hover:bg-gray-100 transition-colors">
               <ChevronLeft className="w-5 h-5" />
             </button>
-            <button className="w-8 h-8 bg-gray-50 rounded-full flex items-center justify-center text-gray-800 hover:bg-gray-100 transition-colors">
+            <button onClick={() => setShowMenu(!showMenu)} className="w-8 h-8 bg-gray-50 rounded-full flex items-center justify-center text-gray-800 hover:bg-gray-100 transition-colors">
               <MoreHorizontal className="w-5 h-5" />
             </button>
           </div>
+
+          {/* Menu Dropdown */}
+          <AnimatePresence>
+            {showMenu && (
+              <>
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  onClick={() => setShowMenu(false)}
+                  className="fixed inset-0 bg-black/20 z-40"
+                />
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  className="absolute top-16 right-4 w-48 bg-white rounded-xl shadow-xl border border-gray-100 z-50 overflow-hidden"
+                >
+                  <div className="py-1">
+                    <button
+                      onClick={() => {
+                        setShowMenu(false);
+                        setShowShareSheet(true);
+                      }}
+                      className="w-full px-4 py-3 flex items-center hover:bg-gray-50 transition-colors"
+                    >
+                      <Share2 className="w-4 h-4 text-gray-500 mr-3" />
+                      <span className="text-sm text-gray-700">共享客户</span>
+                    </button>
+                  </div>
+                </motion.div>
+              </>
+            )}
+          </AnimatePresence>
 
           <div className="mt-4">
             <div className="flex justify-between items-start">
@@ -2108,6 +2246,590 @@ export default function CustomerDetailPage({ customer, onBack }: { customer: any
             </div>
           </>
         )}
+
+        {/* Share Customer Sheet */}
+        <AnimatePresence>
+          {showShareSheet && (
+            <>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => { setShowShareSheet(false); setShareAgentId(''); setFoundAgentName(''); setFoundAgentTenure(null); setShowInheritanceChoice(false); setShareType(null); setHasSigned(false); }}
+                className="fixed inset-0 bg-black/40 z-[80]"
+              />
+              <motion.div
+                initial={{ y: '100%' }}
+                animate={{ y: 0 }}
+                exit={{ y: '100%' }}
+                transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+                className="fixed bottom-0 w-full max-w-md bg-gray-50 rounded-t-[24px] z-[90] pb-safe overflow-hidden"
+              >
+                {/* Drag indicator */}
+                <div className="relative h-1.5 w-12 bg-gray-300 rounded-full mx-auto mt-3 mb-2" />
+
+                <div className="p-6 pt-1 max-h-[85vh] overflow-y-auto no-scrollbar">
+                  {/* Header */}
+                  <div className="flex justify-between items-start mb-5">
+                    <h3 className="text-[18px] font-bold text-gray-900">共享客户</h3>
+                    <button onClick={() => { setShowShareSheet(false); setShareAgentId(''); setFoundAgentName(''); setFoundAgentTenure(null); setShowInheritanceChoice(false); setShareType(null); setHasSigned(false); }} className="p-1.5 text-gray-400 hover:text-gray-600 transition-colors">
+                      <X className="w-5 h-5" />
+                    </button>
+                  </div>
+
+                  {/* Customer Info Card */}
+                  <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 mb-5">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center text-white text-lg font-bold flex-shrink-0">
+                        {customer?.avatar || customer?.name?.[0] || '客'}
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <span className="text-[16px] font-bold text-gray-900">{customer?.name || '未知客户'}</span>
+                          <span className="text-[12px] text-gray-400">{customer?.gender === 'M' ? '男' : customer?.gender === 'F' ? '女' : ''} | {customer?.age || '-'}岁</span>
+                        </div>
+                        <div className="flex items-center gap-1.5 mt-1">
+                          {customer?.tags && customer.tags.slice(0, 2).map((tag: string, i: number) => (
+                            <span key={i} className="px-2 py-0.5 bg-blue-50 text-blue-600 text-[11px] rounded-full border border-blue-100">{tag}</span>
+                          ))}
+                          {customer?.tags && customer.tags.length > 2 && (
+                            <span className="text-[11px] text-gray-400">+{customer.tags.length - 2}</span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Agent Info Form */}
+                  <div className="mb-5">
+                    <h4 className="text-[15px] font-bold text-gray-900 mb-4">
+                      {hasSigned && shareType === 'inherit' ? '继承代理人信息' : '接收共享的代理人信息'}
+                    </h4>
+                    <div className="space-y-4">
+                      <div>
+                        <label className="flex items-center text-[14px] font-medium text-gray-700 mb-2">
+                          <span className="text-red-500 mr-1">*</span> 工号
+                        </label>
+                        <div className="relative">
+                          <input
+                            type="text"
+                            value={shareAgentId}
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              setShareAgentId(value);
+                              setFoundAgentName('');
+                              setFoundAgentTenure(null);
+                              setShowInheritanceChoice(false);
+                              setShareType(null);
+                              // Simulate agent lookup when input has 6+ characters
+                              if (value.length >= 6) {
+                                setIsSearchingAgent(true);
+                                setTimeout(() => {
+                                  // Mock agent data with tenure (months)
+                                  const agents: Record<string, { name: string; tenure: number }> = {
+                                    '1190154669': { name: '李黎红', tenure: 8 }, // 8个月司龄（新人）
+                                    '1200345678': { name: '王明华', tenure: 36 }, // 3年司龄
+                                    '1300456789': { name: '张晓燕', tenure: 6 }, // 6个月司龄（新人）
+                                    '1400567890': { name: '陈建国', tenure: 24 }, // 2年司龄
+                                  };
+                                  const found = agents[value];
+                                  if (found) {
+                                    setFoundAgentName(found.name);
+                                    setFoundAgentTenure(found.tenure);
+
+                                    // Check inheritance conditions
+                                    // Mock current agent: age 58, tenure 72 months (6 years)
+                                    const currentAgentAge = 58;
+                                    const currentAgentTenure = 72;
+                                    const customerValue = customer?.value || 'D'; // A1, A2, A3, A4, B, C, D, E, F
+
+                                    // D类及以上: A1, A2, A3, A4, B, C, D
+                                    const highValueCustomers = ['A1', 'A2', 'A3', 'A4', 'B', 'C', 'D'];
+                                    const isHighValue = highValueCustomers.includes(customerValue);
+
+                                    // 传承条件：当前代理人年龄>=55，司龄>=5年，接收代理人司龄<=1年，客户D类及以上
+                                    if (currentAgentAge >= 55 && currentAgentTenure >= 60 && found.tenure <= 12 && isHighValue) {
+                                      // 先收起键盘，再弹出传承确认弹窗
+                                      if (document.activeElement instanceof HTMLElement) {
+                                        document.activeElement.blur();
+                                      }
+                                      setTimeout(() => {
+                                        setShowInheritanceChoice(true);
+                                      }, 100);
+                                    }
+                                  }
+                                  setIsSearchingAgent(false);
+                                }, 500);
+                              }
+                            }}
+                            disabled={hasSigned && shareType === 'inherit'}
+                            placeholder="请填写工号"
+                            className={`w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[14px] transition-all pr-10 ${hasSigned && shareType === 'inherit' ? 'opacity-60 cursor-not-allowed' : 'outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10'}`}
+                          />
+                          {isSearchingAgent && (
+                            <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                              <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+                            </div>
+                          )}
+                        </div>
+                        {/* Found Agent Name Display */}
+                        {foundAgentName && (
+                          <div className="mt-2 flex items-center gap-2 bg-green-50 px-3 py-2 rounded-lg border border-green-100">
+                            <CheckCircle2 className="w-4 h-4 text-green-600" />
+                            <span className="text-[13px] text-green-700 font-medium">姓名：<span className="font-bold">{foundAgentName}</span></span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Rules Section - changes based on share type */}
+                  {shareType === 'inherit' ? (
+                    // Inheritance rules
+                    <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 mb-6">
+                      <p className="text-[13px] text-gray-700 leading-relaxed mb-3">
+                        您可以将客户传承给相同二级机构的指定代理人，传承后可获得传承奖励。
+                      </p>
+                      <div className="space-y-2.5">
+                        {[
+                          '传承客户给继承人时，需由客户授权同意；',
+                          '传承后，继承人可独立经营该客户，传承人可获得一定比例的传承奖励；',
+                          '继承人独立出单后，传承奖励将按照规则发放给传承人；',
+                          '传承后，客户可随时撤回授权；但继承人可通过自行手动创建此客户，后续继续进行经营、服务；',
+                        ].map((rule, i) => (
+                          <div key={i} className="flex items-start gap-2">
+                            <span className="text-[12px] font-bold text-gray-400 mt-0.5 shrink-0">{i + 1}.</span>
+                            <p className="text-[12px] text-gray-500 leading-relaxed">{rule}</p>
+                          </div>
+                        ))}
+                        {/* Rule 5 with clickable link */}
+                        <div className="flex items-start gap-2">
+                          <span className="text-[12px] font-bold text-gray-400 mt-0.5 shrink-0">5.</span>
+                          <p className="text-[12px] text-gray-500 leading-relaxed">
+                            选择传承后，您可以
+                            <button
+                              onClick={() => {
+                                setShowShareSheet(false);
+                                setShareAgentId('');
+                                setFoundAgentName('');
+                                setFoundAgentTenure(null);
+                                setShowInheritanceChoice(false);
+                                setShareType(null);
+                                onSharedCustomerList?.();
+                              }}
+                              className="text-blue-600 hover:text-blue-700 font-medium underline underline-offset-1"
+                            >
+                              点击此处
+                            </button>
+                            查看传承客户详情。
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    // Share rules (default)
+                    <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 mb-6">
+                      <p className="text-[13px] text-gray-700 leading-relaxed mb-3">
+                        您可以将客户共享给相同二级机构的指定代理人，共同经营。
+                      </p>
+                      <div className="space-y-2.5">
+                        {[
+                          '共享客户给另一位代理人时，需由客户授权同意；',
+                          '客户授权同意后，接收代理人可查看该客户个人信息以及在您名下的寿险保单；',
+                          '您与接收代理人共同为客户服务出单后，你们均可查看此客户保单；',
+                          '分享客户后，您仅可撤销客户未确认授权的分享，客户可以随时撤回授权；但接收代理人可通过自行手动创建此客户，后续继续进行经营、服务；',
+                        ].map((rule, i) => (
+                          <div key={i} className="flex items-start gap-2">
+                            <span className="text-[12px] font-bold text-gray-400 mt-0.5 shrink-0">{i + 1}.</span>
+                            <p className="text-[12px] text-gray-500 leading-relaxed">{rule}</p>
+                          </div>
+                        ))}
+                        {/* Rule 5 with clickable link */}
+                        <div className="flex items-start gap-2">
+                          <span className="text-[12px] font-bold text-gray-400 mt-0.5 shrink-0">5.</span>
+                          <p className="text-[12px] text-gray-500 leading-relaxed">
+                            选择共享后，您可以
+                            <button
+                              onClick={() => {
+                                setShowShareSheet(false);
+                                setShareAgentId('');
+                                setFoundAgentName('');
+                                setFoundAgentTenure(null);
+                                setShowInheritanceChoice(false);
+                                setShareType(null);
+                                onSharedCustomerList?.();
+                              }}
+                              className="text-blue-600 hover:text-blue-700 font-medium underline underline-offset-1"
+                            >
+                              点击此处
+                            </button>
+                            查看分享客户详情。
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Confirm Button or Post-Signature Status */}
+                  {hasSigned && shareType === 'inherit' ? (
+                    <div className="space-y-4">
+                      {/* 协议签署状态 */}
+                      <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl p-4 border border-amber-200">
+                        <div className="flex items-center gap-3 mb-3">
+                          <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center">
+                            <FileText className="w-5 h-5 text-amber-600" />
+                          </div>
+                          <div className="flex-1">
+                            <p className="text-[14px] font-bold text-gray-900">传承协议签署状态</p>
+                            <p className="text-[12px] text-gray-500 mt-0.5">等待继承代理人签署后，自动邀请客户确认</p>
+                          </div>
+                        </div>
+                        {/* 签署进度 */}
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2">
+                            <div className="w-5 h-5 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0">
+                              <CheckCircle2 className="w-3.5 h-3.5 text-white" />
+                            </div>
+                            <span className="text-[13px] text-gray-700">传承代理人（您）已签署</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="w-5 h-5 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0">
+                              <span className="text-[10px] text-gray-500">2</span>
+                            </div>
+                            <span className="text-[13px] text-gray-400">待继承代理人签署协议</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="w-5 h-5 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0">
+                              <span className="text-[10px] text-gray-500">3</span>
+                            </div>
+                            <span className="text-[13px] text-gray-400">待客户确认</span>
+                          </div>
+                        </div>
+                      </div>
+                      {/* 查看协议按钮 */}
+                      <button
+                        onClick={() => setShowAgreementView(true)}
+                        className="w-full py-3.5 rounded-2xl bg-white border-2 border-amber-500 text-amber-600 font-bold text-[15px] hover:bg-amber-50 transition-colors flex items-center justify-center gap-2"
+                      >
+                        <FileText className="w-5 h-5" />
+                        查看已签署的传承协议
+                      </button>
+                    </div>
+                  ) : (
+                    <button className={`w-full ${shareType === 'inherit' ? 'bg-amber-600 shadow-amber-600/20 hover:bg-amber-700' : 'bg-blue-600 shadow-blue-600/20 hover:bg-blue-700'} text-white py-3.5 rounded-2xl font-bold text-[15px] shadow-lg active:scale-[0.98] transition-all flex items-center justify-center gap-2`}>
+                      <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M8.699 12.103c-.347 0-.714-.031-1.084-.108-.023-.005-.047-.008-.069-.012l-1.564.632c-.017.007-.024.009-.04.013-.023.007-.038.012-.059.017-.031.008-.063.015-.095.019a3.197 3.197 0 0 1-1.337-.11c-.362-.101-.682-.28-.94-.518-.258-.239-.45-.547-.552-.909-.102-.362-.102-.764 0-1.126.101-.362.294-.67.552-.909.258-.238.578-.417.94-.518.362-.101.744-.112 1.113-.112.167 0 .334.014.5.033.023.003.045.008.067.012l1.564-.632a2.588 2.588 0 0 1 1.084-.108c.362 0 .724.031 1.086.108.023.005.047.008.069.012l1.564-.632c.017-.007.024-.009.04-.013.023-.007.038-.012.059-.017.031-.008.063-.015.095-.019a3.197 3.197 0 0 1 1.337.11c.362.101.682.28.94.518.258.239.45.547.552.909.102.362.102.764 0 1.126-.101.362-.294.67-.552.909-.258.238-.578.417-.94.518-.362.101-.744.112-1.113.112-.167 0-.334-.014-.5-.033-.023-.003-.045-.008-.067-.012l-1.564.632a2.588 2.588 0 0 1-1.084.108ZM8.699 12.103c-.347 0-.714-.031-1.084-.108" />
+                        <path d="M12.75 2C6.875 2 2 6.875 2 12.75c0 2.075.55 4.025 1.513 5.7L2 22l4.45-1.425c1.625.937 3.525 1.425 5.5 1.425h.05C18.625 22 23.5 17.125 23.5 11.25S18.625 2 12.75 2Zm0 18.5c-1.85 0-3.625-.45-5.175-1.262l-.375-.212-3.1.988.988-3.1-.225-.387C2.825 15.325 2.25 13.575 2.25 11.75 2.25 7.007 6.257 3.25 12.75 3.25S23.25 7.007 23.25 11.75 19.243 21.5 12.75 21.5Z" />
+                      </svg>
+                      {shareType === 'inherit' ? '邀请客户确认传承' : '邀请客户确认共享'}
+                    </button>
+                  )}
+                </div>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
+
+        {/* Inheritance Confirmation Modal */}
+        <AnimatePresence>
+          {showInheritanceChoice && (
+            <>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => { setShowInheritanceChoice(false); setShareType('share'); }}
+                className="fixed inset-0 bg-black/50 z-[100]"
+              />
+              <motion.div
+                initial={{ y: '100%' }}
+                animate={{ y: 0 }}
+                exit={{ y: '100%' }}
+                transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+                className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md z-[110] bg-white rounded-t-3xl shadow-2xl"
+              >
+                {/* Drag indicator */}
+                <div className="relative h-1.5 w-12 bg-gray-300 rounded-full mx-auto mt-3" />
+                {/* Header */}
+                <div className="px-6 pt-4 pb-2">
+                  <h3 className="text-[18px] font-bold text-gray-900">传承提示</h3>
+                </div>
+                {/* Content */}
+                <div className="px-6 py-4">
+                  <p className="text-[14px] text-gray-700 leading-relaxed mb-3">
+                    传承D类及以上客户，接收代理人（继承人）独立出单后，传承人可获得一定比例传承奖励。
+                  </p>
+                  <p className="text-[13px] text-gray-500 mb-3">
+                    是否要进行传承操作？
+                  </p>
+                  <p className="text-[13px] text-gray-500 mb-5">
+                    需要传承代理人和继承代理人双方签署协议，之后会自动邀请客户确认。
+                  </p>
+                  {/* Buttons */}
+                  <div className="flex gap-3 pb-6">
+                    <button
+                      onClick={() => { setShowInheritanceChoice(false); setShareType('share'); }}
+                      className="flex-1 py-3 rounded-xl bg-gray-100 text-gray-700 font-bold text-[14px] hover:bg-gray-200 transition-colors"
+                    >
+                      否，共享客户
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowInheritanceChoice(false);
+                        setShowSignAgreement(true);
+                      }}
+                      className="flex-1 py-3 rounded-xl bg-amber-600 text-white font-bold text-[14px] hover:bg-amber-700 transition-colors shadow-lg shadow-amber-600/20"
+                    >
+                      是，传承客户
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
+
+        {/* 签署协议弹窗 */}
+        <AnimatePresence>
+          {showSignAgreement && (
+            <>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setShowSignAgreement(false)}
+                className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100]"
+              />
+              <motion.div
+                initial={{ y: '100%' }}
+                animate={{ y: 0 }}
+                exit={{ y: '100%' }}
+                transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+                className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md z-[110] bg-white rounded-t-3xl shadow-2xl"
+              >
+                {/* Drag indicator */}
+                <div className="relative h-1.5 w-12 bg-gray-300 rounded-full mx-auto mt-3" />
+                {/* Header */}
+                <div className="px-6 pt-4 pb-2 flex items-center justify-between">
+                  <h3 className="text-[18px] font-bold text-gray-900">签署传承协议</h3>
+                  <button onClick={() => setShowSignAgreement(false)} className="p-2 -mr-2 text-gray-400 hover:text-gray-600">
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+                {/* Content */}
+                <div className="px-6 py-4">
+                  <div className="bg-gray-50 rounded-xl p-4 mb-4">
+                    <p className="text-[13px] text-gray-600 leading-relaxed">
+                      作为传承代理人，您需要先签署传承协议。签署后，系统将自动邀请继承代理人签署，双方签署完成后将自动邀请客户确认。
+                    </p>
+                  </div>
+                  <div className="border border-gray-200 rounded-xl p-4 mb-4">
+                    <h4 className="text-[14px] font-bold text-gray-900 mb-3">传承协议条款</h4>
+                    <div className="space-y-2 text-[13px] text-gray-600">
+                      <p>1. 传承客户给继承人时，需由客户授权同意；</p>
+                      <p>2. 传承后，继承人可独立经营该客户，传承人可获得一定比例的传承奖励；</p>
+                      <p>3. 继承人独立出单后，传承奖励将按照规则发放给传承人；</p>
+                      <p>4. 传承后，客户可随时撤回授权；</p>
+                      <p>5. 本协议需传承代理人和继承代理人双方签署后生效。</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3 mb-5">
+                    <input type="checkbox" className="w-5 h-5 rounded border-gray-300 text-amber-600 focus:ring-amber-500 mt-0.5" />
+                    <p className="text-[13px] text-gray-600">
+                      我已阅读并同意以上传承协议条款
+                    </p>
+                  </div>
+                  {/* Buttons */}
+                  <div className="flex gap-3 pb-6">
+                    <button
+                      onClick={() => setShowSignAgreement(false)}
+                      className="flex-1 py-3 rounded-xl bg-gray-100 text-gray-700 font-bold text-[14px] hover:bg-gray-200 transition-colors"
+                    >
+                      取消
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowSignAgreement(false);
+                        setShowSignatureScreen(true);
+                      }}
+                      className="flex-1 py-3 rounded-xl bg-amber-600 text-white font-bold text-[14px] hover:bg-amber-700 transition-colors shadow-lg shadow-amber-600/20"
+                    >
+                      确认签署
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
+
+        {/* 横屏签字界面 */}
+        <AnimatePresence>
+          {showSignatureScreen && (
+            <>
+              {/* 半透明遮罩 */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 bg-black z-[200]"
+              />
+              {/* 签字全屏界面 */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 z-[201] bg-white flex flex-col"
+              >
+                {/* 顶部标题栏 */}
+                <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 bg-white">
+                  <button
+                    onClick={() => setShowSignatureScreen(false)}
+                    className="flex items-center gap-1 text-gray-600 hover:text-gray-900"
+                  >
+                    <ChevronLeft className="w-5 h-5" />
+                    <span className="text-[14px]">返回</span>
+                  </button>
+                  <h3 className="text-[16px] font-bold text-gray-900">签署传承协议</h3>
+                  <button
+                    onClick={() => {
+                      // 清空画布
+                      const canvas = signatureCanvasRef.current;
+                      if (canvas) {
+                        const ctx = canvas.getContext('2d');
+                        if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
+                      }
+                    }}
+                    className="flex items-center gap-1 text-gray-600 hover:text-gray-900"
+                  >
+                    <RotateCcw className="w-4 h-4" />
+                    <span className="text-[14px]">重写</span>
+                  </button>
+                </div>
+
+                {/* 签字提示 */}
+                <div className="px-4 py-2 bg-amber-50 border-b border-amber-100">
+                  <p className="text-[13px] text-amber-800 text-center">请在下方空白区域签上您的名字</p>
+                </div>
+
+                {/* 签字画布区域 - 占据大部分屏幕 */}
+                <div className="flex-1 relative bg-white">
+                  <canvas
+                    ref={signatureCanvasRef}
+                    className="absolute inset-0 w-full h-full"
+                    style={{ cursor: 'crosshair', touchAction: 'none' }}
+                  />
+                </div>
+
+                {/* 底部按钮 */}
+                <div className="px-4 py-4 bg-white border-t border-gray-200">
+                  <div className="flex gap-3">
+                    <button
+                      onClick={() => setShowSignatureScreen(false)}
+                      className="flex-1 py-3 rounded-xl bg-gray-100 text-gray-700 font-bold text-[14px] hover:bg-gray-200 transition-colors"
+                    >
+                      取消
+                    </button>
+                    <button
+                      onClick={() => {
+                        setHasSigned(true);
+                        setShareType('inherit');
+                        setShowSignatureScreen(false);
+                        setShowShareSheet(true);
+                      }}
+                      className="flex-1 py-3 rounded-xl bg-amber-600 text-white font-bold text-[14px] hover:bg-amber-700 transition-colors shadow-lg shadow-amber-600/20"
+                    >
+                      完成签署
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
+
+        {/* 查看已签署协议弹窗 */}
+        <AnimatePresence>
+          {showAgreementView && (
+            <>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setShowAgreementView(false)}
+                className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[120]"
+              />
+              <motion.div
+                initial={{ y: '100%' }}
+                animate={{ y: 0 }}
+                exit={{ y: '100%' }}
+                transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+                className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md z-[130] bg-white rounded-t-3xl shadow-2xl"
+              >
+                {/* Drag indicator */}
+                <div className="relative h-1.5 w-12 bg-gray-300 rounded-full mx-auto mt-3" />
+                {/* Header */}
+                <div className="px-6 pt-4 pb-2 flex items-center justify-between">
+                  <h3 className="text-[18px] font-bold text-gray-900">传承协议</h3>
+                  <button onClick={() => setShowAgreementView(false)} className="p-2 -mr-2 text-gray-400 hover:text-gray-600">
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+                {/* Content */}
+                <div className="px-6 py-4 max-h-[60vh] overflow-y-auto">
+                  <div className="bg-gray-50 rounded-xl p-4 mb-4">
+                    <p className="text-[13px] text-gray-600 leading-relaxed">
+                      作为传承代理人，您已签署传承协议。签署后，系统将自动邀请继承代理人签署，双方签署完成后将自动邀请客户确认。
+                    </p>
+                  </div>
+                  <div className="border border-gray-200 rounded-xl p-4 mb-4">
+                    <h4 className="text-[14px] font-bold text-gray-900 mb-3">传承协议条款</h4>
+                    <div className="space-y-2 text-[13px] text-gray-600">
+                      <p>1. 传承客户给继承人时，需由客户授权同意；</p>
+                      <p>2. 传承后，继承人可独立经营该客户，传承人可获得一定比例的传承奖励；</p>
+                      <p>3. 继承人独立出单后，传承奖励将按照规则发放给传承人；</p>
+                      <p>4. 传承后，客户可随时撤回授权；</p>
+                      <p>5. 本协议需传承代理人和继承代理人双方签署后生效。</p>
+                    </div>
+                  </div>
+                  {/* 签署状态 */}
+                  <div className="bg-amber-50 rounded-xl p-4 border border-amber-200">
+                    <h4 className="text-[14px] font-bold text-amber-800 mb-3">签署状态</h4>
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <div className="w-5 h-5 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-white" />
+                        </div>
+                        <span className="text-[13px] text-gray-700">传承代理人（您）已签署</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-5 h-5 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0">
+                          <span className="text-[10px] text-gray-500">2</span>
+                        </div>
+                        <span className="text-[13px] text-gray-400">待继承代理人签署协议</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-5 h-5 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0">
+                          <span className="text-[10px] text-gray-500">3</span>
+                        </div>
+                        <span className="text-[13px] text-gray-400">待客户确认</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {/* Bottom button */}
+                <div className="px-6 pb-6 pt-2">
+                  <button
+                    onClick={() => setShowAgreementView(false)}
+                    className="w-full py-3 rounded-xl bg-gray-100 text-gray-700 font-bold text-[14px] hover:bg-gray-200 transition-colors"
+                  >
+                    关闭
+                  </button>
+                </div>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
 
         {/* Birthday Card Modal */}
         {showBirthdayCard && (
