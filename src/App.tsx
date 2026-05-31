@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Sparkles, UserPlus, NotebookPen, Tags, Activity, ChevronRight, BarChart3, Phone, Users, Calendar, FileText, ShieldCheck, Shield, ChevronLeft, ChevronDown, Home, Briefcase, User, Package, Settings, MapPin, Locate, Navigation, Clock, LayoutGrid, ListChecks, ArchiveRestore, UserSearch, Send, Bot, Menu, Search, Plus, Mic, Mail, Monitor, Share2, Globe, History, LogOut, Bell, Star, BookOpen, MessageCircle, Wallet, GraduationCap, ClipboardList, LifeBuoy, PlayCircle, Fingerprint, QrCode, Headphones } from 'lucide-react';
+import { Sparkles, UserPlus, NotebookPen, Tags, Activity, ChevronRight, BarChart3, Phone, Users, Calendar, FileText, ShieldCheck, Shield, ChevronLeft, ChevronDown, Home, Briefcase, User, Package, Settings, MapPin, Locate, Navigation, Clock, LayoutGrid, ListChecks, ArchiveRestore, UserSearch, Send, Bot, Menu, Search, Plus, Mic, Mail, Monitor, Share2, Globe, History, LogOut, Bell, Star, BookOpen, MessageCircle, Wallet, GraduationCap, ClipboardList, LifeBuoy, PlayCircle, Fingerprint, QrCode, Headphones, TrendingUp } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import CustomerListPage from './CustomerListPage';
 import CustomerSearchPage from './CustomerSearchPage';
@@ -14,16 +14,16 @@ import SharedCustomerListPage from './SharedCustomerListPage';
 import { customers } from './data';
 
 const tools = [
-  { icon: UserPlus, label: '新建客户', color: 'text-blue-600', bg: 'bg-blue-50' },
-  { icon: Tags, label: '标签管理', color: 'text-orange-600', bg: 'bg-orange-50' },
-  { icon: NotebookPen, label: '客户笔记', color: 'text-emerald-600', bg: 'bg-emerald-50' },
-  { icon: MapPin, label: '客户地图', color: 'text-indigo-600', bg: 'bg-indigo-50' },
+  { icon: UserPlus, label: '新建客户' },
+  { icon: NotebookPen, label: '客户笔记' },
+  { icon: MapPin, label: '客户地图' },
 ];
 
 const moreTools = [
-  { icon: ListChecks, label: '批量管理', color: 'text-purple-600', bg: 'bg-purple-50' },
-  { icon: ArchiveRestore, label: '找回已删', color: 'text-teal-600', bg: 'bg-teal-50' },
-  { icon: UserSearch, label: '查询身故', color: 'text-slate-600', bg: 'bg-slate-50' },
+  { icon: Tags, label: '标签管理' },
+  { icon: ClipboardList, label: '导入通讯录' },
+  { icon: UserSearch, label: '查询身故客户' },
+  { icon: Share2, label: '共享客户清单' },
 ];
 
 const filters = ['全部', '寿险客户', '准客户', '用户'];
@@ -207,6 +207,12 @@ export default function App() {
   const [metricFilterType, setMetricFilterType] = useState('全部类型');
   const [metricFilterTemp, setMetricFilterTemp] = useState('全部温度');
   const [showMoreTools, setShowMoreTools] = useState(false);
+  const [dynamicFilter, setDynamicFilter] = useState('未读动态');
+  const [devTab, setDevTab] = useState('个人发展');
+  const [productTab, setProductTab] = useState('寿险');
+  const [serviceTab, setServiceTab] = useState('服务');
+  const [equityTab, setEquityTab] = useState('添平安');
+  const [showProfileSheet, setShowProfileSheet] = useState(false);
   const [aiScenarioIndex, setAiScenarioIndex] = useState(0);
   const [showStrategySheet, setShowStrategySheet] = useState(false);
   const [showReviewSheet, setShowReviewSheet] = useState(false);
@@ -605,13 +611,248 @@ export default function App() {
             </>
           )}
         </AnimatePresence>
+        <AnimatePresence>
+          {showProfileSheet && (
+            <>
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowProfileSheet(false)} className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[60]" />
+              <motion.div initial={{ x: "-100%" }} animate={{ x: 0 }} exit={{ x: "-100%" }} transition={{ type: 'spring', damping: 25, stiffness: 200 }} className="fixed left-0 top-0 bottom-0 bg-white z-[70] shadow-2xl overflow-y-auto max-w-md mx-auto w-full">
+                {/* 头部信息 */}
+                <div className="bg-gradient-to-b from-blue-50 to-white px-5 pt-12 pb-6">
+                  {/* 返回按钮 */}
+                  <button onClick={() => setShowProfileSheet(false)} className="absolute top-3 left-3 w-10 h-10 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center shadow-sm hover:bg-white transition-colors z-[80]">
+                    <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" /></svg>
+                  </button>
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="w-16 h-16 bg-gray-100 rounded-full overflow-hidden border-2 border-white shadow-md">
+                      <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=200&h=200" alt="avatar" className="w-full h-full object-cover" />
+                    </div>
+                    <div>
+                      <h2 className="text-xl font-bold text-gray-900">张朝扬</h2>
+                      <p className="text-sm text-gray-500 mt-0.5">组经理 | 工号 1050134060</p>
+                      <p className="text-xs text-gray-400 mt-1">中国平安人寿保险股份有限公司深圳分公司</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 功能列表 */}
+                <div className="px-4 py-3 space-y-3">
+                  {/* 第一组 */}
+                  <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+                    <div className="divide-y divide-gray-50">
+                      <div className="flex items-center justify-between px-4 py-3.5 hover:bg-gray-50 cursor-pointer">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center">
+                            <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+                          </div>
+                          <span className="text-[15px] text-gray-700">我的名片</span>
+                        </div>
+                        <ChevronRight className="w-4 h-4 text-gray-300" />
+                      </div>
+                      <div className="flex items-center justify-between px-4 py-3.5 hover:bg-gray-50 cursor-pointer">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 bg-orange-50 rounded-lg flex items-center justify-center">
+                            <svg className="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                          </div>
+                          <span className="text-[15px] text-gray-700">E 积分</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm text-gray-400">0</span>
+                          <ChevronRight className="w-4 h-4 text-gray-300" />
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between px-4 py-3.5 hover:bg-gray-50 cursor-pointer">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 bg-purple-50 rounded-lg flex items-center justify-center">
+                            <svg className="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
+                          </div>
+                          <span className="text-[15px] text-gray-700">保险小店</span>
+                        </div>
+                        <ChevronRight className="w-4 h-4 text-gray-300" />
+                      </div>
+                      <div className="flex items-center justify-between px-4 py-3.5 hover:bg-gray-50 cursor-pointer">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 bg-yellow-50 rounded-lg flex items-center justify-center">
+                            <svg className="w-4 h-4 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" /></svg>
+                          </div>
+                          <span className="text-[15px] text-gray-700">我的收藏</span>
+                        </div>
+                        <ChevronRight className="w-4 h-4 text-gray-300" />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 活动 */}
+                  <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+                    <div className="flex items-center justify-between px-4 py-3 border-b border-gray-50">
+                      <div className="flex items-center gap-2">
+                        <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                        <span className="text-[15px] text-gray-700">活动</span>
+                      </div>
+                      <button className="flex items-center text-gray-400 hover:text-indigo-600 transition-colors cursor-pointer">
+                        <span className="text-[13px] font-medium">全部活动</span>
+                        <ChevronRight className="w-4 h-4 ml-0.5" />
+                      </button>
+                    </div>
+                    <div className="p-4">
+                      <div className="bg-gradient-to-r from-orange-100 to-orange-50 rounded-xl p-4 relative overflow-hidden">
+                        <div className="relative z-10">
+                          <h3 className="text-lg font-bold text-orange-600">精彩活动 敬请期待</h3>
+                          <p className="text-xs text-orange-400 mt-1">参加活动 享好礼</p>
+                        </div>
+                        <div className="absolute right-2 top-1/2 -translate-y-1/2 w-24 h-24">
+                          <div className="w-16 h-16 bg-orange-200/50 rounded-full absolute top-0 right-0"></div>
+                          <div className="w-10 h-10 bg-yellow-300/50 rounded-full absolute bottom-2 right-4 rotate-12"></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 第二组 */}
+                  <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+                    <div className="divide-y divide-gray-50">
+                      <div className="flex items-center justify-between px-4 py-3.5 hover:bg-gray-50 cursor-pointer">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 bg-gray-50 rounded-lg flex items-center justify-center">
+                            <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
+                          </div>
+                          <span className="text-[15px] text-gray-700">意见反馈</span>
+                        </div>
+                        <ChevronRight className="w-4 h-4 text-gray-300" />
+                      </div>
+                      <div className="flex items-center justify-between px-4 py-3.5 hover:bg-gray-50 cursor-pointer">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 bg-gray-50 rounded-lg flex items-center justify-center">
+                            <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                          </div>
+                          <span className="text-[15px] text-gray-700">使用帮助</span>
+                        </div>
+                        <ChevronRight className="w-4 h-4 text-gray-300" />
+                      </div>
+                      <div className="flex items-center justify-between px-4 py-3.5 hover:bg-gray-50 cursor-pointer">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 bg-gray-50 rounded-lg flex items-center justify-center">
+                            <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
+                          </div>
+                          <span className="text-[15px] text-gray-700">投诉</span>
+                        </div>
+                        <ChevronRight className="w-4 h-4 text-gray-300" />
+                      </div>
+                      <div className="flex items-center justify-between px-4 py-3.5 hover:bg-gray-50 cursor-pointer">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 bg-red-50 rounded-lg flex items-center justify-center">
+                            <svg className="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>
+                          </div>
+                          <span className="text-[15px] text-gray-700">一键报警</span>
+                        </div>
+                        <ChevronRight className="w-4 h-4 text-gray-300" />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 第三组 - 其他工具 */}
+                  <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+                    <div className="divide-y divide-gray-50">
+                      <div className="flex items-center justify-between px-4 py-3.5 hover:bg-gray-50 cursor-pointer">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 bg-indigo-50 rounded-lg flex items-center justify-center">
+                            <svg className="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
+                          </div>
+                          <span className="text-[15px] text-gray-700">其他工具</span>
+                        </div>
+                        <ChevronRight className="w-4 h-4 text-gray-300" />
+                      </div>
+                      <div className="flex items-center justify-between px-4 py-3.5 hover:bg-gray-50 cursor-pointer">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center">
+                            <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                          </div>
+                          <span className="text-[15px] text-gray-700">登录设备管理</span>
+                        </div>
+                        <ChevronRight className="w-4 h-4 text-gray-300" />
+                      </div>
+                      <div className="flex items-center justify-between px-4 py-3.5 hover:bg-gray-50 cursor-pointer">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 bg-green-50 rounded-lg flex items-center justify-center">
+                            <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+                          </div>
+                          <span className="text-[15px] text-gray-700">密码管理</span>
+                        </div>
+                        <ChevronRight className="w-4 h-4 text-gray-300" />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 第四组 - 系统信息 */}
+                  <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+                    <div className="divide-y divide-gray-50">
+                      <div className="flex items-center justify-between px-4 py-3.5 hover:bg-gray-50 cursor-pointer">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 bg-cyan-50 rounded-lg flex items-center justify-center">
+                            <svg className="w-4 h-4 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                          </div>
+                          <span className="text-[15px] text-gray-700">关于口袋E</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm text-gray-400">V2.0.1</span>
+                          <ChevronRight className="w-4 h-4 text-gray-300" />
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between px-4 py-3.5 hover:bg-gray-50 cursor-pointer">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 bg-gray-50 rounded-lg flex items-center justify-center">
+                            <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.43-.743 2.74.743 2 2.073a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.743 1.43-.743 2.74-2.073 2a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.43.743-2.74-.743-2-2.073a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.743-1.43.743-2.74 2.073-2a1.724 1.724 0 002.572-1.065z" /></svg>
+                          </div>
+                          <span className="text-[15px] text-gray-700">设置</span>
+                        </div>
+                        <ChevronRight className="w-4 h-4 text-gray-300" />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 第五组 - 政策与协议 */}
+                  <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+                    <div className="divide-y divide-gray-50">
+                      <div className="flex items-center justify-between px-4 py-3.5 hover:bg-gray-50 cursor-pointer">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 bg-purple-50 rounded-lg flex items-center justify-center">
+                            <svg className="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                          </div>
+                          <span className="text-[15px] text-gray-700">政策与协议</span>
+                        </div>
+                        <ChevronRight className="w-4 h-4 text-gray-300" />
+                      </div>
+                      <div className="flex items-center justify-between px-4 py-3.5 hover:bg-gray-50 cursor-pointer">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center">
+                            <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+                          </div>
+                          <span className="text-[15px] text-gray-700">个人信息收集清单</span>
+                        </div>
+                        <ChevronRight className="w-4 h-4 text-gray-300" />
+                      </div>
+                      <div className="flex items-center justify-between px-4 py-3.5 hover:bg-gray-50 cursor-pointer">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 bg-orange-50 rounded-lg flex items-center justify-center">
+                            <svg className="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 000-2.684m0 2.684a6 6 0 001.108-1.108l2.256-2.256a3 3 0 00-4.264-4.264l-2.256 2.256a6 6 0 00-1.108 1.108m4.364 4.364a6 6 0 001.108-1.108l2.256-2.256a3 3 0 00-4.264 0m4.364 4.364a3 3 0 00-4.264 0m4.364-4.364a3 3 0 00-4.264 0" /></svg>
+                          </div>
+                          <span className="text-[15px] text-gray-700">第三方共享个人信息清单</span>
+                        </div>
+                        <ChevronRight className="w-4 h-4 text-gray-300" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
 
         <div className={`flex-1 flex flex-col min-h-0 ${activeBottomNav === '首页' ? 'overflow-hidden' : 'overflow-y-auto pb-6'}`}>
           {activeBottomNav === '首页' && (
             <div className="flex flex-col h-full bg-[#f8f8f8] overflow-y-auto pb-24 scrollbar-hide">
               {/* 顶部搜索 */}
               <div className="sticky top-0 z-40 bg-white/60 backdrop-blur-md px-4 py-3 pb-2 flex items-center space-x-3">
-                <div className="w-10 h-10 bg-gray-100 rounded-full overflow-hidden flex-shrink-0 border border-gray-200">
+                <div onClick={() => setShowProfileSheet(true)} className="w-10 h-10 bg-gray-100 rounded-full overflow-hidden flex-shrink-0 border border-gray-200 cursor-pointer">
                   <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=100&h=100" alt="avatar" className="w-full h-full object-cover" />
                 </div>
                 <div onClick={() => setCurrentPage('unified-search')} className="flex-1 bg-gray-100/50 rounded-full h-10 flex items-center px-4 space-x-2 cursor-pointer">
@@ -730,6 +971,9 @@ export default function App() {
                 <button onClick={() => setActiveTab('客户库')} className={`text-lg pb-1 relative transition-colors ${activeTab === '客户库' ? 'font-bold text-gray-900 border-b-2 border-indigo-600' : 'font-medium text-gray-400'}`}>
                   客户库
                 </button>
+                <button onClick={() => setActiveTab('活动量')} className={`text-lg pb-1 relative transition-colors ${activeTab === '活动量' ? 'font-bold text-gray-900 border-b-2 border-indigo-600' : 'font-medium text-gray-400'}`}>
+                  活动量
+                </button>
                 {activeTab === '做经营' && (
                   <button onClick={() => setCurrentPage('customer-search')} className="ml-auto p-2 hover:bg-gray-100 rounded-lg transition-colors">
                     <Search className="w-5 h-5 text-gray-600" />
@@ -737,7 +981,7 @@ export default function App() {
                 )}
               </div>
 
-              {activeTab === '做经营' ? (
+              {activeTab === '做经营' && (
                 <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="pb-24">
                   {/* 客经工作台 */}
                   <div className="bg-white rounded-3xl shadow-sm mx-3 mt-3 overflow-hidden">
@@ -966,7 +1210,8 @@ export default function App() {
                     </div>
                   </div>
                 </motion.div>
-              ) : (
+              )}
+              {activeTab === '客户库' && (
                 <motion.div initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} className="pb-24">
                   {/* 客户 AI 搜索 */}
                   <div className="p-4 bg-white sticky top-[60px] z-30 border-b border-gray-50">
@@ -987,193 +1232,314 @@ export default function App() {
 
                   {/* 我的客户 */}
                   <div className="p-5 bg-white mt-3 rounded-3xl shadow-sm mx-3">
-                    <div className="flex justify-between items-end mb-6">
-                      <div>
-                        <h2 className="text-lg font-bold text-gray-900">我的客户</h2>
-                        <button onClick={() => setCurrentPage('customer-list')} className="flex items-center text-xs text-gray-500 mt-1.5 hover:text-indigo-600 transition-colors group cursor-pointer">
-                          总计 <span className="text-indigo-600 font-bold text-lg mx-1 group-hover:scale-110 transition-transform">{currentData.total}</span> 人
-                          <ChevronRight className="w-3 h-3 ml-0.5 text-gray-400 group-hover:text-indigo-500 transition-colors" />
-                        </button>
-                      </div>
-                      <div className="flex space-x-1.5 bg-gray-100 p-1 rounded-xl">
+                    <div className="flex justify-between items-center mb-4">
+                      <h2 className="text-lg font-bold text-gray-900">我的客户</h2>
+                      <button onClick={() => setCurrentPage('customer-list')} className="flex items-center text-xs text-gray-500 hover:text-indigo-600 transition-colors group cursor-pointer">
+                        总计 <span className="text-indigo-600 font-bold text-lg mx-1 group-hover:scale-110 transition-transform">{currentData.total}</span> 人
+                        <ChevronRight className="w-3 h-3 ml-0.5 text-gray-400 group-hover:text-indigo-500 transition-colors" />
+                      </button>
+                    </div>
+                    {/* Tab 与九宫格连为一体 */}
+                    <div className="bg-gray-50/30 rounded-2xl shadow-sm overflow-hidden">
+                      <div className="flex bg-gray-100/80">
                         {filters.map(f => (
-                          <button key={f} onClick={() => setActiveFilter(f)} className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 ${activeFilter === f ? 'bg-white text-indigo-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>
+                          <button key={f} onClick={() => setActiveFilter(f)} className={`flex-1 py-2.5 text-xs font-medium transition-all duration-200 relative ${activeFilter === f ? 'bg-gray-50/30 text-gray-900' : 'text-gray-500 hover:text-gray-700'}`}>
                             {f}
+                            {activeFilter === f && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-50/30"></div>}
                           </button>
                         ))}
                       </div>
-                    </div>
-                    <div className="mt-2 relative bg-gray-50/50 p-4 rounded-2xl border border-gray-100">
-                      <div className="flex">
-                        <div className="flex flex-col justify-around pr-3 text-[10px] text-gray-400 font-semibold h-56">
-                          <span>A</span>
-                          <span>BC</span>
-                          <span>DEF</span>
+                      <div className="p-4 bg-gray-50/30">
+                        <div className="flex justify-center">
+                          <div className="flex flex-col justify-around pr-1.5 text-[10px] text-gray-400 font-semibold h-[160px]">
+                            <span>A</span>
+                            <span>BC</span>
+                            <span>DEF</span>
+                          </div>
+                          <div className="h-[160px]">
+                            <AnimatePresence mode="wait">
+                              <motion.div key={activeFilter} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }} className="flex flex-col gap-1">
+                                {currentData.data.map((row, rowIndex) => (
+                                  <div key={rowIndex} className="flex gap-1 h-[52px]">
+                                    {row.map((cell, colIndex) => {
+                                      const rowWeight = (2 - rowIndex);
+                                      const bgOpacity = 0.15 + (rowWeight * 0.25);
+                                      let baseColor = '99, 102, 241';
+                                      let textColor = 'text-indigo-900';
+                                      if (colIndex === 0) { baseColor = '56, 189, 248'; textColor = 'text-sky-900'; }
+                                      else if (colIndex === 1) { baseColor = '251, 191, 36'; textColor = 'text-amber-900'; }
+                                      else if (colIndex === 2) { baseColor = '248, 113, 113'; textColor = 'text-red-900'; }
+                                      const isDark = bgOpacity > 0.5;
+                                      const finalTextColor = isDark ? 'text-white' : textColor;
+                                      return (
+                                        <motion.div key={`${rowIndex}-${colIndex}`} onClick={() => setCurrentPage('customer-list')} initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 0.3, delay: (rowIndex * 3 + colIndex) * 0.03 }} className="w-[100px] h-[52px] rounded-lg flex flex-col items-center justify-center relative overflow-hidden group cursor-pointer hover:ring-2 hover:ring-indigo-300 transition-all" style={{ backgroundColor: `rgba(${baseColor}, ${bgOpacity})` }}>
+                                          <span className={`text-base font-bold z-10 ${finalTextColor}`}>{cell}</span>
+                                        </motion.div>
+                                      );
+                                    })}
+                                  </div>
+                                ))}
+                              </motion.div>
+                            </AnimatePresence>
+                          </div>
                         </div>
-                        <div className="flex-1 grid grid-rows-3 gap-1.5 h-56 relative">
-                          <AnimatePresence mode="wait">
-                            <motion.div key={activeFilter} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }} className="absolute inset-0 grid grid-rows-3 gap-1.5">
-                              {currentData.data.map((row, rowIndex) => (
-                                <div key={rowIndex} className="grid grid-cols-3 gap-1.5">
-                                  {row.map((cell, colIndex) => {
-                                    const rowWeight = (2 - rowIndex);
-                                    const bgOpacity = 0.15 + (rowWeight * 0.25);
-                                    let baseColor = '99, 102, 241';
-                                    let textColor = 'text-indigo-900';
-                                    if (colIndex === 0) { baseColor = '56, 189, 248'; textColor = 'text-sky-900'; }
-                                    else if (colIndex === 1) { baseColor = '251, 191, 36'; textColor = 'text-amber-900'; }
-                                    else if (colIndex === 2) { baseColor = '248, 113, 113'; textColor = 'text-red-900'; }
-                                    const isDark = bgOpacity > 0.5;
-                                    const finalTextColor = isDark ? 'text-white' : textColor;
-                                    return (
-                                      <motion.div key={`${rowIndex}-${colIndex}`} onClick={() => setCurrentPage('customer-list')} initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 0.3, delay: (rowIndex * 3 + colIndex) * 0.03 }} className="rounded-xl flex flex-col items-center justify-center relative overflow-hidden group cursor-pointer hover:ring-2 hover:ring-indigo-300 transition-all" style={{ backgroundColor: `rgba(${baseColor}, ${bgOpacity})` }}>
-                                        <span className={`text-lg font-bold z-10 ${finalTextColor}`}>{cell}</span>
-                                      </motion.div>
-                                    );
-                                  })}
-                                </div>
-                              ))}
-                            </motion.div>
-                          </AnimatePresence>
+                        <div className="flex justify-center mt-2">
+                          <div className="flex gap-[97px] text-[10px] text-gray-400 font-semibold">
+                            <span>冷却</span>
+                            <span>低温</span>
+                            <span>中高温</span>
+                          </div>
                         </div>
                       </div>
-                      <div className="flex ml-7 mt-3 text-[10px] text-gray-400 font-semibold">
-                        <div className="flex-1 text-center">冷却</div>
-                        <div className="flex-1 text-center">低温</div>
-                        <div className="flex-1 text-center">中高温</div>
-                      </div>
                     </div>
-                    <button onClick={() => setCurrentPage('more-dimensions')} className="w-full mt-3 py-3 bg-indigo-50/50 border border-indigo-100 rounded-xl text-[13px] text-indigo-600 font-medium flex items-center justify-center hover:bg-indigo-50 transition-colors group">
+
+                    {/* 权益客户 */}
+                    <div className="bg-gray-50/30 rounded-xl p-3 mt-3">
+                      <div className="flex justify-between items-center">
+                        <div className="flex items-center">
+                          <div className="w-1 h-4 bg-blue-600 rounded-sm mr-2"></div>
+                          <span className="text-[13px] font-bold text-gray-800">权益客户</span>
+                        </div>
+                        <div className="flex bg-gray-100 rounded-lg p-0.5">
+                          {['添平安', '家办', '会员'].map(tab => (
+                            <button
+                              key={tab}
+                              onClick={() => setEquityTab(tab)}
+                              className={`px-2.5 py-1 rounded-md text-[11px] font-medium transition-all ${
+                                equityTab === tab ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'
+                              }`}
+                            >
+                              {tab}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                      {equityTab === '添平安' && (
+                        <div className="flex justify-around mt-3">
+                          <div className="text-center">
+                            <p className="text-lg font-bold text-gray-900">12</p>
+                            <p className="text-[10px] text-gray-500 mt-1">权益潜客</p>
+                          </div>
+                          <div className="text-center">
+                            <p className="text-lg font-bold text-gray-900">8</p>
+                            <p className="text-[10px] text-gray-500 mt-1">意向客户</p>
+                          </div>
+                          <div className="text-center">
+                            <p className="text-lg font-bold text-gray-900">5</p>
+                            <p className="text-[10px] text-gray-500 mt-1">达标客户</p>
+                          </div>
+                        </div>
+                      )}
+                      {equityTab === '家办' && (
+                        <div className="flex justify-around mt-3">
+                          <div className="text-center">
+                            <p className="text-lg font-bold text-gray-900">6</p>
+                            <p className="text-[10px] text-gray-500 mt-1">权益潜客</p>
+                          </div>
+                          <div className="text-center">
+                            <p className="text-lg font-bold text-gray-900">3</p>
+                            <p className="text-[10px] text-gray-500 mt-1">意向客户</p>
+                          </div>
+                          <div className="text-center">
+                            <p className="text-lg font-bold text-gray-900">2</p>
+                            <p className="text-[10px] text-gray-500 mt-1">达标客户</p>
+                          </div>
+                        </div>
+                      )}
+                      {equityTab === '会员' && (
+                        <div className="flex justify-around mt-3">
+                          <div className="text-center">
+                            <p className="text-lg font-bold text-gray-900">25</p>
+                            <p className="text-[10px] text-gray-500 mt-1">权益潜客</p>
+                          </div>
+                          <div className="text-center">
+                            <p className="text-lg font-bold text-gray-900">18</p>
+                            <p className="text-[10px] text-gray-500 mt-1">意向客户</p>
+                          </div>
+                          <div className="text-center">
+                            <p className="text-lg font-bold text-gray-900">10</p>
+                            <p className="text-[10px] text-gray-500 mt-1">达标客户</p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    <button onClick={() => setCurrentPage('more-dimensions')} className="w-full mt-3 py-3 bg-gray-50/30 rounded-xl text-[13px] text-gray-600 font-medium flex items-center justify-center hover:bg-gray-50/50 transition-colors group">
                       <BarChart3 className="w-4 h-4 mr-2 text-indigo-400 group-hover:text-indigo-600 transition-colors" />
                       查看更多维度分布图
                       <ChevronRight className="w-4 h-4 ml-1 text-indigo-400 group-hover:translate-x-1 transition-transform" />
                     </button>
+
+                    {/* 经营工具 */}
+                    <div className="mt-5 pt-4 border-t border-gray-100">
+                      <div className="flex items-center justify-around gap-2">
+                        {tools.map((tool, idx) => (
+                          <div key={idx} className="flex items-center cursor-pointer group hover:text-blue-600 transition-colors whitespace-nowrap">
+                            <tool.icon className="w-4 h-4 text-gray-800 mr-1.5" />
+                            <span className="text-[12px] text-gray-600 font-medium">{tool.label}</span>
+                          </div>
+                        ))}
+                        <div onClick={() => setShowMoreTools(!showMoreTools)} className="flex items-center cursor-pointer group hover:text-blue-600 transition-colors whitespace-nowrap">
+                          <ChevronDown className={`w-4 h-4 text-gray-800 mr-1.5 transition-transform ${showMoreTools ? 'rotate-180' : ''}`} />
+                          <span className="text-[12px] font-medium text-gray-500">更多</span>
+                        </div>
+                      </div>
+                      <AnimatePresence>
+                        {showMoreTools && (
+                          <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
+                            <div className="flex items-center justify-around gap-2 mt-3 pt-3 border-t border-gray-50/50">
+                              {moreTools.map((tool, idx) => (
+                                <div key={idx} className="flex items-center cursor-pointer group hover:text-blue-600 transition-colors whitespace-nowrap">
+                                  <tool.icon className="w-4 h-4 text-gray-800 mr-1.5" />
+                                  <span className="text-[12px] text-gray-600 font-medium">{tool.label}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
                   </div>
 
                   {/* 客户动态 */}
                   <div className="p-5 bg-white mt-3 rounded-3xl shadow-sm mx-3">
-                    <div className="flex justify-between items-center mb-6">
+                    <div className="flex justify-between items-center mb-4">
                       <h2 className="text-lg font-bold text-gray-900">客户动态</h2>
-                      <button className="flex items-center bg-indigo-50/80 hover:bg-indigo-100 px-2.5 py-1 rounded-xl border border-indigo-100/50 transition-colors cursor-pointer group shadow-sm">
-                        <span className="text-[11px] font-bold text-indigo-600 mr-1.5">未读动态</span>
-                        <span className="bg-rose-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow-sm">3</span>
+                      <button className="flex items-center text-gray-400 hover:text-indigo-600 transition-colors cursor-pointer group">
+                        <span className="text-[11px] font-medium">全部动态</span>
+                        <ChevronRight className="w-4 h-4 ml-0.5 group-hover:translate-x-0.5 transition-transform" />
                       </button>
                     </div>
-                    <div className="space-y-6 relative before:absolute before:inset-y-2 before:left-[7px] before:w-[2px] before:bg-gray-50">
+
+                    {/* 快捷筛选项 */}
+                    <div className="flex gap-2 overflow-x-auto pb-3 mb-4 scrollbar-hide -mx-1 px-1">
+                      {['未读动态', '服务使用', '客户拜访', '日程互动', '产品购买'].map(filter => (
+                        <button
+                          key={filter}
+                          onClick={() => setDynamicFilter(filter)}
+                          className={`whitespace-nowrap px-3 py-1.5 rounded-full text-[11px] font-medium transition-colors ${
+                            dynamicFilter === filter ? 'bg-indigo-50 text-indigo-600 border border-indigo-100' : 'bg-gray-50 text-gray-500 border border-gray-100'
+                          }`}
+                        >
+                          {filter}
+                          {filter === '未读动态' && <span className="ml-1 bg-rose-500 text-white text-[9px] font-bold px-1 py-0.5 rounded-full">3</span>}
+                        </button>
+                      ))}
+                    </div>
+
+                    <div className="space-y-4 relative before:absolute before:inset-y-2 before:left-[7px] before:w-[2px] before:bg-gray-50">
                       {[
-                        { name: '张伟', time: '10分钟前', action: '阅读了资讯《添平安25年服务年报》' },
-                        { name: '王静', time: '1小时前', action: '浏览了产品e生保惠享' },
-                        { name: '刘洋', time: '4小时前', action: '使用了保单还款服务' },
+                        { name: '张伟', time: '10分钟前', category: '资讯阅读', action: '阅读了资讯《添平安25年服务年报》', hasDetail: true },
+                        { name: '王静', time: '1小时前', category: '产品浏览', action: '浏览了产品e生保惠享', hasDetail: true },
+                        { name: '刘洋', time: '4小时前', category: '服务使用', action: '完成睡眠状况综合评测', hasDetail: true },
                       ].map((activity, idx) => (
                         <div key={idx} className="relative pl-6">
                           <div className="absolute left-0 top-1.5 w-4 h-4 bg-indigo-100 rounded-full flex items-center justify-center z-10">
                             <div className="w-2 h-2 bg-indigo-500 rounded-full"></div>
                           </div>
-                          <div className="flex justify-between items-baseline mb-1.5">
-                            <span className="text-[15px] font-bold text-gray-900">{activity.name}</span>
-                            <span className="text-[11px] text-gray-400 font-medium">{activity.time}</span>
+                          <div className="flex justify-between items-center">
+                            <div className="flex items-center">
+                              <span className="text-[15px] font-bold text-gray-900">{activity.name}</span>
+                              <span className="text-[11px] text-gray-400 font-medium ml-2">{activity.time}</span>
+                            </div>
+                            {activity.hasDetail && (
+                              <ChevronRight className="w-4 h-4 text-gray-300" />
+                            )}
                           </div>
-                          <p className="text-[13px] text-gray-500 leading-relaxed">{activity.action}</p>
+                          <div className="flex items-center mt-1">
+                            <span className="text-[11px] font-medium text-indigo-500 bg-indigo-50 px-2 py-0.5 rounded mr-2">{activity.category}</span>
+                            <p className="text-[13px] text-gray-500 leading-relaxed">{activity.action}</p>
+                          </div>
                         </div>
                       ))}
                     </div>
-                    <div className="mt-6 pt-4 border-t border-gray-50 text-center">
+                    <div className="mt-5 pt-3 border-t border-gray-50 text-center">
                       <button className="text-[13px] font-bold text-gray-400 hover:text-indigo-600 transition-colors">查看更多动态</button>
                     </div>
                   </div>
-
-                  {/* 客户质量 */}
-                  <div className="p-5 bg-white mt-4 rounded-3xl shadow-sm mx-3">
-                    <div className="flex justify-between items-center mb-5">
-                      <div>
-                        <h2 className="text-lg font-bold text-gray-900">客户质量</h2>
-                        <div className="flex items-center mt-1 text-[11px] text-gray-400">
-                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-1.5"></span>
-                          数据更新于 00:12
-                        </div>
-                      </div>
-                      <div className="flex space-x-1 bg-gray-100 p-1 rounded-xl">
-                        <button onClick={() => setMetricTimeType('month')} className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 ${metricTimeType === 'month' ? 'bg-white text-indigo-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>月</button>
-                        <button onClick={() => setMetricTimeType('year')} className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 ${metricTimeType === 'year' ? 'bg-white text-indigo-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>年</button>
-                      </div>
+                </motion.div>
+              )}
+              {activeTab === '活动量' && (
+                <motion.div initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} className="pb-24">
+                  <div className="flex flex-col items-center justify-center py-20 px-10 text-center">
+                    <div className="w-48 h-48 bg-gray-50 rounded-full flex items-center justify-center mb-6">
+                      <Activity className="w-20 h-20 text-gray-200" />
                     </div>
-                    <div className="flex space-x-2 overflow-x-auto scrollbar-hide mb-4 pb-1">
-                      <div className="relative shrink-0">
-                        <select value={metricFilterValue} onChange={(e) => setMetricFilterValue(e.target.value)} className="appearance-none bg-gray-50 border border-gray-100 text-gray-600 font-medium text-xs rounded-lg pl-3 pr-7 py-1.5 outline-none focus:ring-2 focus:ring-indigo-500/20 hover:bg-gray-100 transition-colors">
-                          {customerValues.map(v => <option key={v} value={v}>{v}</option>)}
-                        </select>
-                        <ChevronDown className="w-3 h-3 text-gray-400 absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
-                      </div>
-                    </div>
-                    {metricTimeType === 'month' && (
-                      <div className="flex items-center justify-between bg-gray-50 rounded-xl p-2 mb-4 border border-gray-100">
-                        <button onClick={handlePrevMonth} className="p-1.5 hover:bg-gray-200 rounded-lg transition-colors text-gray-500"><ChevronLeft className="w-4 h-4" /></button>
-                        <span className="text-sm font-medium text-gray-700">{metricDate.getFullYear()}年{metricDate.getMonth() + 1}月</span>
-                        <button onClick={handleNextMonth} className="p-1.5 hover:bg-gray-200 rounded-lg transition-colors text-gray-500"><ChevronRight className="w-4 h-4" /></button>
-                      </div>
-                    )}
-                    <div className="grid grid-cols-3 gap-3">
-                      {metrics.map((m, idx) => (
-                        <div key={idx} className="bg-gray-50 rounded-2xl p-4 flex flex-col items-center justify-center border border-gray-100/50 hover:shadow-md transition-shadow cursor-pointer">
-                          <span className="text-2xl font-bold text-gray-900 mb-1">{m.value}</span>
-                          <span className="text-[11px] text-gray-500 font-medium">{m.label}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* 经营工具 */}
-                  <div className="p-5 bg-white mt-4 rounded-3xl shadow-sm mx-3 mb-8">
-                    <div className="flex justify-between items-center mb-5">
-                      <h2 className="text-lg font-bold text-gray-900">经营工具</h2>
-                      <button className="text-xs text-indigo-600 font-bold">管理工具</button>
-                    </div>
-                    <div className="grid grid-cols-5 gap-2">
-                      {tools.map((tool, idx) => (
-                        <div key={idx} className="flex flex-col items-center cursor-pointer group">
-                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-1.5 transition-transform duration-300 group-hover:scale-105 ${tool.bg}`}>
-                            <tool.icon className={`w-5 h-5 ${tool.color}`} />
-                          </div>
-                          <span className="text-[10px] text-gray-500 font-medium">{tool.label}</span>
-                        </div>
-                      ))}
-                      <div onClick={() => setShowMoreTools(!showMoreTools)} className="flex flex-col items-center cursor-pointer group">
-                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-1.5 transition-transform duration-300 group-hover:scale-105 ${showMoreTools ? 'bg-indigo-100' : 'bg-gray-50 hover:bg-gray-100'}`}>
-                          <LayoutGrid className={`w-5 h-5 transition-colors ${showMoreTools ? 'text-indigo-600' : 'text-gray-400 group-hover:text-gray-600'}`} />
-                        </div>
-                        <span className={`text-[10px] font-medium transition-colors ${showMoreTools ? 'text-indigo-600' : 'text-gray-500'}`}>更多</span>
-                      </div>
-                    </div>
-                    <AnimatePresence>
-                      {showMoreTools && (
-                        <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
-                          <div className="grid grid-cols-5 gap-2 mt-4 pt-4 border-t border-gray-50/50">
-                            {moreTools.map((tool, idx) => (
-                              <div key={idx} className="flex flex-col items-center cursor-pointer group">
-                                <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-1.5 transition-transform duration-300 group-hover:scale-105 ${tool.bg}`}>
-                                  <tool.icon className={`w-5 h-5 ${tool.color}`} />
-                                </div>
-                                <span className="text-[10px] text-gray-500 font-medium whitespace-nowrap">{tool.label}</span>
-                              </div>
-                            ))}
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
+                    <h3 className="text-lg font-bold text-gray-900 mb-2">活动量</h3>
+                    <p className="text-sm text-gray-500 leading-relaxed">正在建设</p>
                   </div>
                 </motion.div>
               )}
             </>
           )}
 
-          {(activeBottomNav !== '首页' && activeBottomNav !== '客户') && (
-            <div className="flex flex-col items-center justify-center py-20 px-10 text-center">
-              <div className="w-48 h-48 bg-gray-50 rounded-full flex items-center justify-center mb-6">
-                <LayoutGrid className="w-20 h-20 text-gray-200" />
+          {/* 发展板块 */}
+          {activeBottomNav === '发展' && (
+            <>
+              {/* Tab Switcher */}
+              <div className="flex space-x-6 items-center px-4 py-3 bg-white sticky top-0 z-30">
+                <button onClick={() => setDevTab('个人发展')} className={`text-lg pb-1 relative transition-colors ${devTab === '个人发展' ? 'font-bold text-gray-900 border-b-2 border-indigo-600' : 'font-medium text-gray-400'}`}>
+                  个人发展
+                </button>
+                <button onClick={() => setDevTab('团队发展')} className={`text-lg pb-1 relative transition-colors ${devTab === '团队发展' ? 'font-bold text-gray-900 border-b-2 border-indigo-600' : 'font-medium text-gray-400'}`}>
+                  团队发展
+                </button>
               </div>
-              <h3 className="text-lg font-bold text-gray-900 mb-2">{activeBottomNav}</h3>
-              <p className="text-sm text-gray-500 leading-relaxed">功能正在开发中，敬请期待</p>
-            </div>
+
+              {/* Placeholder Content */}
+              <div className="flex flex-col items-center justify-center py-20 px-10 text-center">
+                <div className="w-48 h-48 bg-gray-50 rounded-full flex items-center justify-center mb-6">
+                  <TrendingUp className="w-20 h-20 text-gray-200" />
+                </div>
+                <h3 className="text-lg font-bold text-gray-900 mb-2">{devTab}</h3>
+                <p className="text-sm text-gray-500 leading-relaxed">功能正在开发中，敬请期待</p>
+              </div>
+            </>
+          )}
+
+          {/* 产品板块 */}
+          {activeBottomNav === '产品' && (
+            <>
+              {/* Tab Switcher */}
+              <div className="flex space-x-6 items-center px-4 py-3 bg-white sticky top-0 z-30">
+                <button onClick={() => setProductTab('寿险')} className={`text-lg pb-1 relative transition-colors ${productTab === '寿险' ? 'font-bold text-gray-900 border-b-2 border-indigo-600' : 'font-medium text-gray-400'}`}>
+                  寿险
+                </button>
+                <button onClick={() => setProductTab('综拓')} className={`text-lg pb-1 relative transition-colors ${productTab === '综拓' ? 'font-bold text-gray-900 border-b-2 border-indigo-600' : 'font-medium text-gray-400'}`}>
+                  综拓
+                </button>
+              </div>
+
+              {/* Placeholder Content */}
+              <div className="flex flex-col items-center justify-center py-20 px-10 text-center">
+                <div className="w-48 h-48 bg-gray-50 rounded-full flex items-center justify-center mb-6">
+                  <Package className="w-20 h-20 text-gray-200" />
+                </div>
+                <h3 className="text-lg font-bold text-gray-900 mb-2">{productTab}</h3>
+                <p className="text-sm text-gray-500 leading-relaxed">功能正在开发中，敬请期待</p>
+              </div>
+            </>
+          )}
+
+          {/* 服务板块 */}
+          {activeBottomNav === '服务' && (
+            <>
+              {/* Tab Switcher */}
+              <div className="flex space-x-6 items-center px-4 py-3 bg-white sticky top-0 z-30">
+                <button onClick={() => setServiceTab('服务')} className={`text-lg pb-1 relative transition-colors ${serviceTab === '服务' ? 'font-bold text-gray-900 border-b-2 border-indigo-600' : 'font-medium text-gray-400'}`}>
+                  服务
+                </button>
+              </div>
+
+              {/* Placeholder Content */}
+              <div className="flex flex-col items-center justify-center py-20 px-10 text-center">
+                <div className="w-48 h-48 bg-gray-50 rounded-full flex items-center justify-center mb-6">
+                  <Headphones className="w-20 h-20 text-gray-200" />
+                </div>
+                <h3 className="text-lg font-bold text-gray-900 mb-2">{serviceTab}</h3>
+                <p className="text-sm text-gray-500 leading-relaxed">功能正在开发中，敬请期待</p>
+              </div>
+            </>
           )}
         </div>
 
@@ -1183,13 +1549,13 @@ export default function App() {
             <div className="flex justify-around items-center h-16">
               {[
                 { icon: Home, label: '首页' },
-                { icon: Briefcase, label: '展业' },
                 { icon: Users, label: '客户' },
                 { icon: Package, label: '产品' },
-                { icon: Settings, label: '管理' },
+                { icon: Headphones, label: '服务' },
+                { icon: TrendingUp, label: '发展' },
               ].map((item, idx) => {
                 const isActive = (item.label === '首页' && activeBottomNav === '首页') || (item.label === '客户' && activeBottomNav === '客户');
-                const isUnderDevelopment = item.label === '展业' || item.label === '产品' || item.label === '管理';
+                const isUnderDevelopment = item.label === '产品' || item.label === '服务' || item.label === '发展';
                 return (
                   <button key={idx} onClick={() => {
                     if (isUnderDevelopment) { setActiveBottomNav(item.label); setCurrentPage('home'); }

@@ -1,11 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, Search, Trash2, Mic, Sparkles, ChevronDown, ChevronUp, Phone, Edit3, Plus, Cake, MessageSquare, MoreHorizontal, CheckCircle2, Info, X, AlertCircle, Send } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Search, Trash2, Mic, Sparkles, ChevronDown, ChevronUp, Phone, Edit3, Plus, Cake, MessageSquare, MoreHorizontal, CheckCircle2, Info, X, AlertCircle, Send, MapPin, Navigation, Shield } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { customers } from './data';
 import CustomerDetailPage from './CustomerDetailPage';
 import FilterSheet, { FilterState } from './FilterSheet';
 
-type SearchState = 'initial' | 'typing' | 'understanding' | 'results' | 'unrecognized';
+type SearchState = 'initial' | 'typing' | 'understanding' | 'results' | 'unrecognized' | 'locating';
+
+// 计算两点之间的距离（km），使用 Haversine 公式
+const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
+  const R = 6371; // 地球半径（km）
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+};
 
 export default function CustomerSearchPage({ onBack }: { onBack: () => void }) {
   const [searchValue, setSearchValue] = useState('');
@@ -27,6 +39,10 @@ export default function CustomerSearchPage({ onBack }: { onBack: () => void }) {
     const hasSeenTip = localStorage.getItem('customer_search_ai_tip_seen');
     return !hasSeenTip;
   });
+  // 位置相关状态
+  const [userLocation, setUserLocation] = useState<{ latitude: number; longitude: number } | null>(null);
+  const [showLocationPermissionModal, setShowLocationPermissionModal] = useState(false);
+  const [searchRadius, setSearchRadius] = useState(1); // 搜索半径（km）
 
   // 关闭提示并记住
   const closeAITip = () => {
@@ -166,7 +182,7 @@ export default function CustomerSearchPage({ onBack }: { onBack: () => void }) {
   const recentSearches = isAISearch ? aiRecentSearches : simpleRecentSearches;
 
   const popularSearches = [
-    '未来一个月生日的客户', 'ABC类中高温客户', '万能险客户'
+    '未来一个月生日的客户', 'ABC类中高温客户', '万能险客户', '附近1公里的客户'
   ];
 
   const suggestions = [
@@ -175,13 +191,47 @@ export default function CustomerSearchPage({ onBack }: { onBack: () => void }) {
     '下月身份证过期的客户'
   ];
 
+  // 模拟获取定位并显示权限确认弹窗
+  const handleNearbySearchClick = () => {
+    setShowLocationPermissionModal(true);
+  };
+
+  // 确认授权后模拟定位并搜索
+  const confirmLocationPermission = () => {
+    setShowLocationPermissionModal(false);
+    setSearchState('locating');
+
+    // 模拟定位过程（2秒）
+    setTimeout(() => {
+      // 模拟用户当前位置（深圳市南山区科技园）
+      const mockUserLocation = { latitude: 22.532, longitude: 113.940 };
+      setUserLocation(mockUserLocation);
+      handleNearbySearch(mockUserLocation.latitude, mockUserLocation.longitude, searchRadius);
+    }, 2000);
+  };
+
+  // 搜索附近客户
+  const handleNearbySearch = (userLat: number, userLon: number, radius: number) => {
+    const results = customers.filter(customer => {
+      if (!customer.latitude || !customer.longitude) return false;
+      const distance = calculateDistance(userLat, userLon, customer.latitude, customer.longitude);
+      return distance <= radius;
+    }).map(customer => {
+      const distance = calculateDistance(userLat, userLon, customer.latitude!, customer.longitude!);
+      return { ...customer, distance };
+    }).sort((a, b) => (a.distance || 0) - (b.distance || 0));
+
+    setFilteredCustomers(results);
+    setSearchState('results');
+  };
+
   useEffect(() => {
     if (searchValue.length > 0 && searchState === 'initial' && isAISearch) {
       setSearchState('typing');
-    } else if (searchValue.length === 0) {
+    } else if (searchValue.length === 0 && searchState !== 'locating') {
       setSearchState('initial');
     }
-  }, [searchValue, isAISearch]);
+  }, [searchValue, isAISearch, searchState]);
 
   // Auto-trigger search when AI toggle is switched in results or unrecognized state
   useEffect(() => {
@@ -471,11 +521,22 @@ export default function CustomerSearchPage({ onBack }: { onBack: () => void }) {
                     <h2 className="text-[14px] font-bold text-gray-400 mb-3">大家在搜</h2>
                     <div className="flex flex-wrap gap-2">
                       {popularSearches.map(tag => (
-                        <button 
+                        <button
                           key={tag}
-                          onClick={() => handleSuggestionClick(tag)}
-                          className="px-4 py-2 bg-gray-50 text-gray-600 text-[13px] rounded-full hover:bg-gray-100 transition-colors"
+                          onClick={() => {
+                            if (tag === '附近1公里的客户') {
+                              handleNearbySearchClick();
+                            } else {
+                              handleSuggestionClick(tag);
+                            }
+                          }}
+                          className={`px-4 py-2 text-gray-600 text-[13px] rounded-full transition-colors ${
+                            tag === '附近1公里的客户'
+                              ? 'bg-gradient-to-r from-emerald-50 to-teal-50 hover:from-emerald-100 hover:to-teal-100 border border-emerald-100 flex items-center gap-1.5'
+                              : 'bg-gray-50 hover:bg-gray-100'
+                          }`}
                         >
+                          {tag === '附近1公里的客户' && <MapPin className="w-3.5 h-3.5 text-emerald-600" />}
                           {tag}
                         </button>
                       ))}
@@ -486,7 +547,7 @@ export default function CustomerSearchPage({ onBack }: { onBack: () => void }) {
                 {/* Voice Button */}
                 {isAISearch && (
                   <div className="flex justify-center pt-8">
-                    <button 
+                    <button
                       onMouseDown={startRecording}
                       onMouseUp={stopRecording}
                       onMouseLeave={stopRecording}
@@ -501,6 +562,32 @@ export default function CustomerSearchPage({ onBack }: { onBack: () => void }) {
                     </button>
                   </div>
                 )}
+              </motion.div>
+            )}
+
+            {/* 定位中状态 */}
+            {searchState === 'locating' && (
+              <motion.div
+                key="locating"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="px-4 py-12 flex flex-col items-center text-center"
+              >
+                <div className="relative mb-6">
+                  <motion.div
+                    animate={{ scale: [1, 1.3, 1], opacity: [0.3, 0.1, 0.3] }}
+                    transition={{ repeat: Infinity, duration: 2 }}
+                    className="absolute inset-0 bg-emerald-500 rounded-full"
+                  />
+                  <div className="relative bg-emerald-500 p-6 rounded-full">
+                    <Navigation className="w-10 h-10 text-white animate-pulse" />
+                  </div>
+                </div>
+                <h3 className="text-[17px] font-bold text-gray-900 mb-2">正在获取您的位置</h3>
+                <p className="text-[14px] text-gray-500 leading-relaxed">
+                  请稍候，我们将为您搜索附近的客户...
+                </p>
               </motion.div>
             )}
 
@@ -716,6 +803,13 @@ export default function CustomerSearchPage({ onBack }: { onBack: () => void }) {
                               </div>
                               
                               <div className="flex items-center flex-wrap mt-1.5 text-[11px] text-gray-500">
+                                {/* Distance - 附近客户显示距离 */}
+                                {customer.distance && (
+                                  <div className="flex items-center gap-1 px-2 py-0.5 bg-emerald-50 text-emerald-600 rounded-full mr-2 font-medium">
+                                    <MapPin className="w-3 h-3" />
+                                    <span>{customer.distance.toFixed(2)}km</span>
+                                  </div>
+                                )}
                                 {[customer.customerType, customer.temperature, customer.value, customer.vipLevel, customer.serviceLevel]
                                   .filter(Boolean)
                                   .map((tag, index, array) => (
@@ -725,6 +819,13 @@ export default function CustomerSearchPage({ onBack }: { onBack: () => void }) {
                                     </div>
                                   ))}
                               </div>
+
+                              {/* Address for nearby search */}
+                              {customer.distance && customer.address && (
+                                <div className="mt-1.5 text-[11px] text-gray-400 truncate max-w-[200px]">
+                                  📍 {customer.address}
+                                </div>
+                              )}
 
                               {/* AI Matched Dynamic Fields */}
                               {isAISearch && getMatchedDynamicFields(customer, searchValue).length > 0 && (
@@ -936,6 +1037,70 @@ export default function CustomerSearchPage({ onBack }: { onBack: () => void }) {
                       }`}
                     >
                       确定
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
+
+        {/* Location Permission Modal */}
+        <AnimatePresence>
+          {showLocationPermissionModal && (
+            <>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setShowLocationPermissionModal(false)}
+                className="absolute inset-0 z-[130] bg-black/60 backdrop-blur-[4px]"
+              />
+              <motion.div
+                initial={{ y: '100%' }}
+                animate={{ y: 0 }}
+                exit={{ y: '100%' }}
+                transition={{ type: 'spring', damping: 28, stiffness: 220 }}
+                className="absolute bottom-0 left-0 right-0 z-[140] bg-white rounded-t-[24px] pb-10 shadow-[0_-12px_40px_rgba(0,0,0,0.15)]"
+              >
+                {/* Handle */}
+                <div className="flex justify-center py-3">
+                  <div className="w-12 h-1.5 bg-gray-200 rounded-full" />
+                </div>
+
+                <div className="px-6 pt-2 pb-4">
+                  <div className="flex items-center justify-center mb-4">
+                    <div className="w-16 h-16 rounded-full bg-emerald-50 flex items-center justify-center">
+                      <Navigation className="w-8 h-8 text-emerald-500" />
+                    </div>
+                  </div>
+                  <h3 className="text-[20px] font-bold text-gray-900 text-center mb-2">需要获取您的位置</h3>
+                  <p className="text-[14px] text-gray-500 text-center leading-relaxed mb-6">
+                    搜索附近客户需要获取您的当前位置信息，我们将为您展示距离1公里以内的客户。
+                  </p>
+
+                  <div className="bg-gray-50 rounded-xl p-4 mb-6">
+                    <div className="flex items-start gap-3">
+                      <Shield className="w-5 h-5 text-blue-500 mt-0.5" />
+                      <div>
+                        <p className="text-[13px] text-gray-700 font-medium">位置信息仅用于搜索</p>
+                        <p className="text-[12px] text-gray-500 mt-1">您的位置信息不会被存储或分享，仅用于计算与客户的距离。</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center space-x-3">
+                    <button
+                      onClick={() => setShowLocationPermissionModal(false)}
+                      className="flex-1 py-4 bg-gray-50 rounded-2xl text-[16px] font-bold text-gray-500 hover:text-gray-600 transition-colors active:scale-[0.98]"
+                    >
+                      取消
+                    </button>
+                    <button
+                      onClick={confirmLocationPermission}
+                      className="flex-[2] py-4 bg-emerald-600 rounded-2xl text-[16px] font-bold text-white shadow-lg shadow-emerald-500/30 active:scale-[0.98]"
+                    >
+                      允许定位
                     </button>
                   </div>
                 </div>

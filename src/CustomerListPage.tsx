@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
-import { ChevronLeft, Search, MoreHorizontal, Filter, ChevronDown, Phone, Edit3, Plus, Cake, UserPlus, BookOpen, ListChecks, ArchiveRestore, UserSearch, Share2, X, ChevronRight } from 'lucide-react';
+import { ChevronLeft, Search, MoreHorizontal, Filter, ChevronDown, Phone, Edit3, Plus, Cake, UserPlus, BookOpen, ListChecks, ArchiveRestore, UserSearch, Share2, X, ChevronRight, Info } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import CustomerDetailPage from './CustomerDetailPage';
 import { customers } from './data';
@@ -14,6 +14,7 @@ interface FilterState {
   customerSegment?: string;
   vipLevel?: string;
   businessStage?: string;
+  nearingExpiryHighValue?: string; // 是否濒临失效高客
   // 平安权益
   anYouYi?: string;
   anYouHu?: string;
@@ -51,6 +52,7 @@ export default function CustomerListPage({ onBack, onSearch, onSharedCustomerLis
   const [selectedCustomerId, setSelectedCustomerId] = useState<number | null>(null);
   const [showMenu, setShowMenu] = useState(false);
   const [showFilterSheet, setShowFilterSheet] = useState(false);
+  const [showFieldDefinition, setShowFieldDefinition] = useState(false);
   const [activeFilterCategory, setActiveFilterCategory] = useState('排序条件');
   const [filters, setFilters] = useState<FilterState>({});
   const [tempFilters, setTempFilters] = useState<FilterState>({});
@@ -84,6 +86,7 @@ export default function CustomerListPage({ onBack, onSearch, onSharedCustomerLis
     '寿险投被保人': ['仅投保人', '仅被保人', '投/被保人'],
     '存量客户类型': ['在职有效客户', '纯存续单客户'],
     '保单托管': ['已托管客户', '未托管客户'],
+    '高价值客户失效风险': ['濒临失效', '暂无识别风险'],
     '经营阶段': ['忠诚客户', '客户', '准客户', '用户'],
   };
 
@@ -338,105 +341,107 @@ export default function CustomerListPage({ onBack, onSearch, onSharedCustomerLis
           </button>
         </div>
 
-        {/* Filter Bar */}
-        <div className="relative z-40">
-          <div className="flex px-4 py-3 justify-between items-center border-b border-gray-50 bg-white">
-            <button className="flex items-center text-[13px] text-gray-600">
-              客户类型 <ChevronDown className="w-3.5 h-3.5 ml-0.5" />
-            </button>
-            <button className="flex items-center text-[13px] text-gray-600">
-              客户温度 <ChevronDown className="w-3.5 h-3.5 ml-0.5" />
-            </button>
-            <button className="flex items-center text-[13px] text-gray-600">
-              客户价值 <ChevronDown className="w-3.5 h-3.5 ml-0.5" />
-            </button>
-            <button className="flex items-center text-[13px] text-gray-600">
-              客群标签 <ChevronDown className="w-3.5 h-3.5 ml-0.5" />
-            </button>
-            <div className="w-px h-3.5 bg-gray-200 mx-1"></div>
-            <button
-              onClick={handleOpenFilter}
-              className="flex items-center text-[13px] text-gray-700 font-medium relative"
-            >
-              筛选 <Filter className="w-3.5 h-3.5 ml-1" />
-              {getSelectedCount() > 0 && (
-                <span className="absolute -top-1 -right-2 w-4 h-4 bg-blue-600 text-white text-[9px] rounded-full flex items-center justify-center">
-                  {getSelectedCount()}
-                </span>
-              )}
-            </button>
-          </div>
-        </div>
+        {/* Filter Bar - only show for 客户列表 */}
+        {activeTab === '客户列表' && (
+          <>
+            <div className="relative z-40">
+              <div className="flex px-4 py-3 justify-between items-center border-b border-gray-50 bg-white">
+                <button className="flex items-center text-[13px] text-gray-600">
+                  客户类型 <ChevronDown className="w-3.5 h-3.5 ml-0.5" />
+                </button>
+                <button className="flex items-center text-[13px] text-gray-600">
+                  客户温度 <ChevronDown className="w-3.5 h-3.5 ml-0.5" />
+                </button>
+                <button className="flex items-center text-[13px] text-gray-600">
+                  客户价值 <ChevronDown className="w-3.5 h-3.5 ml-0.5" />
+                </button>
+                <button className="flex items-center text-[13px] text-gray-600">
+                  客群标签 <ChevronDown className="w-3.5 h-3.5 ml-0.5" />
+                </button>
+                <div className="w-px h-3.5 bg-gray-200 mx-1"></div>
+                <button
+                  onClick={handleOpenFilter}
+                  className="flex items-center text-[13px] text-gray-700 font-medium relative"
+                >
+                  筛选 <Filter className="w-3.5 h-3.5 ml-1" />
+                  {getSelectedCount() > 0 && (
+                    <span className="absolute -top-1 -right-2 w-4 h-4 bg-blue-600 text-white text-[9px] rounded-full flex items-center justify-center">
+                      {getSelectedCount()}
+                    </span>
+                  )}
+                </button>
+              </div>
+            </div>
 
-        {/* Quick Filters */}
-        <div className="flex items-center px-4 py-3 overflow-x-auto scrollbar-hide space-x-2">
-          {['综拓准客', '在职有效', '仅投保人', '寿险 VIP'].map(filter => (
-            <button key={filter} className="whitespace-nowrap px-3 py-1.5 bg-gray-50 text-gray-600 text-[12px] rounded-full">
-              {filter}
-            </button>
-          ))}
-        </div>
+            {/* Quick Filters */}
+            <div className="flex items-center px-4 py-3 overflow-x-auto scrollbar-hide space-x-2">
+              {['综拓准客', '在职有效', '仅投保人', '寿险 VIP'].map(filter => (
+                <button key={filter} className="whitespace-nowrap px-3 py-1.5 bg-gray-50 text-gray-600 text-[12px] rounded-full">
+                  {filter}
+                </button>
+              ))}
+            </div>
 
-        {/* List */}
-        <div className="flex-1 overflow-y-auto relative bg-gray-50">
-          <div className="px-4 py-2 flex items-center justify-between text-[12px] text-gray-500">
-            <span>共找到 <span className="text-blue-600 font-medium">{filteredCustomers.length}</span> 位客户</span>
-          </div>
-          <div className="px-4 pb-3">
-            {filteredCustomers.map((customer) => (
-              <div
-                key={customer.id}
-                className="bg-white rounded-xl p-4 mb-3 shadow-sm border border-gray-100 cursor-pointer hover:border-blue-200 transition-colors"
-                onClick={() => setSelectedCustomerId(customer.id)}
-              >
-                <div className="flex justify-between items-start">
-                  <div className="flex">
-                    {/* Avatar */}
-                    <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 bg-blue-500 text-white flex items-center justify-center text-base font-medium mr-3 mt-0.5">
-                      {customer.isImage ? (
-                        <img src={customer.avatar} alt={customer.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-                      ) : (
-                        customer.avatar
-                      )}
-                    </div>
-
-                    {/* Info */}
-                    <div className="flex flex-col justify-center">
-                      <div className="flex items-center flex-wrap mb-1.5 gap-y-1">
-                        <span className="text-[16px] font-bold text-gray-900">{customer.name}</span>
-
-                        {/* Gender & Age */}
-                        <div className={`ml-2 px-1.5 py-0.5 rounded text-[10px] flex items-center font-medium ${customer.gender === 'M' ? 'bg-blue-50 text-blue-500' : 'bg-pink-50 text-pink-500'}`}>
-                          {customer.gender === 'M' ? '♂' : '♀'} {customer.age}岁
+            {/* List */}
+            <div className="flex-1 overflow-y-auto relative bg-gray-50">
+              <div className="px-4 py-2 flex items-center justify-between text-[12px] text-gray-500">
+                <span>共找到 <span className="text-blue-600 font-medium">{filteredCustomers.length}</span> 位客户</span>
+              </div>
+              <div className="px-4 pb-3">
+                {filteredCustomers.map((customer) => (
+                  <div
+                    key={customer.id}
+                    className="bg-white rounded-xl p-4 mb-3 shadow-sm border border-gray-100 cursor-pointer hover:border-blue-200 transition-colors"
+                    onClick={() => setSelectedCustomerId(customer.id)}
+                  >
+                    <div className="flex justify-between items-start">
+                      <div className="flex">
+                        {/* Avatar */}
+                        <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 bg-blue-500 text-white flex items-center justify-center text-base font-medium mr-3 mt-0.5">
+                          {customer.isImage ? (
+                            <img src={customer.avatar} alt={customer.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                          ) : (
+                            customer.avatar
+                          )}
                         </div>
 
-                        {/* Birthday Badge */}
-                        {customer.daysToBirthday !== undefined && customer.daysToBirthday <= 7 && (
-                          <div className="ml-2 flex items-center text-[10px] text-orange-500 bg-orange-50 px-1.5 py-0.5 rounded border border-orange-100 font-medium">
-                            <Cake className="w-3 h-3 mr-1" />
-                            {customer.daysToBirthday === 0 ? '今天生日' : `${customer.daysToBirthday}天后生日`}
-                          </div>
-                        )}
+                        {/* Info */}
+                        <div className="flex flex-col justify-center">
+                          <div className="flex items-center flex-wrap mb-1.5 gap-y-1">
+                            <span className="text-[16px] font-bold text-gray-900">{customer.name}</span>
 
-                        {customer.badge && (
-                          <span className="ml-2 px-1.5 py-0.5 border border-gray-300 text-gray-500 text-[10px] rounded-sm">
-                            {customer.badge}
-                          </span>
-                        )}
-                      </div>
-
-                      <div className="flex items-center flex-wrap mt-1.5 text-[11px] text-gray-500">
-                        {[customer.customerType, customer.temperature, customer.value, customer.vipLevel, customer.serviceLevel]
-                          .filter(Boolean)
-                          .map((tag, index, array) => (
-                            <div key={index} className="flex items-center">
-                              <span>{tag}</span>
-                              {index < array.length - 1 && <span className="mx-1.5 text-gray-300">|</span>}
+                            {/* Gender & Age */}
+                            <div className={`ml-2 px-1.5 py-0.5 rounded text-[10px] flex items-center font-medium ${customer.gender === 'M' ? 'bg-blue-50 text-blue-500' : 'bg-pink-50 text-pink-500'}`}>
+                              {customer.gender === 'M' ? '♂' : '♀'} {customer.age}岁
                             </div>
-                          ))}
+
+                            {/* Birthday Badge */}
+                            {customer.daysToBirthday !== undefined && customer.daysToBirthday <= 7 && (
+                              <div className="ml-2 flex items-center text-[10px] text-orange-500 bg-orange-50 px-1.5 py-0.5 rounded border border-orange-100 font-medium">
+                                <Cake className="w-3 h-3 mr-1" />
+                                {customer.daysToBirthday === 0 ? '今天生日' : `${customer.daysToBirthday}天后生日`}
+                              </div>
+                            )}
+
+                            {customer.badge && (
+                              <span className="ml-2 px-1.5 py-0.5 border border-gray-300 text-gray-500 text-[10px] rounded-sm">
+                                {customer.badge}
+                              </span>
+                            )}
+                          </div>
+
+                          <div className="flex items-center flex-wrap mt-1.5 text-[11px] text-gray-500">
+                            {[customer.customerType, customer.temperature, customer.value, customer.vipLevel, customer.serviceLevel]
+                              .filter(Boolean)
+                              .map((tag, index, array) => (
+                                <div key={index} className="flex items-center">
+                                  <span>{tag}</span>
+                                  {index < array.length - 1 && <span className="mx-1.5 text-gray-300">|</span>}
+                                </div>
+                              ))}
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </div>
 
                   {/* Contact Button */}
                   <button className="px-3 py-1.5 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center flex-shrink-0 hover:bg-blue-100 transition-colors text-[12px] font-medium">
@@ -466,6 +471,8 @@ export default function CustomerListPage({ onBack, onSearch, onSharedCustomerLis
             ))}
           </div>
         </div>
+          </>
+        )}
 
         {/* Filter Sheet */}
         <AnimatePresence>
@@ -650,6 +657,33 @@ export default function CustomerListPage({ onBack, onSearch, onSharedCustomerLis
                             key={option}
                             onClick={() => setTempFilters({ ...tempFilters })}
                             className="py-3 px-4 rounded-xl text-[14px] font-medium bg-gray-50 text-gray-700"
+                          >
+                            {option}
+                          </button>
+                        ))}
+                      </div>
+                      <div className="flex items-center gap-1.5 mt-6 mb-4">
+                        <h3 className="text-[15px] font-bold text-gray-900">高价值客户失效风险</h3>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setShowFieldDefinition(true);
+                          }}
+                          className="w-4 h-4 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:bg-gray-200 transition-colors"
+                        >
+                          <Info className="w-2.5 h-2.5" />
+                        </button>
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        {customerCategoryOptions['高价值客户失效风险'].map(option => (
+                          <button
+                            key={option}
+                            onClick={() => setTempFilters({ ...tempFilters, nearingExpiryHighValue: tempFilters.nearingExpiryHighValue === option ? undefined : option })}
+                            className={`py-3 px-4 rounded-xl text-[14px] font-medium transition-all ${
+                              tempFilters.nearingExpiryHighValue === option
+                                ? 'bg-blue-600 text-white'
+                                : 'bg-gray-50 text-gray-700'
+                            }`}
                           >
                             {option}
                           </button>
@@ -1068,6 +1102,37 @@ export default function CustomerListPage({ onBack, onSearch, onSharedCustomerLis
                     确定
                   </button>
                 </div>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
+
+        {/* 字段释义弹窗 */}
+        <AnimatePresence>
+          {showFieldDefinition && (
+            <>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setShowFieldDefinition(false)}
+                className="fixed inset-0 bg-black/40 z-[200]"
+              />
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[280px] bg-white rounded-2xl shadow-2xl z-[210] p-5"
+              >
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-[16px] font-bold text-gray-900">高价值客户失效风险</h3>
+                  <button onClick={() => setShowFieldDefinition(false)} className="text-gray-400 hover:text-gray-600">
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+                <p className="text-[13px] text-gray-600 leading-relaxed">
+                  基于客户近期保单缴费情况、产品续保状态及客户活跃度等多维度数据，智能识别高价值客户是否存在失效风险，帮助代理人及时采取挽留措施。
+                </p>
               </motion.div>
             </>
           )}
