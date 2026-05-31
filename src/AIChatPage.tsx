@@ -44,7 +44,7 @@ const selectedCustomers: CustomerCard[] = [
 ];
 
 // 消息类型
-type MessageType = 'text' | 'customer-list';
+type MessageType = 'text' | 'customer-list' | 'birthday-card' | 'greeting-card';
 
 interface Message {
   id: string;
@@ -55,10 +55,12 @@ interface Message {
   customers?: CustomerCard[];
   showStrategy?: boolean;
   customerName?: string;
+  birthdayCard?: { customerName: string; poem: string };
+  greetingCard?: { customerName: string; poem: string; style: string };
 }
 
 // 模拟 AI 响应
-const generateAIResponse = (userMessage: string): { content: string; type: MessageType; customers?: CustomerCard[]; showStrategy?: boolean; customerName?: string } => {
+const generateAIResponse = (userMessage: string): { content: string; type: MessageType; customers?: CustomerCard[]; showStrategy?: boolean; customerName?: string; birthdayCard?: { customerName: string; poem: string }; greetingCard?: { customerName: string; poem: string; style: string } } => {
   // 检测是否是访前锦囊请求
   if (userMessage.includes('访前') || userMessage.includes('面访') || userMessage.includes('整理')) {
     // 提取客户名称
@@ -69,6 +71,46 @@ const generateAIResponse = (userMessage: string): { content: string; type: Messa
       type: 'text',
       showStrategy: true,
       customerName,
+    };
+  }
+
+  // 检测是否是生日贺卡请求
+  if (userMessage.includes('生日') && userMessage.includes('藏头诗')) {
+    const customerMatch = userMessage.match(/客户(.+)后天要过生日/);
+    const customerName = customerMatch ? customerMatch[1].trim() : '邓逵';
+    return {
+      content: `找到一个后天过生日的客户叫"${customerName}"，写好了藏头诗你看看，回复"制作贺卡"我就立马开始制作贺卡，或者告诉我要求，我来重新生成藏头诗。`,
+      type: 'birthday-card',
+      birthdayCard: {
+        customerName,
+        poem: `${customerName.charAt(0)}福如东海长流水，\n${customerName.charAt(1) ?? '福'}寿比南山不老松，\n生辰吉乐笑开颜，\n日暖风和好运连。`,
+      },
+    };
+  }
+
+  // 检测是否是制作贺卡请求
+  if (userMessage.includes('制作贺卡')) {
+    return {
+      content: '好的，贺卡已制作完成！这是一张温馨的生日祝福贺卡，您可以通过微信发送给客户，或者打印出来当面送给他。',
+      type: 'greeting-card',
+      greetingCard: {
+        customerName: '邓逵',
+        poem: '邓福如东海长流水，\n逵寿比南山不老松，\n生辰吉乐笑开颜，\n日暖风和好运连。',
+        style: '温馨祝福',
+      },
+    };
+  }
+
+  // 检测是否是重新生成藏头诗
+  if (userMessage.includes('重新生成') || userMessage.includes('藏头诗') && userMessage.includes('喜庆')) {
+    const customerName = '邓逵';
+    return {
+      content: `好的，为您重新生成了一首更喜庆的藏头诗，回复"制作贺卡"开始制作：`,
+      type: 'birthday-card',
+      birthdayCard: {
+        customerName,
+        poem: `${customerName.charAt(0)}喜气洋洋迎新岁，\n${customerName.charAt(1) ?? '喜'}鹏展翅上青云，\n生花妙笔绘宏图，\n日进斗金福满门。`,
+      },
     };
   }
 
@@ -172,6 +214,8 @@ export default function AIChatPage({ onBack, initialMessage, onCustomerClick, on
       customers: response.customers,
       showStrategy: response.showStrategy,
       customerName: response.customerName,
+      birthdayCard: response.birthdayCard,
+      greetingCard: response.greetingCard,
     };
 
     setConversations(prev => prev.map(c =>
@@ -219,6 +263,8 @@ export default function AIChatPage({ onBack, initialMessage, onCustomerClick, on
       customers: response.customers,
       showStrategy: response.showStrategy,
       customerName: response.customerName,
+      birthdayCard: response.birthdayCard,
+      greetingCard: response.greetingCard,
     };
 
     setConversations(prev => prev.map(c =>
@@ -539,6 +585,80 @@ export default function AIChatPage({ onBack, initialMessage, onCustomerClick, on
                             </div>
                           </div>
                         ))}
+                      </div>
+                    )}
+
+                    {/* 生日贺卡藏头诗 */}
+                    {msg.type === 'birthday-card' && msg.birthdayCard && (
+                      <div className="mt-3">
+                        <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl p-4 border border-amber-100">
+                          <div className="flex items-center gap-2 mb-3">
+                            <Calendar className="w-4 h-4 text-amber-500" />
+                            <span className="text-[13px] font-medium text-gray-700">为 {msg.birthdayCard.customerName} 准备的藏头诗</span>
+                          </div>
+                          <div className="bg-white/60 rounded-lg p-3 text-center">
+                            <p className="text-[15px] leading-relaxed text-gray-800 whitespace-pre-line font-medium">
+                              {msg.birthdayCard.poem}
+                            </p>
+                          </div>
+                          <div className="flex items-center justify-center gap-2 mt-3">
+                            <button
+                              onClick={() => setInputValue('制作贺卡')}
+                              className="px-4 py-2 bg-amber-500 text-white rounded-lg text-[12px] font-medium hover:bg-amber-600 transition-colors"
+                            >
+                              制作贺卡
+                            </button>
+                            <button
+                              onClick={() => setInputValue('重新生成藏头诗，要求更喜庆一点')}
+                              className="px-4 py-2 bg-gray-100 text-gray-600 rounded-lg text-[12px] font-medium hover:bg-gray-200 transition-colors"
+                            >
+                              重新生成
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* 制作完成的贺卡 */}
+                    {msg.type === 'greeting-card' && msg.greetingCard && (
+                      <div className="mt-3">
+                        <div className="bg-gradient-to-br from-rose-50 via-pink-50 to-amber-50 rounded-xl p-4 border border-rose-100 shadow-sm">
+                          <div className="flex items-center gap-2 mb-3">
+                            <Star className="w-4 h-4 text-rose-500" />
+                            <span className="text-[13px] font-medium text-gray-700">生日祝福贺卡 · {msg.greetingCard.style}</span>
+                          </div>
+                          {/* 贺卡预览 */}
+                          <div className="bg-white rounded-xl p-4 shadow-inner border border-gray-100">
+                            <div className="text-center mb-3">
+                              <span className="text-[11px] text-gray-400">致</span>
+                              <span className="text-[16px] font-bold text-gray-800 ml-1">{msg.greetingCard.customerName}</span>
+                            </div>
+                            <div className="bg-gradient-to-r from-amber-100 to-rose-100 rounded-lg p-3 text-center">
+                              <p className="text-[14px] leading-relaxed text-gray-800 whitespace-pre-line font-medium">
+                                {msg.greetingCard.poem}
+                              </p>
+                            </div>
+                            <div className="text-center mt-3">
+                              <span className="text-[11px] text-gray-400">—— 您的专属保险顾问</span>
+                            </div>
+                          </div>
+                          {/* 操作按钮 */}
+                          <div className="flex items-center justify-center gap-2 mt-3">
+                            <button
+                              onClick={() => alert('微信发送功能开发中')}
+                              className="px-4 py-2 bg-rose-500 text-white rounded-lg text-[12px] font-medium hover:bg-rose-600 transition-colors flex items-center gap-1"
+                            >
+                              <Send className="w-3.5 h-3.5" />
+                              微信发送
+                            </button>
+                            <button
+                              onClick={() => alert('下载功能开发中')}
+                              className="px-4 py-2 bg-gray-100 text-gray-600 rounded-lg text-[12px] font-medium hover:bg-gray-200 transition-colors"
+                            >
+                              下载图片
+                            </button>
+                          </div>
+                        </div>
                       </div>
                     )}
                   </div>

@@ -193,6 +193,7 @@ function MoreDimensionsPage({ onBack }: { onBack: () => void }) {
 
 const aiScenarios = [
   { botMood: 'smile', text: '10点约了邓逵，Bob为您准备了访前锦囊', cta: '去查看', taskId: 'task-1', type: 'strategy', customer: '邓逵' },
+  { botMood: 'sparkle', text: '客户邓逵后天要过生日了，我帮你准备好了藏头诗祝福贺卡，一起来完善下？', cta: '去查看', taskId: 'birthday-1', type: 'birthday', customer: '邓逵' },
   { botMood: 'sparkle', text: '5月盘客开始啦，BOB为您优选了7位符合"感恩回馈"权益的高潜老客户', cta: '去查看', taskId: 'review-task', type: 'review_list' },
   { botMood: 'cheer', text: '月末冲刺！这5位"高意向"客户需要最后一次促成访视', cta: '去复盘', taskId: 'task-2', type: 'review' },
 ];
@@ -1528,6 +1529,11 @@ export default function App() {
     if (scenario.type === 'strategy') {
       // 跳转到AI聊天页面，自动发送访前锦囊请求
       setAiInitialMessage(`帮我整理下面访前的信息与资料，我要去面访${scenario.customer}`);
+      setCurrentPage('ai-chat');
+    }
+    else if (scenario.type === 'birthday') {
+      // 跳转到AI聊天页面，自动发送生日贺卡请求
+      setAiInitialMessage(`客户${scenario.customer}后天要过生日，做个藏头诗祝福贺卡`);
       setCurrentPage('ai-chat');
     }
     else if (scenario.type === 'review_list') {

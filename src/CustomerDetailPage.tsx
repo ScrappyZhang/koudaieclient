@@ -939,46 +939,9 @@ export default function CustomerDetailPage({ customer, onBack, onSharedCustomerL
                 {/* 2.1 客户特征 */}
                 <div className="px-4 py-3 border-b border-gray-100">
                   <h3 className="text-[13px] font-semibold text-gray-700 mb-2">客户特征</h3>
-                  <div className="grid grid-cols-4 gap-2">
-                    <div className="bg-gray-50 rounded-lg p-2 text-center">
-                      <div className="text-[11px] text-gray-400">性别</div>
-                      <div className="text-[13px] font-semibold text-gray-800 mt-0.5">女</div>
-                    </div>
-                    <div className="bg-gray-50 rounded-lg p-2 text-center">
-                      <div className="text-[11px] text-gray-400">年龄</div>
-                      <div className="text-[13px] font-semibold text-gray-800 mt-0.5">38岁</div>
-                    </div>
-                    <div className="bg-gray-50 rounded-lg p-2 text-center">
-                      <div className="text-[11px] text-gray-400">客温</div>
-                      <div className="text-[13px] font-semibold text-blue-600 mt-0.5">高温</div>
-                    </div>
-                    <div className="bg-gray-50 rounded-lg p-2 text-center">
-                      <div className="text-[11px] text-gray-400">VIP等级</div>
-                      <div className="text-[13px] font-semibold text-gray-800 mt-0.5">铂金</div>
-                    </div>
-                    <div className="bg-gray-50 rounded-lg p-2 text-center">
-                      <div className="text-[11px] text-gray-400">成交概率</div>
-                      <div className="text-[13px] font-semibold text-gray-800 mt-0.5">78%</div>
-                    </div>
-                    <div className="bg-gray-50 rounded-lg p-2 text-center">
-                      <div className="text-[11px] text-gray-400">60天转化率</div>
-                      <div className="text-[13px] font-semibold text-gray-800 mt-0.5">65%</div>
-                    </div>
-                    <div className="bg-gray-50 rounded-lg p-2 text-center">
-                      <div className="text-[11px] text-gray-400">客户价值</div>
-                      <div className="text-[13px] font-semibold text-gray-800 mt-0.5">A4</div>
-                    </div>
-                    <div className="bg-gray-50 rounded-lg p-2 text-center">
-                      <div className="text-[11px] text-gray-400">服务级别</div>
-                      <div className="text-[13px] font-semibold text-gray-800 mt-0.5">康养会员</div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* 2.2 身份标签 */}
-                <div className="px-4 py-3 border-b border-gray-100">
-                  <h3 className="text-[13px] font-semibold text-gray-700 mb-2">身份标签</h3>
                   <div className="flex flex-wrap gap-1.5">
+                    <span className="px-2.5 py-1 bg-blue-50 text-blue-600 rounded-lg text-[12px] font-medium">成交概率78%</span>
+                    <span className="px-2.5 py-1 bg-blue-50 text-blue-600 rounded-lg text-[12px] font-medium">60天转化率65%</span>
                     <span className="px-2.5 py-1 bg-gray-100 text-gray-600 rounded-lg text-[12px]">已婚</span>
                     <span className="px-2.5 py-1 bg-gray-100 text-gray-600 rounded-lg text-[12px]">有房</span>
                     <span className="px-2.5 py-1 bg-gray-100 text-gray-600 rounded-lg text-[12px]">有车</span>
@@ -988,7 +951,7 @@ export default function CustomerDetailPage({ customer, onBack, onSharedCustomerL
                   </div>
                 </div>
 
-                {/* 2.3 偏好与需求 */}
+                {/* 2.2 偏好与需求 */}
                 <div className="px-4 py-3 border-b border-gray-100">
                   <h3 className="text-[13px] font-semibold text-gray-700 mb-3">偏好与需求</h3>
 
@@ -1004,10 +967,13 @@ export default function CustomerDetailPage({ customer, onBack, onSharedCustomerL
                         </div>
                       </div>
                       <div className="flex items-start gap-2">
-                        <Info className="w-4 h-4 text-gray-400 mt-0.5" />
+                        <Info className="w-4 h-4 text-amber-500 mt-0.5" />
                         <div className="flex-1">
                           <div className="text-[12px] font-medium text-gray-800">缺口结论</div>
-                          <div className="text-[11px] text-gray-600">高端医疗缺失、终身养老金不足</div>
+                          <div className="flex flex-wrap gap-1 mt-1">
+                            <span className="px-2 py-0.5 bg-amber-50 text-amber-600 rounded text-[11px]">高端医疗缺失</span>
+                            <span className="px-2 py-0.5 bg-amber-50 text-amber-600 rounded text-[11px]">终身养老金不足</span>
+                          </div>
                         </div>
                       </div>
                       <div className="flex items-start gap-2">
@@ -1031,7 +997,7 @@ export default function CustomerDetailPage({ customer, onBack, onSharedCustomerL
                   </div>
                 </div>
 
-                {/* 2.4 消费决策习惯 */}
+                {/* 2.3 消费决策习惯 */}
                 <div className="px-4 py-3 border-b border-gray-100">
                   <h3 className="text-[13px] font-semibold text-gray-700 mb-2">消费决策习惯</h3>
                   <div className="grid grid-cols-2 gap-3">
@@ -1046,7 +1012,7 @@ export default function CustomerDetailPage({ customer, onBack, onSharedCustomerL
                   </div>
                 </div>
 
-                {/* 2.5 购买力判断 */}
+                {/* 2.4 购买力判断 */}
                 <div className="px-4 py-3 border-b border-gray-100">
                   <h3 className="text-[13px] font-semibold text-gray-700 mb-2">购买力判断</h3>
                   <div className="grid grid-cols-2 gap-3">
@@ -1063,13 +1029,13 @@ export default function CustomerDetailPage({ customer, onBack, onSharedCustomerL
                     </div>
                   </div>
                   <div className="flex flex-wrap gap-1.5 mt-2">
-                    <span className="px-2 py-0.5 bg-blue-50 text-blue-600 rounded-lg text-[11px]">近期有资金</span>
-                    <span className="px-2 py-0.5 bg-blue-50 text-blue-600 rounded-lg text-[11px]">旺财有余额</span>
+                    <span className="px-2 py-0.5 bg-blue-50 text-blue-600 rounded-lg text-[11px] font-medium">近期有资金</span>
+                    <span className="px-2 py-0.5 bg-blue-50 text-blue-600 rounded-lg text-[11px] font-medium">旺财有余额</span>
                     <span className="px-2 py-0.5 bg-gray-100 text-gray-500 rounded-lg text-[11px]">无生存金到账</span>
                   </div>
                 </div>
 
-                {/* 2.6 客户风险 */}
+                {/* 2.5 客户风险 */}
                 <div className="px-4 py-3">
                   <h3 className="text-[13px] font-semibold text-gray-700 mb-2">客户风险</h3>
                   <div className="grid grid-cols-2 gap-2">
@@ -1150,7 +1116,7 @@ export default function CustomerDetailPage({ customer, onBack, onSharedCustomerL
                       <div className="text-[12px] text-gray-600">家庭保障覆盖率</div>
                       <div className="flex items-center gap-2">
                         <span className="text-[18px] font-bold text-gray-800">85%</span>
-                        <span className="px-1.5 py-0.5 bg-gray-200 text-gray-600 rounded text-[10px]">中等缺口</span>
+                        <span className="px-1.5 py-0.5 bg-amber-50 text-amber-600 rounded text-[10px] font-medium">中等缺口</span>
                       </div>
                     </div>
                     <div className="space-y-2">
@@ -1158,36 +1124,36 @@ export default function CustomerDetailPage({ customer, onBack, onSharedCustomerL
                         <span className="text-gray-600">重疾保障</span>
                         <div className="flex items-center gap-1">
                           <div className="w-20 h-1.5 bg-gray-200 rounded-full overflow-hidden">
-                            <div className="w-[90%] h-full bg-gray-600 rounded-full"></div>
+                            <div className="w-[90%] h-full bg-blue-500 rounded-full"></div>
                           </div>
-                          <span className="text-gray-600 font-medium">充足</span>
+                          <span className="text-blue-600 font-medium">充足</span>
                         </div>
                       </div>
                       <div className="flex items-center justify-between text-[11px]">
                         <span className="text-gray-600">意外保障</span>
                         <div className="flex items-center gap-1">
                           <div className="w-20 h-1.5 bg-gray-200 rounded-full overflow-hidden">
-                            <div className="w-[80%] h-full bg-gray-600 rounded-full"></div>
+                            <div className="w-[80%] h-full bg-blue-400 rounded-full"></div>
                           </div>
-                          <span className="text-gray-600 font-medium">良好</span>
+                          <span className="text-blue-500 font-medium">良好</span>
                         </div>
                       </div>
                       <div className="flex items-center justify-between text-[11px]">
                         <span className="text-gray-600">高端医疗</span>
                         <div className="flex items-center gap-1">
                           <div className="w-20 h-1.5 bg-gray-200 rounded-full overflow-hidden">
-                            <div className="w-[20%] h-full bg-gray-400 rounded-full"></div>
+                            <div className="w-[20%] h-full bg-amber-500 rounded-full"></div>
                           </div>
-                          <span className="text-gray-500 font-medium">缺失</span>
+                          <span className="text-amber-600 font-medium">缺失</span>
                         </div>
                       </div>
                       <div className="flex items-center justify-between text-[11px]">
                         <span className="text-gray-600">养老规划</span>
                         <div className="flex items-center gap-1">
                           <div className="w-20 h-1.5 bg-gray-200 rounded-full overflow-hidden">
-                            <div className="w-[40%] h-full bg-gray-500 rounded-full"></div>
+                            <div className="w-[40%] h-full bg-amber-400 rounded-full"></div>
                           </div>
-                          <span className="text-gray-500 font-medium">不足</span>
+                          <span className="text-amber-500 font-medium">不足</span>
                         </div>
                       </div>
                     </div>
