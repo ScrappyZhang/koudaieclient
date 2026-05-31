@@ -11,6 +11,8 @@ import CustomerDetailPage from './CustomerDetailPage';
 import ScheduleCalendarPage from './ScheduleCalendarPage';
 import ScheduleEditPage from './ScheduleEditPage';
 import SharedCustomerListPage from './SharedCustomerListPage';
+import CustomerNotesPage from './CustomerNotesPage';
+import AddCustomerNotePage from './AddCustomerNotePage';
 import { customers } from './data';
 
 const tools = [
@@ -241,6 +243,7 @@ export default function App() {
   const [taskStatus, setTaskStatus] = useState<Record<string, string>>({});
   const [aiInitialMessage, setAiInitialMessage] = useState<string | undefined>(undefined);
   const [sharedCustomerDefaultTab, setSharedCustomerDefaultTab] = useState<'incoming' | 'outgoing'>('outgoing');
+  const [customerDetailInitialTab, setCustomerDetailInitialTab] = useState<string | undefined>(undefined);
   const [messages, setMessages] = useState<{role: 'user' | 'assistant', content: string, time: string}[]>([
     { role: 'assistant', content: '嘿！我是 AskBob，您的智能保险助手。有什么我可以帮您的吗？', time: '04-20 13:37' }
   ]);
@@ -372,7 +375,12 @@ export default function App() {
       setCurrentPage('customer-detail');
     }}
   />;
-  if (currentPage === 'customer-detail') return <CustomerDetailPage customer={selectedCustomer} onBack={() => setCurrentPage('home')} onSharedCustomerList={() => { setSharedCustomerDefaultTab('outgoing'); setCurrentPage('shared-customer-list'); }} />;
+  if (currentPage === 'customer-detail') return <CustomerDetailPage
+    customer={selectedCustomer}
+    onBack={() => { setCurrentPage('home'); setCustomerDetailInitialTab(undefined); }}
+    onSharedCustomerList={() => { setSharedCustomerDefaultTab('outgoing'); setCurrentPage('shared-customer-list'); }}
+    initialTab={customerDetailInitialTab}
+  />;
   if (currentPage === 'schedule-calendar') return <ScheduleCalendarPage
     onBack={() => setCurrentPage('home')}
     onCustomerDetail={() => {
@@ -436,6 +444,38 @@ export default function App() {
     }}
   />;
   if (currentPage === 'shared-customer-list') return <SharedCustomerListPage onBack={() => setCurrentPage('customer-list')} defaultTab={sharedCustomerDefaultTab} />;
+  if (currentPage === 'customer-notes') return <CustomerNotesPage
+    onBack={() => setCurrentPage('home')}
+    onAddNote={() => setCurrentPage('add-customer-note')}
+    onCustomerClick={(customerName) => {
+      const customer = customers.find(c => c.name === customerName);
+      if (customer) {
+        setSelectedCustomer(customer);
+      } else {
+        // 如果找不到客户，创建一个默认客户对象
+        setSelectedCustomer({
+          id: 100,
+          name: customerName,
+          avatar: customerName.charAt(0),
+          phone: '139****5678',
+          gender: 'M',
+          age: 36,
+          maritalStatus: '已婚',
+          birthday: '1990-03-01',
+          customerType: '寿险客户',
+          temperature: '高温',
+          value: 'A4',
+          vipLevel: '铂金',
+          serviceLevel: '康养会员',
+          remark: '',
+          familyMembers: []
+        });
+      }
+      setCustomerDetailInitialTab('时光轴');
+      setCurrentPage('customer-detail');
+    }}
+  />;
+  if (currentPage === 'add-customer-note') return <AddCustomerNotePage onBack={() => setCurrentPage('customer-notes')} onSave={() => { setCurrentPage('customer-notes'); }} />;
 
   // 新签传承协议页面
   if (currentPage === 'new-inheritance-agreement') {
@@ -2460,7 +2500,11 @@ export default function App() {
                     <div className="mt-5 pt-4 border-t border-gray-100">
                       <div className="flex items-center justify-around gap-2">
                         {tools.map((tool, idx) => (
-                          <div key={idx} className="flex items-center cursor-pointer group hover:text-blue-600 transition-colors whitespace-nowrap">
+                          <div key={idx} onClick={() => {
+                            if (tool.label === '客户笔记') {
+                              setCurrentPage('customer-notes');
+                            }
+                          }} className="flex items-center cursor-pointer group hover:text-blue-600 transition-colors whitespace-nowrap">
                             <tool.icon className="w-4 h-4 text-gray-800 mr-1.5" />
                             <span className="text-[12px] text-gray-600 font-medium">{tool.label}</span>
                           </div>

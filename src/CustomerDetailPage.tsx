@@ -2,8 +2,8 @@ import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { ChevronLeft, MoreHorizontal, Copy, Eye, EyeOff, Edit3, Plus, MapPin, Info, CheckCircle2, Shield, Calendar, Heart, Activity, FileText, Briefcase, Users, MessageSquare, ChevronDown, ChevronRight, Menu, X, Phone, Cake, UserPlus, ShieldCheck, Clock, Send, ExternalLink, Search, Sparkles, Plane, Share2, RotateCcw } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
-export default function CustomerDetailPage({ customer, onBack, onSharedCustomerList }: { customer: any, onBack: () => void, onSharedCustomerList?: () => void }) {
-  const [activeTab, setActiveTab] = useState('客户画像');
+export default function CustomerDetailPage({ customer, onBack, onSharedCustomerList, initialTab }: { customer: any, onBack: () => void, onSharedCustomerList?: () => void, initialTab?: string }) {
+  const [activeTab, setActiveTab] = useState(initialTab || '客户画像');
   const [showSensitive, setShowSensitive] = useState(false);
   const [showAllTabs, setShowAllTabs] = useState(false);
   const [temperature, setTemperature] = useState(customer?.temperature || '低温');
