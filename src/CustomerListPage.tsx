@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
-import { ChevronLeft, Search, MoreHorizontal, Filter, ChevronDown, Phone, Edit3, Plus, Cake, UserPlus, BookOpen, ListChecks, ArchiveRestore, UserSearch, Share2, X, ChevronRight, Info } from 'lucide-react';
+import { ChevronLeft, Search, MoreHorizontal, Filter, ChevronDown, Phone, Edit3, Plus, Cake, UserPlus, BookOpen, ListChecks, ArchiveRestore, UserSearch, Share2, X, ChevronRight, Info, Users } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import CustomerDetailPage from './CustomerDetailPage';
 import { customers } from './data';
@@ -46,7 +46,7 @@ interface FilterState {
   vehiclePriceRange?: string;
 }
 
-export default function CustomerListPage({ onBack, onSearch, onSharedCustomerList }: { onBack: () => void; onSearch?: () => void; onSharedCustomerList?: () => void }) {
+export default function CustomerListPage({ onBack, onSearch, onSharedCustomerList, onInheritanceCustomer }: { onBack: () => void; onSearch?: () => void; onSharedCustomerList?: () => void; onInheritanceCustomer?: () => void }) {
   const [activeTab, setActiveTab] = useState('客户列表');
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [selectedCustomerId, setSelectedCustomerId] = useState<number | null>(null);
@@ -304,6 +304,9 @@ export default function CustomerListPage({ onBack, onSearch, onSharedCustomerLis
                       setShowMenu(false);
                       if (option.label === '共享客户清单' && onSharedCustomerList) {
                         onSharedCustomerList();
+                      }
+                      if (option.label === '传承客户' && onInheritanceCustomer) {
+                        onInheritanceCustomer();
                       }
                     };
                     return (
@@ -1150,4 +1153,5 @@ const menuOptions = [
   { icon: ArchiveRestore, label: '找回已删客户' },
   { icon: UserSearch, label: '查询身故客户' },
   { icon: Share2, label: '共享客户清单' },
+  { icon: Users, label: '传承客户' },
 ];

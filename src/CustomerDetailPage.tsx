@@ -26,6 +26,20 @@ export default function CustomerDetailPage({ customer, onBack, onSharedCustomerL
   const [showInvalidPolicies, setShowInvalidPolicies] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [showShareSheet, setShowShareSheet] = useState(false);
+  const [showTransferSheet, setShowTransferSheet] = useState(false);
+  const [transferAgentId, setTransferAgentId] = useState('');
+  const [transferAgentName, setTransferAgentName] = useState('');
+  const [showTransferAgentDropdown, setShowTransferAgentDropdown] = useState(false);
+  const [transferStatus, setTransferStatus] = useState<'idle' | 'sent' | 'pending'>('idle'); // 传承状态
+  const [showWechatPrompt, setShowWechatPrompt] = useState(false); // 微信提示弹窗
+  // 已签署传承协议的代理人列表（根据客户判断是否有）
+  // 曹嘉玲等客户有签署传承协议的代理人，常弘等客户没有
+  const hasSignedInheritanceAgreement = customer?.name === '曹嘉玲' || customer?.name === '邓逵' || customer?.name === '张小明';
+  const transferAgents = hasSignedInheritanceAgreement ? [
+    { id: '100123', name: '李小华' },
+    { id: '100456', name: '陈小芳' },
+    { id: '100789', name: '赵美玲' },
+  ] : [];
   const [shareAgentId, setShareAgentId] = useState('');
   const [foundAgentName, setFoundAgentName] = useState('');
   const [foundAgentTenure, setFoundAgentTenure] = useState<number | null>(null); // 接收代理人司龄（月）
@@ -717,6 +731,16 @@ export default function CustomerDetailPage({ customer, onBack, onSharedCustomerL
                     >
                       <Share2 className="w-4 h-4 text-gray-500 mr-3" />
                       <span className="text-sm text-gray-700">共享客户</span>
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowMenu(false);
+                        setShowTransferSheet(true);
+                      }}
+                      className="w-full px-4 py-3 flex items-center hover:bg-gray-50 transition-colors"
+                    >
+                      <Users className="w-4 h-4 text-gray-500 mr-3" />
+                      <span className="text-sm text-gray-700">传承客户</span>
                     </button>
                   </div>
                 </motion.div>
@@ -2524,6 +2548,293 @@ export default function CustomerDetailPage({ customer, onBack, onSharedCustomerL
                       {shareType === 'inherit' ? '邀请客户确认传承' : '邀请客户确认共享'}
                     </button>
                   )}
+                </div>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
+
+        {/* 传承客户弹窗 */}
+        <AnimatePresence>
+          {showTransferSheet && (
+            <>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => { setShowTransferSheet(false); setTransferAgentId(''); setTransferAgentName(''); setTransferStatus('idle'); }}
+                className="fixed inset-0 bg-black/40 z-[80]"
+              />
+              <motion.div
+                initial={{ y: '100%' }}
+                animate={{ y: 0 }}
+                exit={{ y: '100%' }}
+                transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+                className="fixed bottom-0 w-full max-w-md bg-gray-50 rounded-t-[24px] z-[90] pb-safe overflow-hidden"
+              >
+                {/* Drag indicator */}
+                <div className="relative h-1.5 w-12 bg-gray-300 rounded-full mx-auto mt-3 mb-2" />
+
+                <div className="p-6 pt-1 max-h-[85vh] overflow-y-auto no-scrollbar">
+                  {/* Header */}
+                  <div className="flex justify-between items-start mb-5">
+                    <h3 className="text-[18px] font-bold text-gray-900">传承客户</h3>
+                    <button onClick={() => { setShowTransferSheet(false); setTransferAgentId(''); setTransferAgentName(''); setTransferStatus('idle'); }} className="p-1.5 text-gray-400 hover:text-gray-600 transition-colors">
+                      <X className="w-5 h-5" />
+                    </button>
+                  </div>
+
+                  {/* Customer Info Card */}
+                  <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 mb-5">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-12 h-12 rounded-full flex items-center justify-center text-white text-lg font-medium shadow-sm ${customer?.color || 'bg-blue-500'}`}>
+                        {customer?.isImage ? (
+                          <img src={customer.avatar} alt={customer.name} className="w-full h-full object-cover rounded-full" referrerPolicy="no-referrer" />
+                        ) : (
+                          customer?.avatar || customer?.name?.charAt(0) || '客'
+                        )}
+                      </div>
+                      <div>
+                        <p className="text-[16px] font-bold text-gray-900">{customer?.name || '未知客户'}</p>
+                        <p className="text-[13px] text-gray-500">{customer?.phone || ''}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 有签署传承协议的代理人 - 显示完整传承流程 */}
+                  {hasSignedInheritanceAgreement ? (
+                    <>
+                      {/* Agent Selection */}
+                      <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 mb-5">
+                        <label className="text-[14px] font-medium text-gray-700 mb-3 block">
+                          选择传承接收代理人
+                        </label>
+
+                        {/* 已签署传承协议的代理人下拉 */}
+                        <div className="relative">
+                          <button
+                            onClick={() => setShowTransferAgentDropdown(!showTransferAgentDropdown)}
+                            className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[14px] text-left flex items-center justify-between"
+                          >
+                            <span className={transferAgentId ? 'text-gray-800' : 'text-gray-400'}>
+                              {transferAgentId ? (
+                                <>
+                                  <span className="font-medium">{transferAgentName}</span>
+                                  <span className="text-gray-500 ml-2">工号 {transferAgentId}</span>
+                                </>
+                              ) : '请选择已签署传承协议的代理人'}
+                            </span>
+                            <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${showTransferAgentDropdown ? 'rotate-180' : ''}`} />
+                          </button>
+
+                          <AnimatePresence>
+                            {showTransferAgentDropdown && (
+                              <motion.div
+                                initial={{ opacity: 0, y: -5 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -5 }}
+                                className="absolute top-full left-0 right-0 mt-1 bg-white rounded-xl shadow-lg border border-gray-100 z-50 overflow-hidden"
+                              >
+                                <div className="divide-y divide-gray-50">
+                                  {transferAgents.map((agent) => (
+                                    <button
+                                      key={agent.id}
+                                      onClick={() => {
+                                        setTransferAgentId(agent.id);
+                                        setTransferAgentName(agent.name);
+                                        setShowTransferAgentDropdown(false);
+                                      }}
+                                      className={`w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors ${transferAgentId === agent.id ? 'bg-blue-50' : ''}`}
+                                    >
+                                      <span className={`text-[14px] font-medium ${transferAgentId === agent.id ? 'text-blue-600' : 'text-gray-800'}`}>{agent.name}</span>
+                                      <span className={`text-[12px] ml-2 ${transferAgentId === agent.id ? 'text-blue-500' : 'text-gray-500'}`}>工号 {agent.id}</span>
+                                    </button>
+                                  ))}
+                                </div>
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+                        </div>
+                      </div>
+
+                      {/* Rules Section */}
+                      <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 mb-6">
+                        <p className="text-[13px] text-gray-700 leading-relaxed mb-3">
+                          传承客户给已签署传承协议的代理人，传承后可获得传承奖励。
+                        </p>
+                        <div className="space-y-2.5">
+                          {[
+                            '传承客户给继承人时，需由客户授权同意；',
+                            '传承后，继承人可独立经营该客户，传承人可获得一定比例的传承奖励；',
+                            '继承人独立出单后，传承奖励将按照规则发放给传承人；',
+                            '传承后，客户可随时撤回授权；但继承人可通过自行手动创建此客户，后续继续进行经营、服务；',
+                          ].map((rule, i) => (
+                            <div key={i} className="flex items-start gap-2">
+                              <span className="text-[12px] font-bold text-gray-400 mt-0.5 shrink-0">{i + 1}.</span>
+                              <p className="text-[12px] text-gray-500 leading-relaxed">{rule}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Submit Button - 根据状态显示不同内容 */}
+                      {transferStatus === 'idle' ? (
+                        <button
+                          disabled={!transferAgentId}
+                          onClick={() => {
+                            if (transferAgentId) {
+                              setShowWechatPrompt(true);
+                            }
+                          }}
+                          className={`w-full py-3.5 rounded-2xl font-bold text-[15px] shadow-lg active:scale-[0.98] transition-all flex items-center justify-center gap-2 ${transferAgentId ? 'bg-amber-600 shadow-amber-600/20 hover:bg-amber-700 text-white' : 'bg-gray-200 text-gray-400 cursor-not-allowed'}`}
+                        >
+                          <Users className="w-5 h-5" />
+                          邀请客户确认
+                        </button>
+                      ) : (
+                        <div className="space-y-3">
+                          {/* 待客户同意状态 */}
+                          <div className="bg-orange-50 rounded-xl p-4 flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <div className="w-5 h-5 bg-orange-400 rounded-full flex items-center justify-center">
+                                <Clock className="w-3 h-3 text-white" />
+                              </div>
+                              <span className="text-[14px] font-medium text-orange-700">待客户同意</span>
+                            </div>
+                            <button
+                              onClick={() => {
+                                setTransferStatus('idle');
+                                setTransferAgentId('');
+                                setTransferAgentName('');
+                              }}
+                              className="text-[13px] text-gray-500 hover:text-gray-700 font-medium"
+                            >
+                              撤销传承
+                            </button>
+                          </div>
+                          <div className="bg-white rounded-xl p-3 text-center">
+                            <p className="text-[12px] text-gray-500">
+                              已向客户发送传承请求，等待客户确认同意
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    /* 没有签署传承协议 - 显示提示弹窗 */
+                    <>
+                      {/* 提示卡片 */}
+                      <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 mb-5">
+                        <div className="flex flex-col items-center text-center">
+                          <div className="w-16 h-16 bg-orange-50 rounded-full flex items-center justify-center mb-4">
+                            <FileText className="w-8 h-8 text-orange-400" />
+                          </div>
+                          <p className="text-[15px] text-gray-700 leading-relaxed mb-4">
+                            如要传承客户，应当先签署代理人间客户传承协议
+                          </p>
+                          <button
+                            onClick={() => {
+                              setShowTransferSheet(false);
+                              // 跳转到新签代理人间客户传承协议页面
+                            }}
+                            className="text-[14px] text-blue-600 font-medium hover:text-blue-700 underline underline-offset-2"
+                          >
+                            点击此处签署代理人间客户传承协议
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Rules Section */}
+                      <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
+                        <p className="text-[13px] text-gray-700 leading-relaxed mb-3">
+                          传承客户说明：
+                        </p>
+                        <div className="space-y-2.5">
+                          {[
+                            '传承代理人和继承代理人双方需先签署传承协议；',
+                            '传承客户给继承人时，需由客户授权同意；',
+                            '传承后，继承人可独立经营该客户，传承人可获得一定比例的传承奖励；',
+                          ].map((rule, i) => (
+                            <div key={i} className="flex items-start gap-2">
+                              <span className="text-[12px] font-bold text-gray-400 mt-0.5 shrink-0">{i + 1}.</span>
+                              <p className="text-[12px] text-gray-500 leading-relaxed">{rule}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
+
+        {/* 微信提示弹窗 */}
+        <AnimatePresence>
+          {showWechatPrompt && (
+            <>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setShowWechatPrompt(false)}
+                className="fixed inset-0 bg-black/40 z-[100]"
+              />
+              <motion.div
+                initial={{ y: '100%' }}
+                animate={{ y: 0 }}
+                exit={{ y: '100%' }}
+                transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+                className="fixed bottom-0 w-full max-w-md bg-white rounded-t-[24px] z-[110] overflow-hidden"
+              >
+                {/* Drag indicator */}
+                <div className="relative h-1.5 w-12 bg-gray-300 rounded-full mx-auto mt-3 mb-2" />
+
+                <div className="p-6 pt-1">
+                  {/* Header */}
+                  <div className="flex justify-between items-start mb-5">
+                    <h3 className="text-[18px] font-bold text-gray-900">发送传承请求</h3>
+                    <button onClick={() => setShowWechatPrompt(false)} className="p-1.5 text-gray-400 hover:text-gray-600 transition-colors">
+                      <X className="w-5 h-5" />
+                    </button>
+                  </div>
+
+                  {/* 内容 */}
+                  <div className="flex flex-col items-center text-center mb-6">
+                    <div className="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mb-4">
+                      <MessageSquare className="w-8 h-8 text-green-500" />
+                    </div>
+                    <p className="text-[14px] text-gray-700 leading-relaxed mb-2">
+                      正在唤起微信...
+                    </p>
+                    <p className="text-[13px] text-gray-500">
+                      向客户 <span className="font-medium text-gray-700">{customer?.name}</span> 发送传承服务升级消息
+                    </p>
+                  </div>
+
+                  {/* 接收代理人信息 */}
+                  <div className="bg-gray-50 rounded-xl p-4 mb-5">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[13px] text-gray-500">传承接收代理人</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[14px] font-medium text-gray-800">{transferAgentName}</span>
+                        <span className="text-[12px] text-gray-500">工号 {transferAgentId}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 确认按钮 */}
+                  <button
+                    onClick={() => {
+                      setShowWechatPrompt(false);
+                      setTransferStatus('sent');
+                    }}
+                    className="w-full py-3.5 rounded-2xl bg-green-500 text-white font-bold text-[15px] shadow-lg shadow-green-500/20 hover:bg-green-600 transition-colors flex items-center justify-center gap-2"
+                  >
+                    <Send className="w-5 h-5" />
+                    确认发送
+                  </button>
                 </div>
               </motion.div>
             </>

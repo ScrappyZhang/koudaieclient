@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Sparkles, UserPlus, NotebookPen, Tags, Activity, ChevronRight, BarChart3, Phone, Users, Calendar, FileText, ShieldCheck, Shield, ChevronLeft, ChevronDown, Home, Briefcase, User, Package, Settings, MapPin, Locate, Navigation, Clock, LayoutGrid, ListChecks, ArchiveRestore, UserSearch, Send, Bot, Menu, Search, Plus, Mic, Mail, Monitor, Share2, Globe, History, LogOut, Bell, Star, BookOpen, MessageCircle, Wallet, GraduationCap, ClipboardList, LifeBuoy, PlayCircle, Fingerprint, QrCode, Headphones, TrendingUp } from 'lucide-react';
+import { Sparkles, UserPlus, NotebookPen, Tags, Activity, ChevronRight, BarChart3, Phone, Users, Calendar, FileText, ShieldCheck, Shield, ChevronLeft, ChevronDown, Home, Briefcase, User, Package, Settings, MapPin, Locate, Navigation, Clock, LayoutGrid, ListChecks, ArchiveRestore, UserSearch, Send, Bot, Menu, Search, Plus, Mic, Mail, Monitor, Share2, Globe, History, LogOut, Bell, Star, BookOpen, MessageCircle, Wallet, GraduationCap, ClipboardList, LifeBuoy, PlayCircle, Fingerprint, QrCode, Headphones, TrendingUp, Filter, X, CheckCircle2, Check } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import CustomerListPage from './CustomerListPage';
 import CustomerSearchPage from './CustomerSearchPage';
@@ -24,6 +24,7 @@ const moreTools = [
   { icon: ClipboardList, label: '导入通讯录' },
   { icon: UserSearch, label: '查询身故客户' },
   { icon: Share2, label: '共享客户清单' },
+  { icon: Users, label: '传承客户' },
 ];
 
 const filters = ['全部', '寿险客户', '准客户', '用户'];
@@ -195,7 +196,7 @@ const aiScenarios = [
 ];
 
 export default function App() {
-  const [currentPage, setCurrentPage] = useState<'home' | 'more-dimensions' | 'customer-list' | 'customer-search' | 'unified-search' | 'agent-profile' | 'schedule' | 'chat' | 'ai-chat' | 'customer-detail' | 'schedule-calendar' | 'schedule-edit' | 'shared-customer-list'>('home');
+  const [currentPage, setCurrentPage] = useState<'home' | 'more-dimensions' | 'customer-list' | 'customer-search' | 'unified-search' | 'agent-profile' | 'schedule' | 'chat' | 'ai-chat' | 'customer-detail' | 'schedule-calendar' | 'schedule-edit' | 'shared-customer-list' | 'inheritance-customer' | 'new-inheritance-agreement' | 'heir-sign-agreement'>('home');
   const [selectedCustomer, setSelectedCustomer] = useState<any>(null);
   const [editingSchedule, setEditingSchedule] = useState<{ id: string; title: string; time: string; type: string } | null>(null);
   const [activeFilter, setActiveFilter] = useState('全部');
@@ -212,6 +213,27 @@ export default function App() {
   const [productTab, setProductTab] = useState('寿险');
   const [serviceTab, setServiceTab] = useState('服务');
   const [equityTab, setEquityTab] = useState('添平安');
+  const [inheritanceTab, setInheritanceTab] = useState('传承客户清单');
+  const [inheritanceAgreementFilter, setInheritanceAgreementFilter] = useState('');
+  const [inheritanceHeirFilter, setInheritanceHeirFilter] = useState('');
+  const [showStatusSheet, setShowStatusSheet] = useState(false);
+  const [showHeirSheet, setShowHeirSheet] = useState(false);
+  const [heirSearchQuery, setHeirSearchQuery] = useState('');
+  // 新签传承协议相关状态
+  const [newAgreementStep, setNewAgreementStep] = useState<'select-heir' | 'view-agreement' | 'sign' | 'complete'>('select-heir');
+  const [newHeirId, setNewHeirId] = useState('');
+  const [newHeirName, setNewHeirName] = useState('');
+  const [isSearchingNewHeir, setIsSearchingNewHeir] = useState(false);
+  const [agreementReadTime, setAgreementReadTime] = useState(5);
+  const [hasScrolledToBottom, setHasScrolledToBottom] = useState(false);
+  const [canSignAgreement, setCanSignAgreement] = useState(false);
+  const [signatureText, setSignatureText] = useState('');
+  // 继承人签署协议相关状态
+  const [heirSignStep, setHeirSignStep] = useState<'view' | 'sign' | 'complete'>('view');
+  const [heirSignReadTime, setHeirSignReadTime] = useState(5);
+  const [heirCanSign, setHeirCanSign] = useState(false);
+  const [heirSignatureText, setHeirSignatureText] = useState('');
+  const [selectedAgreement, setSelectedAgreement] = useState<any>(null);
   const [showProfileSheet, setShowProfileSheet] = useState(false);
   const [aiScenarioIndex, setAiScenarioIndex] = useState(0);
   const [showStrategySheet, setShowStrategySheet] = useState(false);
@@ -270,6 +292,23 @@ export default function App() {
     return () => clearInterval(interval);
   }, []);
 
+  // 继承人签署页面倒计时
+  useEffect(() => {
+    if (currentPage === 'heir-sign-agreement' && heirSignStep === 'view' && !heirCanSign && heirSignReadTime > 0) {
+      const timer = setInterval(() => {
+        setHeirSignReadTime((prev) => {
+          if (prev <= 1) {
+            clearInterval(timer);
+            setHeirCanSign(true);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+      return () => clearInterval(timer);
+    }
+  }, [currentPage, heirSignStep, heirCanSign, heirSignReadTime]);
+
   const currentData = gridData[activeFilter];
   const handlePrevMonth = () => setMetricDate(prev => new Date(prev.getFullYear(), prev.getMonth() - 1));
   const handleNextMonth = () => setMetricDate(prev => new Date(prev.getFullYear(), prev.getMonth() + 1));
@@ -295,7 +334,7 @@ export default function App() {
   const metrics = getMetrics();
 
   if (currentPage === 'more-dimensions') return <MoreDimensionsPage onBack={() => setCurrentPage('home')} />;
-  if (currentPage === 'customer-list') return <CustomerListPage onBack={() => setCurrentPage('home')} onSearch={() => setCurrentPage('customer-search')} onSharedCustomerList={() => { setSharedCustomerDefaultTab('outgoing'); setCurrentPage('shared-customer-list'); }} />;
+  if (currentPage === 'customer-list') return <CustomerListPage onBack={() => setCurrentPage('home')} onSearch={() => setCurrentPage('customer-search')} onSharedCustomerList={() => { setSharedCustomerDefaultTab('outgoing'); setCurrentPage('shared-customer-list'); }} onInheritanceCustomer={() => setCurrentPage('inheritance-customer')} />;
   if (currentPage === 'customer-search') return <CustomerSearchPage onBack={() => setCurrentPage('home')} />;
   if (currentPage === 'unified-search') return <UnifiedSearchPage onBack={() => setCurrentPage('home')} />;
   if (currentPage === 'agent-profile') return <AgentProfilePage onBack={() => setCurrentPage('home')} />;
@@ -397,6 +436,1053 @@ export default function App() {
     }}
   />;
   if (currentPage === 'shared-customer-list') return <SharedCustomerListPage onBack={() => setCurrentPage('customer-list')} defaultTab={sharedCustomerDefaultTab} />;
+
+  // 新签传承协议页面
+  if (currentPage === 'new-inheritance-agreement') {
+    // 步骤1：选择继承代理人
+    if (newAgreementStep === 'select-heir') {
+      return (
+        <div className="flex flex-col h-full bg-gray-50">
+          <div className="sticky top-0 z-10 bg-white px-4 py-4 flex items-center border-b border-gray-100">
+            <button onClick={() => setCurrentPage('inheritance-customer')} className="p-2 -ml-2 hover:bg-gray-100 rounded-lg transition-colors">
+              <ChevronLeft className="w-5 h-5 text-gray-600" />
+            </button>
+            <h1 className="text-lg font-bold text-gray-900 ml-2">新签传承协议</h1>
+          </div>
+
+          <div className="flex-1 overflow-y-auto px-4 py-4">
+            {/* 进度指示 */}
+            <div className="flex items-center justify-center gap-2 mb-6">
+              <div className="flex items-center gap-1">
+                <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs font-bold">1</div>
+                <span className="text-sm text-blue-600 font-medium">选择继承人</span>
+              </div>
+              <div className="w-8 h-0.5 bg-gray-200" />
+              <div className="flex items-center gap-1">
+                <div className="w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center text-gray-400 text-xs font-bold">2</div>
+                <span className="text-sm text-gray-400">签署协议</span>
+              </div>
+            </div>
+
+            {/* 选择继承代理人卡片 */}
+            <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 mb-4">
+              <label className="text-[14px] font-medium text-gray-700 mb-3 block">
+                继承代理人工号
+              </label>
+              <div className="relative">
+                <input
+                  type="text"
+                  value={newHeirId}
+                  onChange={(e) => setNewHeirId(e.target.value)}
+                  placeholder="请填写继承代理人工号"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-[14px] outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10"
+                />
+                {isSearchingNewHeir && (
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                    <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+                  </div>
+                )}
+              </div>
+              {/* 校验按钮 */}
+              <button
+                onClick={() => {
+                  if (newHeirId) {
+                    setIsSearchingNewHeir(true);
+                    setTimeout(() => {
+                      // 模拟校验成功
+                      setNewHeirName('李小华');
+                      setIsSearchingNewHeir(false);
+                    }, 500);
+                  }
+                }}
+                disabled={!newHeirId || isSearchingNewHeir}
+                className={`w-full mt-3 py-2.5 rounded-xl text-[14px] font-medium transition-colors ${newHeirId && !isSearchingNewHeir ? 'bg-blue-500 text-white hover:bg-blue-600' : 'bg-gray-200 text-gray-400 cursor-not-allowed'}`}
+              >
+                校验代理人
+              </button>
+              {/* 校验结果 */}
+              {newHeirName && (
+                <div className="mt-3 flex items-center gap-2 bg-green-50 px-3 py-2 rounded-lg border border-green-100">
+                  <CheckCircle2 className="w-4 h-4 text-green-600" />
+                  <span className="text-[13px] text-green-700 font-medium">姓名：<span className="font-bold">{newHeirName}</span></span>
+                </div>
+              )}
+            </div>
+
+            {/* 传承协议说明 */}
+            <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
+              <h3 className="text-[14px] font-bold text-gray-800 mb-3">传承协议说明</h3>
+              <div className="space-y-2 text-[13px] text-gray-600">
+                <p>传承代理人和继承代理人双方签署协议后，协议生效。</p>
+                <p>协议生效后，传承人可将客户传承给继承人经营。</p>
+                <p>继承人独立出单后，传承人可获得传承奖励。</p>
+              </div>
+            </div>
+
+            {/* 下一步按钮 */}
+            <button
+              onClick={() => {
+                if (newHeirName) {
+                  setNewAgreementStep('view-agreement');
+                  // 启动倒计时
+                  const timer = setInterval(() => {
+                    setAgreementReadTime(prev => {
+                      if (prev <= 1) {
+                        clearInterval(timer);
+                        setCanSignAgreement(true);
+                        return 0;
+                      }
+                      return prev - 1;
+                    });
+                  }, 1000);
+                }
+              }}
+              disabled={!newHeirName}
+              className={`w-full mt-4 py-3.5 rounded-2xl font-bold text-[15px] shadow-lg transition-all ${newHeirName ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-gray-200 text-gray-400 cursor-not-allowed'}`}
+            >
+              下一步：浏览协议
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    // 步骤2：浏览协议
+    if (newAgreementStep === 'view-agreement') {
+      return (
+        <div className="flex flex-col h-full bg-gray-50">
+          <div className="sticky top-0 z-10 bg-white px-4 py-4 flex items-center border-b border-gray-100">
+            <button onClick={() => setNewAgreementStep('select-heir')} className="p-2 -ml-2 hover:bg-gray-100 rounded-lg transition-colors">
+              <ChevronLeft className="w-5 h-5 text-gray-600" />
+            </button>
+            <h1 className="text-lg font-bold text-gray-900 ml-2">传承协议</h1>
+          </div>
+
+          <div className="flex-1 overflow-y-auto">
+            {/* 进度指示 */}
+            <div className="px-4 py-4">
+              <div className="flex items-center justify-center gap-2 mb-4">
+                <div className="flex items-center gap-1">
+                  <div className="w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center text-gray-400 text-xs font-bold">1</div>
+                  <span className="text-sm text-gray-400">选择继承人</span>
+                </div>
+                <div className="w-8 h-0.5 bg-blue-500" />
+                <div className="flex items-center gap-1">
+                  <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs font-bold">2</div>
+                  <span className="text-sm text-blue-600 font-medium">签署协议</span>
+                </div>
+              </div>
+            </div>
+
+            {/* 协议内容 */}
+            <div
+              className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 mx-4 mb-4 max-h-[400px] overflow-y-auto"
+              onScroll={(e) => {
+                const element = e.target as HTMLDivElement;
+                if (element.scrollHeight - element.scrollTop <= element.clientHeight + 10) {
+                  setHasScrolledToBottom(true);
+                  setCanSignAgreement(true);
+                }
+              }}
+            >
+              <h2 className="text-[16px] font-bold text-gray-900 mb-4 text-center">代理人间客户传承协议</h2>
+
+              <div className="text-[13px] text-gray-700 leading-relaxed space-y-3">
+                <p><strong>甲方（传承代理人）：</strong>张朝扬（工号 1050134060）</p>
+                <p><strong>乙方（继承代理人）：</strong>{newHeirName}（工号 {newHeirId})</p>
+                <p><strong>丙方：</strong>平安人寿有限责任公司</p>
+
+                <p className="mt-4">鉴于甲方自愿将其经营的客户资源传承给乙方，甲乙丙三方经协商一致，达成如下协议：</p>
+
+                <p><strong>第一条 传承范围</strong></p>
+                <p>甲方同意将其名下的客户资源（以下简称"传承客户")传承给乙方进行后续经营和服务。</p>
+
+                <p><strong>第二条 传承条件</strong></p>
+                <p>1. 传承客户给继承人时，需由客户授权同意；</p>
+                <p>2. 传承后，继承人可独立经营该客户，传承人可获得一定比例的传承奖励；</p>
+                <p>3. 继承人独立出单后，传承奖励将按照规则发放给传承人。</p>
+
+                <p><strong>第三条 三方权利与义务</strong></p>
+                <p>1. 甲方有权获得传承奖励，乙方有义务配合甲方完成传承流程；</p>
+                <p>2. 乙方有权独立经营传承客户，但应妥善维护客户关系；</p>
+                <p>3. 丙方负责监督协议执行，并按规则发放传承奖励；</p>
+                <p>4. 客户可随时撤回传承授权，三方应尊重客户意愿。</p>
+
+                <p><strong>第四条 协议生效</strong></p>
+                <p>本协议自三方签署之日起生效，三方应严格遵守协议约定。</p>
+
+                <p className="mt-6"><strong>甲方签字：</strong>____________________</p>
+                <p className="mt-2"><strong>乙方签字：</strong>____________________</p>
+                <p className="mt-2"><strong>丙方盖章：</strong>____________________</p>
+                <p className="mt-2"><strong>签署日期：</strong>{new Date().toISOString().split('T')[0]}</p>
+              </div>
+            </div>
+
+            {/* 提示 */}
+            <div className="px-4 mb-4">
+              {!canSignAgreement ? (
+                <div className="bg-orange-50 rounded-xl p-3 flex items-center gap-2">
+                  <Clock className="w-4 h-4 text-orange-500" />
+                  <span className="text-[13px] text-orange-600">
+                    请先阅读传承协议（{agreementReadTime > 0 ? `${agreementReadTime}秒后可签署` : '请滑动到底部'}）
+                  </span>
+                </div>
+              ) : (
+                <div className="bg-green-50 rounded-xl p-3 flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-green-500" />
+                  <span className="text-[13px] text-green-600">已阅读完毕，可以签署</span>
+                </div>
+              )}
+            </div>
+
+            {/* 签署按钮 */}
+            <div className="px-4 pb-4">
+              <button
+                onClick={() => {
+                  if (canSignAgreement) {
+                    setNewAgreementStep('sign');
+                  }
+                }}
+                disabled={!canSignAgreement}
+                className={`w-full py-3.5 rounded-2xl font-bold text-[15px] shadow-lg transition-all ${canSignAgreement ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-gray-200 text-gray-400 cursor-not-allowed'}`}
+              >
+                {canSignAgreement ? '同意传承协议并点击签署' : '请先阅读传承协议'}
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // 步骤3：签名
+    if (newAgreementStep === 'sign') {
+      return (
+        <div className="flex flex-col h-full bg-gray-50">
+          <div className="sticky top-0 z-10 bg-white px-4 py-4 flex items-center border-b border-gray-100">
+            <button onClick={() => setNewAgreementStep('view-agreement')} className="p-2 -ml-2 hover:bg-gray-100 rounded-lg transition-colors">
+              <ChevronLeft className="w-5 h-5 text-gray-600" />
+            </button>
+            <h1 className="text-lg font-bold text-gray-900 ml-2">签署协议</h1>
+          </div>
+
+          <div className="flex-1 overflow-y-auto px-4 py-4">
+            {/* 进度指示 */}
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <div className="flex items-center gap-1">
+                <div className="w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center text-gray-400 text-xs font-bold">1</div>
+                <span className="text-sm text-gray-400">选择继承人</span>
+              </div>
+              <div className="w-8 h-0.5 bg-blue-500" />
+              <div className="flex items-center gap-1">
+                <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs font-bold">2</div>
+                <span className="text-sm text-blue-600 font-medium">签署协议</span>
+              </div>
+            </div>
+
+            {/* 签名区域 */}
+            <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 mb-4">
+              <label className="text-[14px] font-medium text-gray-700 mb-3 block">
+                请在下方签署您的姓名
+              </label>
+              <div className="bg-gray-50 rounded-xl border border-gray-200 p-4 min-h-[150px] relative">
+                <div className="absolute inset-0 flex items-center justify-center text-gray-300 text-sm" style={{ opacity: signatureText ? 0 : 0.5 }}>
+                  点击此处开始签名
+                </div>
+                <input
+                  type="text"
+                  value={signatureText}
+                  onChange={(e) => setSignatureText(e.target.value)}
+                  placeholder="张朝扬"
+                  className="w-full text-center text-[24px] font-medium text-gray-800 bg-transparent border-none outline-none"
+                  style={{ fontFamily: 'cursive' }}
+                />
+              </div>
+            </div>
+
+            {/* 签名提示 */}
+            <div className="bg-blue-50 rounded-xl p-3 mb-4">
+              <p className="text-[13px] text-blue-600">
+                请使用您的真实姓名进行签名，签名后将无法修改
+              </p>
+            </div>
+
+            {/* 确认签署按钮 - 不限制，可直接点击 */}
+            <button
+              onClick={() => {
+                setNewAgreementStep('complete');
+              }}
+              className="w-full py-3.5 rounded-2xl font-bold text-[15px] shadow-lg bg-blue-600 text-white hover:bg-blue-700 transition-all"
+            >
+              确认签署
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    // 步骤4：完成 - 查看签署协议详情页面
+    if (newAgreementStep === 'complete') {
+      return (
+        <div className="flex flex-col h-full bg-gray-50">
+          <div className="sticky top-0 z-10 bg-white px-4 py-4 flex items-center border-b border-gray-100">
+            <button onClick={() => { setCurrentPage('inheritance-customer'); setInheritanceTab('传承协议签署'); }} className="p-2 -ml-2 hover:bg-gray-100 rounded-lg transition-colors">
+              <ChevronLeft className="w-5 h-5 text-gray-600" />
+            </button>
+            <h1 className="text-lg font-bold text-gray-900 ml-2">传承协议详情</h1>
+          </div>
+
+          <div className="flex-1 overflow-y-auto px-4 py-4">
+            {/* 协议签署状态 */}
+            <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 mb-4">
+              <h3 className="text-[14px] font-bold text-gray-800 mb-3">协议签署状态</h3>
+              <div className="space-y-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                    <CheckCircle2 className="w-4 h-4 text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-[14px] font-medium text-gray-800">传承人已签署</p>
+                    <p className="text-[12px] text-gray-500">张朝扬 | 2026-03-15 14:30</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
+                    <span className="text-[12px] text-gray-500 font-bold">2</span>
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-[14px] text-gray-400">待继承人签署</p>
+                    <p className="text-[12px] text-gray-400">{newHeirName} | 待签署</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
+                    <span className="text-[12px] text-gray-500 font-bold">3</span>
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-[14px] text-gray-400">待公司用印</p>
+                    <p className="text-[12px] text-gray-400">平安人寿有限责任公司</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* 协议基本信息 */}
+            <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 mb-4">
+              <h3 className="text-[14px] font-bold text-gray-800 mb-3">协议信息</h3>
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-[13px] text-gray-500">协议编号</span>
+                  <span className="text-[13px] font-medium text-gray-800">INH-20260315001</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-[13px] text-gray-500">传承代理人</span>
+                  <span className="text-[13px] font-medium text-gray-800">张朝扬（工号 1050134060）</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-[13px] text-gray-500">继承代理人</span>
+                  <span className="text-[13px] font-medium text-gray-800">{newHeirName}（工号 {newHeirId})</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-[13px] text-gray-500">签署时间</span>
+                  <span className="text-[13px] font-medium text-gray-800">2026-03-15 14:30</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-[13px] text-gray-500">当前状态</span>
+                  <span className="text-[12px] px-2 py-0.5 rounded-full bg-orange-50 text-orange-600 font-medium">待继承人签署</span>
+                </div>
+              </div>
+            </div>
+
+            {/* 协议文件浏览 */}
+            <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 mb-4">
+              <h3 className="text-[14px] font-bold text-gray-800 mb-3">协议文件</h3>
+              <div className="bg-gray-50 rounded-xl p-4 max-h-[300px] overflow-y-auto">
+                <div className="text-[13px] text-gray-700 leading-relaxed space-y-3">
+                  <p className="text-center font-bold">代理人间客户传承协议</p>
+                  <p><strong>甲方（传承代理人）：</strong>张朝扬（工号 1050134060）</p>
+                  <p><strong>乙方（继承代理人）：</strong>{newHeirName}（工号 {newHeirId})</p>
+                  <p><strong>丙方：</strong>平安人寿有限责任公司</p>
+                  <p className="mt-3">鉴于甲方自愿将其经营的客户资源传承给乙方，甲乙丙三方经协商一致，达成如下协议：</p>
+                  <p><strong>第一条 传承范围</strong></p>
+                  <p>甲方同意将其名下的客户资源传承给乙方进行后续经营和服务。</p>
+                  <p><strong>第二条 传承条件</strong></p>
+                  <p>1. 传承客户给继承人时，需由客户授权同意；</p>
+                  <p>2. 传承后，继承人可独立经营该客户，传承人可获得传承奖励；</p>
+                  <p>3. 继承人独立出单后，传承奖励将按照规则发放。</p>
+                  <p><strong>第三条 三方权利与义务</strong></p>
+                  <p>1. 甲方有权获得传承奖励；</p>
+                  <p>2. 乙方有权独立经营传承客户；</p>
+                  <p>3. 丙方负责监督协议执行并发放奖励。</p>
+                  <p><strong>第四条 协议生效</strong></p>
+                  <p>本协议自三方签署之日起生效。</p>
+                  <p className="mt-4"><strong>甲方签字：</strong>张朝扬</p>
+                  <p><strong>乙方签字：</strong>（待签署）</p>
+                  <p><strong>丙方盖章：</strong>（待用印）</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+  }
+
+  if (currentPage === 'heir-sign-agreement' && selectedAgreement) {
+    if (heirSignStep === 'view') {
+      return (
+        <div className="flex flex-col h-full bg-gray-50">
+          <div className="sticky top-0 z-10 bg-white px-4 py-4 flex items-center border-b border-gray-100">
+            <button onClick={() => setCurrentPage('inheritance-customer')} className="p-2 -ml-2 hover:bg-gray-100 rounded-lg transition-colors">
+              <ChevronLeft className="w-5 h-5 text-gray-600" />
+            </button>
+            <h1 className="text-lg font-bold text-gray-900 ml-2">传承协议签署</h1>
+          </div>
+
+          <div className="flex-1 overflow-y-auto px-4 py-4">
+            {/* 签署进度 */}
+            <div className="bg-white rounded-2xl shadow-sm p-4 mb-4">
+              <h3 className="text-sm font-medium text-gray-700 mb-3">签署进度</h3>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+                    <Check className="w-3 h-3 text-white" />
+                  </div>
+                  <span className="text-xs text-gray-600">传承人已签署</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center">
+                    <span className="text-xs text-white font-medium">2</span>
+                  </div>
+                  <span className="text-xs text-orange-600 font-medium">待继承人签署</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 bg-gray-300 rounded-full flex items-center justify-center">
+                    <span className="text-xs text-white font-medium">3</span>
+                  </div>
+                  <span className="text-xs text-gray-500">待公司用印</span>
+                </div>
+              </div>
+            </div>
+
+            {/* 协议信息 */}
+            <div className="bg-white rounded-2xl shadow-sm p-4 mb-4">
+              <h3 className="text-sm font-medium text-gray-700 mb-3">协议信息</h3>
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-gray-500">传承人</span>
+                  <span className="text-gray-800">{selectedAgreement.inheritor}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-500">继承人</span>
+                  <span className="text-gray-800">{selectedAgreement.heir}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-500">传承代理人</span>
+                  <span className="text-gray-800">张朝扬</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-500">继承代理人（乙方）</span>
+                  <span className="text-gray-800">{selectedAgreement.heir}（工号：{selectedAgreement.heirId}）</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-500">签署时间</span>
+                  <span className="text-gray-800">{selectedAgreement.time}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* 协议文件浏览 */}
+            <div className="bg-white rounded-2xl shadow-sm p-4 mb-4">
+              <h3 className="text-sm font-medium text-gray-700 mb-3">协议文件浏览</h3>
+              <div
+                className="border border-gray-200 rounded-lg p-4 h-64 overflow-y-auto text-sm text-gray-600 leading-relaxed"
+                onScroll={(e) => {
+                  const target = e.target as HTMLDivElement;
+                  const isAtBottom = target.scrollHeight - target.scrollTop <= target.clientHeight + 10;
+                  if (isAtBottom && heirSignReadTime > 0) {
+                    setHeirCanSign(true);
+                    setHeirSignReadTime(0);
+                  }
+                }}
+              >
+                <p className="text-center font-bold mb-4">代理人间客户传承协议</p>
+                <p className="mb-2">甲方（传承代理人）：张朝扬</p>
+                <p className="mb-2">乙方（继承代理人）：{selectedAgreement.heir}（工号：{selectedAgreement.heirId}）</p>
+                <p className="mb-2">丙方：平安人寿有限责任公司</p>
+                <p className="mb-4">鉴于甲方拟将其名下客户资源传承给乙方，经三方友好协商，达成如下协议：</p>
+                <p className="mb-2"><strong>第一条 传承客户范围</strong></p>
+                <p className="mb-2">甲方同意将其名下的客户资源传承给乙方，具体客户名单见附件。</p>
+                <p className="mb-4">传承客户包括但不限于：客户姓名、联系方式、保单信息等。</p>
+                <p className="mb-2"><strong>第二条 传承条件</strong></p>
+                <p className="mb-2">1. 客户资源传承应获得客户本人书面同意；</p>
+                <p className="mb-2">2. 乙方应具备相应的从业资质和能力；</p>
+                <p className="mb-4">3. 传承过程应符合公司相关规定及监管要求。</p>
+                <p className="mb-2"><strong>第三条 权利义务</strong></p>
+                <p className="mb-2">1. 甲方应如实向乙方介绍客户情况；</p>
+                <p className="mb-2">2. 乙方应妥善保管客户信息，保护客户隐私；</p>
+                <p className="mb-4">3. 丙方负责监督传承过程，确保合规性。</p>
+                <p className="mb-2"><strong>第四条 协议生效</strong></p>
+                <p className="mb-4">本协议自三方签署之日起生效。</p>
+                <p className="mt-4"><strong>甲方签字：</strong>张朝扬（已签署）</p>
+                <p><strong>乙方签字：</strong>（待签署）</p>
+                <p><strong>丙方盖章：</strong>（待用印）</p>
+              </div>
+              {heirSignReadTime > 0 && (
+                <div className="mt-3 flex items-center justify-center gap-2 text-sm text-orange-600">
+                  <Clock className="w-4 h-4" />
+                  <span>请阅读协议内容（{heirSignReadTime}秒）或滚动到底部</span>
+                </div>
+              )}
+              {heirCanSign && (
+                <div className="mt-3 text-center text-sm text-green-600">
+                  已阅读完毕，可以开始签署
+                </div>
+              )}
+            </div>
+
+            {/* 同意签署按钮 */}
+            <button
+              onClick={() => {
+                if (heirCanSign) {
+                  setHeirSignStep('sign');
+                }
+              }}
+              disabled={!heirCanSign}
+              className={`w-full py-3 rounded-xl font-medium ${
+                heirCanSign
+                  ? 'bg-blue-500 text-white'
+                  : 'bg-gray-200 text-gray-500'
+              }`}
+            >
+              {heirCanSign ? '同意并开始签署' : `等待阅读完成（${heirSignReadTime}秒）`}
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    if (heirSignStep === 'sign') {
+      return (
+        <div className="flex flex-col h-full bg-gray-50">
+          <div className="sticky top-0 z-10 bg-white px-4 py-4 flex items-center border-b border-gray-100">
+            <button onClick={() => setHeirSignStep('view')} className="p-2 -ml-2 hover:bg-gray-100 rounded-lg transition-colors">
+              <ChevronLeft className="w-5 h-5 text-gray-600" />
+            </button>
+            <h1 className="text-lg font-bold text-gray-900 ml-2">签署协议</h1>
+          </div>
+
+          <div className="flex-1 overflow-y-auto px-4 py-4">
+            <div className="bg-white rounded-2xl shadow-sm p-4 mb-4">
+              <p className="text-sm text-gray-600 mb-4">
+                请确认以下信息无误后，点击确认签署完成：
+              </p>
+              <div className="space-y-2 text-sm mb-6">
+                <div className="flex justify-between">
+                  <span className="text-gray-500">传承人</span>
+                  <span className="text-gray-800">{selectedAgreement.inheritor}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-500">继承人</span>
+                  <span className="text-gray-800">{selectedAgreement.heir}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-500">继承代理人（乙方）</span>
+                  <span className="text-gray-800">{selectedAgreement.heir}</span>
+                </div>
+              </div>
+
+              <div className="border border-dashed border-gray-300 rounded-lg p-6 mb-4">
+                <p className="text-center text-gray-400 text-sm">签署区域</p>
+                <p className="text-center text-gray-800 font-medium mt-2">乙方：{selectedAgreement.heir}</p>
+                <p className="text-center text-xs text-gray-500 mt-1">已模拟签署完成</p>
+              </div>
+            </div>
+
+            <button
+              onClick={() => setHeirSignStep('complete')}
+              className="w-full py-3 bg-blue-500 text-white rounded-xl font-medium"
+            >
+              确认签署完成
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    if (heirSignStep === 'complete') {
+      return (
+        <div className="flex flex-col h-full bg-gray-50">
+          <div className="sticky top-0 z-10 bg-white px-4 py-4 flex items-center border-b border-gray-100">
+            <button onClick={() => setCurrentPage('inheritance-customer')} className="p-2 -ml-2 hover:bg-gray-100 rounded-lg transition-colors">
+              <ChevronLeft className="w-5 h-5 text-gray-600" />
+            </button>
+            <h1 className="text-lg font-bold text-gray-900 ml-2">签署完成</h1>
+          </div>
+
+          <div className="flex-1 overflow-y-auto px-4 py-4">
+            <div className="bg-white rounded-2xl shadow-sm p-6 mb-4 text-center">
+              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Check className="w-8 h-8 text-green-500" />
+              </div>
+              <h2 className="text-lg font-bold text-gray-800 mb-2">签署成功</h2>
+              <p className="text-sm text-gray-500">协议已成功签署，等待公司用印</p>
+            </div>
+
+            {/* 签署进度 */}
+            <div className="bg-white rounded-2xl shadow-sm p-4 mb-4">
+              <h3 className="text-sm font-medium text-gray-700 mb-3">签署进度</h3>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+                    <Check className="w-3 h-3 text-white" />
+                  </div>
+                  <span className="text-xs text-gray-600">传承人已签署</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+                    <Check className="w-3 h-3 text-white" />
+                  </div>
+                  <span className="text-xs text-gray-600">继承人已签署</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                    <span className="text-xs text-white font-medium">3</span>
+                  </div>
+                  <span className="text-xs text-blue-600 font-medium">待公司用印</span>
+                </div>
+              </div>
+            </div>
+
+            {/* 协议信息 */}
+            <div className="bg-white rounded-2xl shadow-sm p-4 mb-4">
+              <h3 className="text-sm font-medium text-gray-700 mb-3">协议信息</h3>
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-gray-500">传承人</span>
+                  <span className="text-gray-800">{selectedAgreement.inheritor}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-500">继承人</span>
+                  <span className="text-gray-800">{selectedAgreement.heir}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-500">签署状态</span>
+                  <span className="text-blue-600 font-medium">待公司用印</span>
+                </div>
+              </div>
+            </div>
+
+            <button
+              onClick={() => setCurrentPage('inheritance-customer')}
+              className="w-full py-3 bg-blue-500 text-white rounded-xl font-medium"
+            >
+              返回传承协议列表
+            </button>
+          </div>
+        </div>
+      );
+    }
+  }
+
+  if (currentPage === 'inheritance-customer') return (
+    <div className="flex flex-col h-full bg-gray-50">
+      <div className="sticky top-0 z-10 bg-white px-4 py-4 flex items-center border-b border-gray-100">
+        <button onClick={() => setCurrentPage('home')} className="p-2 -ml-2 hover:bg-gray-100 rounded-lg transition-colors">
+          <ChevronLeft className="w-5 h-5 text-gray-600" />
+        </button>
+        <h1 className="text-lg font-bold text-gray-900 ml-2">传承客户</h1>
+      </div>
+
+      {/* Tab切换 */}
+      <div className="bg-white px-4 pt-3 pb-2 border-b border-gray-100">
+        <div className="flex">
+          <button
+            onClick={() => setInheritanceTab('传承客户清单')}
+            className={`text-[15px] mr-6 pb-2 relative ${inheritanceTab === '传承客户清单' ? 'font-bold text-gray-900' : 'font-medium text-gray-500'}`}
+          >
+            传承客户清单
+            {inheritanceTab === '传承客户清单' && <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-6 h-0.5 bg-blue-600 rounded-full"></div>}
+          </button>
+          <button
+            onClick={() => setInheritanceTab('传承协议签署')}
+            className={`text-[15px] pb-2 relative ${inheritanceTab === '传承协议签署' ? 'font-bold text-gray-900' : 'font-medium text-gray-500'}`}
+          >
+            传承协议签署
+            {inheritanceTab === '传承协议签署' && <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-6 h-0.5 bg-blue-600 rounded-full"></div>}
+          </button>
+        </div>
+      </div>
+
+      {/* 传承协议签署内容 */}
+      {inheritanceTab === '传承协议签署' && (
+        <div className="flex-1 overflow-y-auto px-4 py-4">
+          {/* 筛选区域 */}
+          <div className="flex items-center gap-3 mb-4">
+            {/* 签署状态筛选 */}
+            <button
+              onClick={() => setShowStatusSheet(true)}
+              className="flex items-center gap-1 px-3 py-2 bg-white rounded-lg border border-gray-200 text-sm text-gray-600 min-w-[100px]"
+            >
+              <span>{inheritanceAgreementFilter || '签署状态'}</span>
+              <ChevronDown className="w-4 h-4" />
+            </button>
+
+            {/* 继承代理人筛选 */}
+            <button
+              onClick={() => setShowHeirSheet(true)}
+              className="flex items-center gap-1 px-3 py-2 bg-white rounded-lg border border-gray-200 text-sm text-gray-600 min-w-[100px]"
+            >
+              <span>{inheritanceHeirFilter || '继承代理人'}</span>
+              <ChevronDown className="w-4 h-4" />
+            </button>
+
+            {/* 新签传承协议链接 */}
+            <button
+              onClick={() => {
+                setCurrentPage('new-inheritance-agreement');
+                setNewAgreementStep('select-heir');
+                setNewHeirId('');
+                setNewHeirName('');
+                setAgreementReadTime(5);
+                setHasScrolledToBottom(false);
+                setCanSignAgreement(false);
+                setSignatureText('');
+              }}
+              className="flex items-center gap-1 text-blue-500 text-sm font-medium ml-auto"
+            >
+              <Plus className="w-4 h-4" />
+              新签传承协议
+            </button>
+          </div>
+
+          {/* 协议列表 */}
+          <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+            <div className="divide-y divide-gray-50">
+              {[
+                { id: 1, inheritor: '张小明', heir: '李小华', heirId: '100123', time: '2026-03-15', status: '待继承人签署' },
+                { id: 2, inheritor: '王大明', heir: '陈小芳', heirId: '100456', time: '2026-03-10', status: '待继承人签署' },
+                { id: 3, inheritor: '刘强', heir: '赵美玲', heirId: '100789', time: '2026-02-28', status: '待公司用印' },
+                { id: 4, inheritor: '周伟', heir: '孙丽', heirId: '101012', time: '2026-02-20', status: '待公司用印' },
+                { id: 5, inheritor: '李明', heir: '张芳', heirId: '101345', time: '2025-12-08', status: '签署完成' },
+                { id: 6, inheritor: '赵刚', heir: '王红', heirId: '101678', time: '2025-11-15', status: '签署完成' },
+              ]
+                .filter(a => (inheritanceAgreementFilter === '' || a.status === inheritanceAgreementFilter) && (inheritanceHeirFilter === '' || a.heir === inheritanceHeirFilter))
+                .map((agreement) => (
+                <div
+                  key={agreement.id}
+                  onClick={() => {
+                    // 如果是待继承人签署状态，跳转到继承人签署页面
+                    if (agreement.status === '待继承人签署') {
+                      setSelectedAgreement(agreement);
+                      setCurrentPage('heir-sign-agreement');
+                      setHeirSignStep('view');
+                      setHeirSignReadTime(5);
+                      setHeirCanSign(false);
+                      setHeirSignatureText('');
+                    }
+                  }}
+                  className="px-4 py-4 flex items-center justify-between hover:bg-gray-50 cursor-pointer"
+                >
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1.5">
+                      <span className="text-sm font-medium text-gray-800">传承人：{agreement.inheritor}</span>
+                      <span className="text-xs text-gray-400">→</span>
+                      <span className="text-sm font-medium text-gray-800">继承人：{agreement.heir}</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className="text-xs text-gray-500">签署时间：{agreement.time}</span>
+                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+                        agreement.status === '待继承人签署' ? 'bg-orange-50 text-orange-600' :
+                        agreement.status === '待公司用印' ? 'bg-blue-50 text-blue-600' :
+                        'bg-green-50 text-green-600'
+                      }`}>
+                        {agreement.status}
+                      </span>
+                    </div>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-gray-300" />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 传承客户清单内容 */}
+      {inheritanceTab === '传承客户清单' && (
+        <div className="flex-1 overflow-y-auto px-4 py-4">
+          {/* 我发起传承的客户 */}
+          <div className="bg-white rounded-2xl shadow-sm overflow-hidden mb-4">
+            <div className="px-4 py-3 border-b border-gray-50 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                <h3 className="text-sm font-medium text-gray-700">我发起传承的客户</h3>
+              </div>
+              <span className="text-xs text-gray-400">共 4 人</span>
+            </div>
+            <div className="divide-y divide-gray-50">
+              {[
+                { id: 1, name: '张小明', phone: '138****1234', transferTime: '2026-03-15', status: '待客户确认', heirName: '李小华', heirId: '100123' },
+                { id: 2, name: '王大明', phone: '139****5678', transferTime: '2026-02-20', status: '客户已同意', heirName: '陈小芳', heirId: '100456' },
+                { id: 3, name: '刘强', phone: '137****9012', transferTime: '2025-12-08', status: '客户已拒绝', heirName: '赵美玲', heirId: '100789' },
+                { id: 4, name: '周伟', phone: '135****6789', transferTime: '2025-10-15', status: '您已撤销', heirName: '孙丽', heirId: '101012' },
+              ].map((customer) => (
+                <div
+                  key={customer.id}
+                  onClick={() => {
+                    setSelectedCustomer({
+                      id: customer.id,
+                      name: customer.name,
+                      phone: customer.phone,
+                      avatar: '',
+                      source: '传承客户',
+                      tags: [],
+                      temperature: '中温',
+                      value: 'B',
+                      notes: '',
+                      lastContact: customer.transferTime,
+                      polices: [],
+                      activities: [],
+                      schedules: [],
+                      familyMembers: []
+                    });
+                    setCurrentPage('customer-detail');
+                  }}
+                  className="px-4 py-3.5 hover:bg-gray-50 cursor-pointer"
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center">
+                        <span className="text-sm font-medium text-blue-600">{customer.name.charAt(0)}</span>
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-800">{customer.name}</p>
+                        <p className="text-xs text-gray-500">{customer.phone}</p>
+                      </div>
+                    </div>
+                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+                      customer.status === '待客户确认' ? 'bg-orange-50 text-orange-600' :
+                      customer.status === '客户已同意' ? 'bg-green-50 text-green-600' :
+                      customer.status === '客户已拒绝' ? 'bg-red-50 text-red-600' :
+                      'bg-gray-50 text-gray-500'
+                    }`}>
+                      {customer.status}
+                    </span>
+                  </div>
+                  <div className="bg-gray-50 rounded-lg px-3 py-2 text-xs text-gray-500">
+                    {customer.transferTime} 传承给 {customer.heirName}（工号 {customer.heirId}）
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* 我接收继承的客户 */}
+          <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+            <div className="px-4 py-3 border-b border-gray-50 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                <h3 className="text-sm font-medium text-gray-700">我接收继承的客户</h3>
+              </div>
+              <span className="text-xs text-gray-400">共 2 人</span>
+            </div>
+            <div className="divide-y divide-gray-50">
+              {[
+                { id: 5, name: '陈小芳', phone: '136****3456', inheritTime: '2026-01-10', status: '客户已同意', fromName: '王大明', fromId: '100456' },
+                { id: 6, name: '赵美玲', phone: '135****7890', inheritTime: '2025-11-05', status: '客户已同意', fromName: '刘强', fromId: '100789' },
+              ].map((customer) => (
+                <div
+                  key={customer.id}
+                  onClick={() => {
+                    setSelectedCustomer({
+                      id: customer.id,
+                      name: customer.name,
+                      phone: customer.phone,
+                      avatar: '',
+                      source: '传承客户',
+                      tags: [],
+                      temperature: '中温',
+                      value: 'B',
+                      notes: '',
+                      lastContact: customer.inheritTime,
+                      polices: [],
+                      activities: [],
+                      schedules: [],
+                      familyMembers: []
+                    });
+                    setCurrentPage('customer-detail');
+                  }}
+                  className="px-4 py-3.5 hover:bg-gray-50 cursor-pointer"
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-green-50 rounded-full flex items-center justify-center">
+                        <span className="text-sm font-medium text-green-600">{customer.name.charAt(0)}</span>
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-800">{customer.name}</p>
+                        <p className="text-xs text-gray-500">{customer.phone}</p>
+                      </div>
+                    </div>
+                    <span className="text-xs px-2 py-0.5 rounded-full font-medium bg-green-50 text-green-600">
+                      {customer.status}
+                    </span>
+                  </div>
+                  <div className="bg-gray-50 rounded-lg px-3 py-2 text-xs text-gray-500">
+                    {customer.inheritTime} 从 {customer.fromName}（工号 {customer.fromId}）处继承
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 签署状态筛选Sheet */}
+      <AnimatePresence>
+        {showStatusSheet && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowStatusSheet(false)}
+              className="fixed inset-0 bg-black/40 z-[80]"
+            />
+            <motion.div
+              initial={{ y: '100%' }}
+              animate={{ y: 0 }}
+              exit={{ y: '100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              className="fixed bottom-0 w-full max-w-md bg-white rounded-t-[24px] z-[90] overflow-hidden"
+            >
+              {/* Drag indicator */}
+              <div className="relative h-1.5 w-12 bg-gray-300 rounded-full mx-auto mt-3 mb-2" />
+
+              <div className="p-4">
+                {/* Header */}
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-[16px] font-bold text-gray-900">签署状态</h3>
+                  <button onClick={() => setShowStatusSheet(false)} className="p-1.5 text-gray-400 hover:text-gray-600">
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+
+                {/* 选项列表 */}
+                <div className="space-y-2">
+                  {['全部', '待继承人签署', '待公司用印', '签署完成'].map((status) => (
+                    <button
+                      key={status}
+                      onClick={() => {
+                        setInheritanceAgreementFilter(status === '全部' ? '' : status);
+                        setShowStatusSheet(false);
+                      }}
+                      className={`w-full px-4 py-3 rounded-xl text-left text-[14px] transition-colors ${inheritanceAgreementFilter === (status === '全部' ? '' : status) ? 'bg-blue-50 text-blue-600 font-medium' : 'bg-gray-50 text-gray-700 hover:bg-gray-100'}`}
+                    >
+                      {status}
+                      {inheritanceAgreementFilter === (status === '全部' ? '' : status) && (
+                        <CheckCircle2 className="w-4 h-4 text-blue-600 inline-block ml-2" />
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* 继承代理人筛选Sheet */}
+      <AnimatePresence>
+        {showHeirSheet && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => { setShowHeirSheet(false); setHeirSearchQuery(''); }}
+              className="fixed inset-0 bg-black/40 z-[80]"
+            />
+            <motion.div
+              initial={{ y: '100%' }}
+              animate={{ y: 0 }}
+              exit={{ y: '100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              className="fixed bottom-0 w-full max-w-md bg-white rounded-t-[24px] z-[90] overflow-hidden"
+            >
+              {/* Drag indicator */}
+              <div className="relative h-1.5 w-12 bg-gray-300 rounded-full mx-auto mt-3 mb-2" />
+
+              <div className="p-4">
+                {/* Header */}
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-[16px] font-bold text-gray-900">继承代理人</h3>
+                  <button onClick={() => { setShowHeirSheet(false); setHeirSearchQuery(''); }} className="p-1.5 text-gray-400 hover:text-gray-600">
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+
+                {/* 搜索框 */}
+                <div className="relative mb-4">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <input
+                    type="text"
+                    placeholder="搜索代理人姓名"
+                    value={heirSearchQuery}
+                    onChange={(e) => setHeirSearchQuery(e.target.value)}
+                    className="w-full bg-gray-50 border border-gray-200 rounded-xl pl-10 pr-4 py-2.5 text-[14px] outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10"
+                  />
+                </div>
+
+                {/* 代理人列表 */}
+                <div className="max-h-[300px] overflow-y-auto space-y-2">
+                  {/* 全部选项 */}
+                  <button
+                    onClick={() => {
+                      setInheritanceHeirFilter('');
+                      setShowHeirSheet(false);
+                      setHeirSearchQuery('');
+                    }}
+                    className={`w-full px-4 py-3 rounded-xl text-left transition-colors ${inheritanceHeirFilter === '' ? 'bg-blue-50' : 'bg-gray-50 hover:bg-gray-100'}`}
+                  >
+                    <span className={`text-[14px] ${inheritanceHeirFilter === '' ? 'text-blue-600 font-medium' : 'text-gray-700'}`}>全部</span>
+                  </button>
+
+                  {/* 代理人列表 */}
+                  {[
+                    { name: '李小华', id: '100123' },
+                    { name: '陈小芳', id: '100456' },
+                    { name: '赵美玲', id: '100789' },
+                    { name: '孙丽', id: '101012' },
+                    { name: '张芳', id: '101345' },
+                    { name: '王红', id: '101678' },
+                  ]
+                    .filter(heir => heir.name.toLowerCase().includes(heirSearchQuery.toLowerCase()))
+                    .map((heir) => (
+                    <button
+                      key={heir.id}
+                      onClick={() => {
+                        setInheritanceHeirFilter(heir.name);
+                        setShowHeirSheet(false);
+                        setHeirSearchQuery('');
+                      }}
+                      className={`w-full px-4 py-3 rounded-xl text-left transition-colors ${inheritanceHeirFilter === heir.name ? 'bg-blue-50' : 'bg-gray-50 hover:bg-gray-100'}`}
+                    >
+                      <span className={`text-[14px] ${inheritanceHeirFilter === heir.name ? 'text-blue-600 font-medium' : 'text-gray-700'}`}>{heir.name}</span>
+                      <span className={`text-[12px] ml-2 ${inheritanceHeirFilter === heir.name ? 'text-blue-500' : 'text-gray-500'}`}>工号 {heir.id}</span>
+                      {inheritanceHeirFilter === heir.name && (
+                        <CheckCircle2 className="w-4 h-4 text-blue-600 inline-block ml-2" />
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+    </div>
+  );
 
   const handleAiAction = (scenario: any) => {
     if (scenario.type === 'strategy') {
@@ -1387,13 +2473,17 @@ export default function App() {
                       <AnimatePresence>
                         {showMoreTools && (
                           <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
-                            <div className="flex items-center justify-around gap-2 mt-3 pt-3 border-t border-gray-50/50">
+                            <div className="flex flex-wrap items-center justify-around gap-x-2 gap-y-3 mt-3 pt-3 border-t border-gray-50/50">
                               {moreTools.map((tool, idx) => (
-                                <div key={idx} className="flex items-center cursor-pointer group hover:text-blue-600 transition-colors whitespace-nowrap">
-                                  <tool.icon className="w-4 h-4 text-gray-800 mr-1.5" />
-                                  <span className="text-[12px] text-gray-600 font-medium">{tool.label}</span>
-                                </div>
-                              ))}
+                              <div key={idx} onClick={() => {
+                                if (tool.label === '传承客户') {
+                                  setCurrentPage('inheritance-customer');
+                                }
+                              }} className="flex items-center cursor-pointer group hover:text-blue-600 transition-colors whitespace-nowrap">
+                                <tool.icon className="w-4 h-4 text-gray-800 mr-1.5" />
+                                <span className="text-[12px] text-gray-600 font-medium">{tool.label}</span>
+                              </div>
+                            ))}
                             </div>
                           </motion.div>
                         )}
