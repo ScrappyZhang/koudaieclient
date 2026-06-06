@@ -70,7 +70,7 @@ const customerCategoryOptions = {
   '寿险投被保人': ['仅投保人', '仅被保人', '投/被保人'],
   '存量客户类型': ['在职有效客户', '纯存续单客户'],
   '保单托管': ['已托管客户', '未托管客户'],
-  '高价值客户失效风险': ['濒临失效', '暂无识别风险'],
+  '是否濒临失效高客': ['是'],
   '经营阶段': ['忠诚客户', '客户', '准客户', '用户'],
 };
 
@@ -407,7 +407,7 @@ export default function FilterSheet({ visible, onClose, filters, onApply }: Filt
                     ))}
                   </div>
                   <div className="flex items-center gap-1.5 mt-6 mb-4">
-                    <h3 className="text-[15px] font-bold text-gray-900">高价值客户失效风险</h3>
+                    <h3 className="text-[15px] font-bold text-gray-900">是否濒临失效高客</h3>
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
@@ -418,8 +418,8 @@ export default function FilterSheet({ visible, onClose, filters, onApply }: Filt
                       <Info className="w-2.5 h-2.5" />
                     </button>
                   </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    {customerCategoryOptions['高价值客户失效风险'].map(option => (
+                  <div className="grid grid-cols-1 gap-3">
+                    {customerCategoryOptions['是否濒临失效高客'].map(option => (
                       <button
                         key={option}
                         onClick={() => setTempFilters({ ...tempFilters, nearingExpiryHighValue: tempFilters.nearingExpiryHighValue === option ? undefined : option })}
@@ -858,13 +858,13 @@ export default function FilterSheet({ visible, onClose, filters, onApply }: Filt
                   className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[280px] bg-white rounded-2xl shadow-2xl z-[220] p-5"
                 >
                   <div className="flex items-center justify-between mb-3">
-                    <h3 className="text-[16px] font-bold text-gray-900">高价值客户失效风险</h3>
+                    <h3 className="text-[16px] font-bold text-gray-900">是否濒临失效高客</h3>
                     <button onClick={() => setShowFieldDefinition(false)} className="text-gray-400 hover:text-gray-600">
                       <X className="w-5 h-5" />
                     </button>
                   </div>
                   <p className="text-[13px] text-gray-600 leading-relaxed">
-                    基于客户近期保单缴费情况、产品续保状态及客户活跃度等多维度数据，智能识别高价值客户是否存在失效风险，帮助代理人及时采取挽留措施。
+                    通过模型识别高客（可投资资产50万以上）且有保单失效风险
                   </p>
                 </motion.div>
               )}
