@@ -752,15 +752,6 @@ export default function CustomerDetailPageNew({ customer, onBack, onSharedCustom
 
               {/* 基础信息 */}
               <div className="bg-white rounded-2xl p-4 shadow-sm">
-                {/* 基础信息相关标签 - 新增 */}
-                <div className="mb-4">
-                  <div className="flex flex-wrap gap-1.5">
-                    {customerInsights.basicInfoTags.map((tag, i) => (
-                      <span key={i} className="px-2 py-1 bg-gray-100 text-gray-600 rounded-lg text-[12px]">{tag}</span>
-                    ))}
-                  </div>
-                </div>
-
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-[15px] font-bold text-gray-900">基础信息</h2>
                   <div className="flex items-center space-x-3">
@@ -770,6 +761,15 @@ export default function CustomerDetailPageNew({ customer, onBack, onSharedCustom
                     <button className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-[13px] font-medium hover:bg-gray-200 transition-colors">
                       编辑
                     </button>
+                  </div>
+                </div>
+
+                {/* 基础信息相关标签 */}
+                <div className="mb-4">
+                  <div className="flex flex-wrap gap-1.5">
+                    {customerInsights.basicInfoTags.map((tag, i) => (
+                      <span key={i} className="px-2 py-1 bg-gray-100 text-gray-600 rounded-lg text-[12px]">{tag}</span>
+                    ))}
                   </div>
                 </div>
 
