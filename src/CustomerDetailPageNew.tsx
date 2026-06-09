@@ -488,7 +488,7 @@ export default function CustomerDetailPageNew({ customer, onBack, onSharedCustom
   // 客户洞察数据
   const customerInsights = {
     basicInfoTags: ['企业中坚', '年入50-100万', '已婚有子', '高净值', '理性决策'],
-    familyTags: ['配偶（40岁）', '儿子（10岁）', '母亲（60岁）', '三代同堂'],
+    familyTags: ['三代同堂'],
     riskLevel: '中低风险',
     growthPotential: '高潜力',
     contactFrequency: '近30天接触4次',
