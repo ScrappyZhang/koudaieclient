@@ -7,6 +7,8 @@ export default function CustomerDetailPageNew({ customer, onBack, onSharedCustom
   const [showSensitive, setShowSensitive] = useState(false);
   const [showAllTabs, setShowAllTabs] = useState(false);
   const [showMoreBasicInfo, setShowMoreBasicInfo] = useState(false);
+  const [showInfoSheet, setShowInfoSheet] = useState(false);
+  const [infoSheetTab, setInfoSheetTab] = useState('基本信息');
   const [temperature, setTemperature] = useState(customer?.temperature || '低温');
   const [showTempModal, setShowTempModal] = useState(false);
   const [tags, setTags] = useState<string[]>(customer?.tags || ['社会中坚', '健康']);
@@ -751,21 +753,13 @@ export default function CustomerDetailPageNew({ customer, onBack, onSharedCustom
                 </div>
               </div>
 
-              {/* 基础信息 */}
+              {/* 基础信息 + 职业资产 合并卡片 */}
               <div className="bg-white rounded-2xl p-4 shadow-sm">
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-[15px] font-bold text-gray-900">基础信息</h2>
-                  <div className="flex items-center space-x-3">
-                    <button onClick={() => setShowSensitive(!showSensitive)} className="text-gray-400 hover:text-gray-600">
-                      {showSensitive ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                    </button>
-                    <button className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-[13px] font-medium hover:bg-gray-200 transition-colors">
-                      编辑
-                    </button>
-                  </div>
                 </div>
 
-                {/* 基础信息相关标签 */}
+                {/* 标签 */}
                 <div className="mb-4">
                   <div className="flex flex-wrap gap-1.5">
                     {customerInsights.basicInfoTags.map((tag, i) => (
@@ -775,84 +769,152 @@ export default function CustomerDetailPageNew({ customer, onBack, onSharedCustom
                 </div>
 
                 <div className="space-y-1">
-                  {/* 默认显示的字段 */}
                   <InfoRow label="保单手机" value="13812345691" maskedValue="1********91" onCopy="13812345691" />
                   <InfoRow label="其他手机" value="13998765432" maskedValue="1********32" onCopy="13998765432" />
-
-                  <div className="flex items-start py-1.5">
-                    <span className="w-20 text-[14px] text-gray-500 shrink-0">证件号码</span>
-                    <div className="flex-1">
-                      <div className="flex items-start justify-between">
-                        <span className="text-[15px] text-gray-900 font-medium break-all pr-2">
-                          {showSensitive ? '420123198707140024' : '420***********0024'}
-                        </span>
-                        <button onClick={() => copyToClipboard('420123198707140024')} className="text-blue-500 hover:text-blue-600 shrink-0 mt-0.5">
-                          <Copy className="w-4 h-4" />
-                        </button>
-                      </div>
-                      <div className="text-[13px] text-gray-500 mt-1">证件类型：身份证</div>
-                      <div className="text-[13px] text-gray-500 mt-0.5">有效期：2025/10/17 - 2045/10/17</div>
-                    </div>
-                  </div>
-
+                  <InfoRow label="证件号码" value="420123198707140024" maskedValue="420***********0024" onCopy="420123198707140024" />
                   <InfoRow label="联系地址" value="广东省深圳市南山区高新南九道太平洋保险大厦" maskedValue="广东省深圳市******************" hasMap />
+                  <InfoRow label="职业" value="企业高管" />
+                  <InfoRow label="工作单位" value="深圳市某科技有限公司" />
+                  <InfoRow label="公司岗位" value="市场总监" />
+                  <InfoRow label="年收入" value="50-100万" />
+                  <InfoRow label="资产规模" value="500-1000万" />
 
                   {/* 查看更多按钮 */}
                   <button
-                    onClick={() => setShowMoreBasicInfo(!showMoreBasicInfo)}
+                    onClick={() => { setShowMoreBasicInfo(!showMoreBasicInfo); setShowInfoSheet(true); }}
                     className="w-full py-2 flex items-center justify-center text-blue-500 text-[13px] font-medium hover:text-blue-600 transition-colors"
                   >
-                    {showMoreBasicInfo ? '收起' : '查看更多'}
-                    <ChevronDown className={`w-4 h-4 ml-1 transition-transform ${showMoreBasicInfo ? 'rotate-180' : ''}`} />
+                    查看全部字段
+                    <ChevronDown className="w-4 h-4 ml-1" />
                   </button>
-
-                  {/* 展开后显示的更多字段 */}
-                  {showMoreBasicInfo && (
-                    <div className="space-y-1 animate-in fade-in slide-in-from-top-2 duration-200">
-                      <InfoRow label="姓名" value={customer?.name || "曹嘉玲"} />
-                      <InfoRow label="年龄" value={`${customer?.age || 38}岁`} />
-                      <InfoRow label="出生日期" value="1987年07月14日(六月十九)" />
-                      <InfoRow label="微信昵称" value="嘉玲" />
-                      <InfoRow label="电子邮箱" value="cjl@example.com" />
-                      <InfoRow label="国籍" value="中国" />
-                      <InfoRow label="户籍" value="广东省深圳市" />
-                      <InfoRow label="学历" value="本科" />
-                      <InfoRow label="婚姻状况" value="已婚" />
-                      <InfoRow label="家庭地址" value="广东省深圳市福田区香蜜湖街道某某小区" maskedValue="广东省深圳市******************" hasMap />
-                      <InfoRow label="身高" value="165cm" />
-                      <InfoRow label="体重" value="55kg" />
-                      <InfoRow label="客户号" value="CUS202308150001" onCopy="CUS202308150001" />
-                      <InfoRow label="客户来源" value="线上获客" />
-                      <InfoRow label="客户添加日" value="2023-08-15" />
-                    </div>
-                  )}
                 </div>
               </div>
 
-              {/* 职业资产 */}
-              <div className="bg-white rounded-2xl p-4 shadow-sm">
-                <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-[15px] font-bold text-gray-900">职业资产</h2>
-                  <button className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-[13px] font-medium hover:bg-gray-200 transition-colors">
-                    编辑
-                  </button>
-                </div>
+              {/* 详情浮窗 - 基本信息 + 职业资产 */}
+              <AnimatePresence>
+                {showInfoSheet && (
+                  <>
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      onClick={() => { setShowInfoSheet(false); setShowMoreBasicInfo(false); }}
+                      className="fixed inset-0 bg-black/40 z-[100]"
+                    />
+                    <motion.div
+                      initial={{ y: '100%' }}
+                      animate={{ y: 0 }}
+                      exit={{ y: '100%' }}
+                      transition={{ type: 'spring', damping: 28, stiffness: 300 }}
+                      className="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-gray-50 rounded-t-[24px] z-[110] overflow-hidden"
+                    >
+                      {/* Header */}
+                      <div className="bg-white px-4 pt-3 pb-2 border-b border-gray-100">
+                        {/* Drag indicator */}
+                        <div className="w-10 h-1 bg-gray-300 rounded-full mx-auto mb-3" />
+                        <div className="flex items-center justify-between mb-3">
+                          <h2 className="text-[17px] font-bold text-gray-900">客户详情</h2>
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => setShowMoreBasicInfo(!showMoreBasicInfo)}
+                              className="p-1.5 text-gray-400 hover:text-gray-600 transition-colors"
+                            >
+                              {showMoreBasicInfo ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                            </button>
+                            <button className="px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-[12px] font-medium">
+                              编辑
+                            </button>
+                            <button
+                              onClick={() => { setShowInfoSheet(false); setShowMoreBasicInfo(false); }}
+                              className="p-1 text-gray-400 hover:text-gray-600"
+                            >
+                              <X className="w-5 h-5" />
+                            </button>
+                          </div>
+                        </div>
+                        {/* Tabs */}
+                        <div className="flex gap-2">
+                          {['基本信息', '职业资产'].map(tab => (
+                            <button
+                              key={tab}
+                              onClick={() => setInfoSheetTab(tab)}
+                              className={`px-4 py-1.5 rounded-full text-[13px] font-medium transition-all ${
+                                infoSheetTab === tab
+                                  ? 'bg-blue-600 text-white shadow-sm'
+                                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                              }`}
+                            >
+                              {tab}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
 
-                <div className="space-y-1">
-                  <InfoRow label="职业" value="企业高管" />
-                  <InfoRow label="在职年数" value="5年" />
-                  <InfoRow label="工作单位" value="深圳市某科技有限公司" />
-                  <InfoRow label="工作电话" value="0755-88888888" maskedValue="0755-********" onCopy="0755-88888888" />
-                  <InfoRow label="在职部门" value="市场部" />
-                  <InfoRow label="公司岗位" value="市场总监" />
-                  <InfoRow label="单位地址" value="广东省深圳市南山区科技园某栋" maskedValue="广东省深圳市南山区**********" hasMap />
-                  <InfoRow label="年收入" value="50-100万" />
-                  <InfoRow label="家庭收入" value="100-200万" />
-                  <InfoRow label="情况" value="良好" />
-                  <InfoRow label="资产规模" value="500-1000万" />
-                  <InfoRow label="车辆信息" value="宝马 5系 (粤B·12345)" maskedValue="宝马 5系 (粤B·*****)" />
-                </div>
-              </div>
+                      {/* Content */}
+                      <div className="bg-gray-50 max-h-[70vh] overflow-y-auto p-4">
+                        {/* 基本信息 Tab */}
+                        {infoSheetTab === '基本信息' && (
+                          <div className="bg-white rounded-2xl p-4 shadow-sm space-y-1">
+                            <InfoRow label="姓名" value={customer?.name || "曹嘉玲"} />
+                            <InfoRow label="年龄" value={`${customer?.age || 38}岁`} />
+                            <InfoRow label="出生日期" value="1987年07月14日(六月十九)" />
+                            <InfoRow label="微信昵称" value="嘉玲" />
+                            <InfoRow label="保单手机" value="13812345691" maskedValue="1********91" onCopy="13812345691" />
+                            <InfoRow label="其他手机" value="13998765432" maskedValue="1********32" onCopy="13998765432" />
+
+                            <div className="flex items-start py-1.5">
+                              <span className="w-20 text-[14px] text-gray-500 shrink-0">证件号码</span>
+                              <div className="flex-1">
+                                <div className="flex items-start justify-between">
+                                  <span className="text-[15px] text-gray-900 font-medium break-all pr-2">
+                                    {showMoreBasicInfo ? '420123198707140024' : '420***********0024'}
+                                  </span>
+                                  <button onClick={() => copyToClipboard('420123198707140024')} className="text-blue-500 hover:text-blue-600 shrink-0 mt-0.5">
+                                    <Copy className="w-4 h-4" />
+                                  </button>
+                                </div>
+                                <div className="text-[13px] text-gray-500 mt-1">证件类型：身份证</div>
+                                <div className="text-[13px] text-gray-500 mt-0.5">有效期：2025/10/17 - 2045/10/17</div>
+                              </div>
+                            </div>
+
+                            <InfoRow label="电子邮箱" value="cjl@example.com" />
+                            <InfoRow label="国籍" value="中国" />
+                            <InfoRow label="户籍" value="广东省深圳市" />
+                            <InfoRow label="学历" value="本科" />
+                            <InfoRow label="婚姻状况" value="已婚" />
+                            <InfoRow label="联系地址" value="广东省深圳市南山区高新南九道太平洋保险大厦" maskedValue="广东省深圳市******************" hasMap />
+                            <InfoRow label="家庭地址" value="广东省深圳市福田区香蜜湖街道某某小区" maskedValue="广东省深圳市******************" hasMap />
+                            <InfoRow label="身高" value="165cm" />
+                            <InfoRow label="体重" value="55kg" />
+                            <InfoRow label="客户号" value="CUS202308150001" onCopy="CUS202308150001" />
+                            <InfoRow label="客户来源" value="线上获客" />
+                            <InfoRow label="客户添加日" value="2023-08-15" />
+                          </div>
+                        )}
+
+                        {/* 职业资产 Tab */}
+                        {infoSheetTab === '职业资产' && (
+                          <div className="bg-white rounded-2xl p-4 shadow-sm space-y-1">
+                            <InfoRow label="职业" value="企业高管" />
+                            <InfoRow label="在职年数" value="5年" />
+                            <InfoRow label="工作单位" value="深圳市某科技有限公司" />
+                            <InfoRow label="工作电话" value="0755-88888888" maskedValue="0755-********" onCopy="0755-88888888" />
+                            <InfoRow label="在职部门" value="市场部" />
+                            <InfoRow label="公司岗位" value="市场总监" />
+                            <InfoRow label="单位地址" value="广东省深圳市南山区科技园某栋" maskedValue="广东省深圳市南山区**********" hasMap />
+                            <InfoRow label="年收入" value="50-100万" />
+                            <InfoRow label="家庭收入" value="100-200万" />
+                            <InfoRow label="情况" value="良好" />
+                            <InfoRow label="资产规模" value="500-1000万" />
+                            <InfoRow label="车辆信息" value="宝马 5系 (粤B·12345)" maskedValue="宝马 5系 (粤B·*****)" />
+                          </div>
+                        )}
+                      </div>
+                    </motion.div>
+                  </>
+                )}
+              </AnimatePresence>
 
               {/* 家庭成员 - 新增标签 */}
               <div className="bg-white rounded-2xl p-4 shadow-sm">
