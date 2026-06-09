@@ -19,7 +19,7 @@ const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: numbe
   return R * c;
 };
 
-export default function CustomerSearchPage({ onBack }: { onBack: () => void }) {
+export default function CustomerSearchPage({ onBack, onToggleVersion }: { onBack: () => void; onToggleVersion?: () => void }) {
   const [searchValue, setSearchValue] = useState('');
   const [isAISearch, setIsAISearch] = useState(true);
   const [searchState, setSearchState] = useState<SearchState>('initial');
@@ -355,7 +355,7 @@ export default function CustomerSearchPage({ onBack }: { onBack: () => void }) {
 
   if (selectedCustomerId !== null) {
     const selectedCustomer = customers.find(c => c.id === selectedCustomerId);
-    return <CustomerDetailPage customer={selectedCustomer} onBack={() => setSelectedCustomerId(null)} />;
+    return <CustomerDetailPage customer={selectedCustomer} onBack={() => setSelectedCustomerId(null)} onToggleVersion={onToggleVersion} />;
   }
 
   return (

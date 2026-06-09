@@ -46,7 +46,7 @@ interface FilterState {
   vehiclePriceRange?: string;
 }
 
-export default function CustomerListPage({ onBack, onSearch, onSharedCustomerList, onInheritanceCustomer }: { onBack: () => void; onSearch?: () => void; onSharedCustomerList?: () => void; onInheritanceCustomer?: () => void }) {
+export default function CustomerListPage({ onBack, onSearch, onSharedCustomerList, onInheritanceCustomer, onToggleVersion }: { onBack: () => void; onSearch?: () => void; onSharedCustomerList?: () => void; onInheritanceCustomer?: () => void; onToggleVersion?: () => void }) {
   const [activeTab, setActiveTab] = useState('客户列表');
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [selectedCustomerId, setSelectedCustomerId] = useState<number | null>(null);
@@ -260,7 +260,7 @@ export default function CustomerListPage({ onBack, onSearch, onSharedCustomerLis
 
   if (selectedCustomerId !== null) {
     const selectedCustomer = customers.find(c => c.id === selectedCustomerId);
-    return <CustomerDetailPage customer={selectedCustomer} onBack={() => setSelectedCustomerId(null)} onSharedCustomerList={onSharedCustomerList} />;
+    return <CustomerDetailPage customer={selectedCustomer} onBack={() => setSelectedCustomerId(null)} onSharedCustomerList={onSharedCustomerList} onToggleVersion={onToggleVersion} />;
   }
 
   return (

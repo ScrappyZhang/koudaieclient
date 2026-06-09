@@ -33,7 +33,7 @@ const mockArticles = [
   { id: 4, title: '代理人高效面访技巧', category: '销售技巧', time: '2025-01-08', views: 543 },
 ];
 
-export default function UnifiedSearchPage({ onBack, onAskBob }: { onBack: () => void; onAskBob?: () => void }) {
+export default function UnifiedSearchPage({ onBack, onAskBob, onToggleVersion }: { onBack: () => void; onAskBob?: () => void; onToggleVersion?: () => void }) {
   const [activeCategory, setActiveCategory] = useState<SearchCategory>('全部');
   const [searchValue, setSearchValue] = useState('');
   const [searchState, setSearchState] = useState<SearchState>('initial');
@@ -103,7 +103,7 @@ export default function UnifiedSearchPage({ onBack, onAskBob }: { onBack: () => 
 
   if (selectedCustomerId !== null) {
     const selectedCustomer = customers.find(c => c.id === selectedCustomerId);
-    return <CustomerDetailPage customer={selectedCustomer} onBack={() => setSelectedCustomerId(null)} />;
+    return <CustomerDetailPage customer={selectedCustomer} onBack={() => setSelectedCustomerId(null)} onToggleVersion={onToggleVersion} />;
   }
 
   const { customerResults, productResults, functionResults, articleResults } = getFilteredResults();
