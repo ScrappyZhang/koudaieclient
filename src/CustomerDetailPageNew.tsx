@@ -6,6 +6,7 @@ export default function CustomerDetailPageNew({ customer, onBack, onSharedCustom
   const [activeTab, setActiveTab] = useState(initialTab || '客户信息');
   const [showSensitive, setShowSensitive] = useState(false);
   const [showAllTabs, setShowAllTabs] = useState(false);
+  const [showMoreBasicInfo, setShowMoreBasicInfo] = useState(false);
   const [temperature, setTemperature] = useState(customer?.temperature || '低温');
   const [showTempModal, setShowTempModal] = useState(false);
   const [tags, setTags] = useState<string[]>(customer?.tags || ['社会中坚', '健康']);
@@ -774,10 +775,7 @@ export default function CustomerDetailPageNew({ customer, onBack, onSharedCustom
                 </div>
 
                 <div className="space-y-1">
-                  <InfoRow label="姓名" value={customer?.name || "曹嘉玲"} />
-                  <InfoRow label="年龄" value={`${customer?.age || 38}岁`} />
-                  <InfoRow label="出生日期" value="1987年07月14日(六月十九)" />
-                  <InfoRow label="微信昵称" value="嘉玲" />
+                  {/* 默认显示的字段 */}
                   <InfoRow label="保单手机" value="13812345691" maskedValue="1********91" onCopy="13812345691" />
                   <InfoRow label="其他手机" value="13998765432" maskedValue="1********32" onCopy="13998765432" />
 
@@ -797,18 +795,37 @@ export default function CustomerDetailPageNew({ customer, onBack, onSharedCustom
                     </div>
                   </div>
 
-                  <InfoRow label="电子邮箱" value="cjl@example.com" />
-                  <InfoRow label="国籍" value="中国" />
-                  <InfoRow label="户籍" value="广东省深圳市" />
-                  <InfoRow label="学历" value="本科" />
-                  <InfoRow label="婚姻状况" value="已婚" />
                   <InfoRow label="联系地址" value="广东省深圳市南山区高新南九道太平洋保险大厦" maskedValue="广东省深圳市******************" hasMap />
-                  <InfoRow label="家庭地址" value="广东省深圳市福田区香蜜湖街道某某小区" maskedValue="广东省深圳市******************" hasMap />
-                  <InfoRow label="身高" value="165cm" />
-                  <InfoRow label="体重" value="55kg" />
-                  <InfoRow label="客户号" value="CUS202308150001" onCopy="CUS202308150001" />
-                  <InfoRow label="客户来源" value="线上获客" />
-                  <InfoRow label="客户添加日" value="2023-08-15" />
+
+                  {/* 查看更多按钮 */}
+                  <button
+                    onClick={() => setShowMoreBasicInfo(!showMoreBasicInfo)}
+                    className="w-full py-2 flex items-center justify-center text-blue-500 text-[13px] font-medium hover:text-blue-600 transition-colors"
+                  >
+                    {showMoreBasicInfo ? '收起' : '查看更多'}
+                    <ChevronDown className={`w-4 h-4 ml-1 transition-transform ${showMoreBasicInfo ? 'rotate-180' : ''}`} />
+                  </button>
+
+                  {/* 展开后显示的更多字段 */}
+                  {showMoreBasicInfo && (
+                    <div className="space-y-1 animate-in fade-in slide-in-from-top-2 duration-200">
+                      <InfoRow label="姓名" value={customer?.name || "曹嘉玲"} />
+                      <InfoRow label="年龄" value={`${customer?.age || 38}岁`} />
+                      <InfoRow label="出生日期" value="1987年07月14日(六月十九)" />
+                      <InfoRow label="微信昵称" value="嘉玲" />
+                      <InfoRow label="电子邮箱" value="cjl@example.com" />
+                      <InfoRow label="国籍" value="中国" />
+                      <InfoRow label="户籍" value="广东省深圳市" />
+                      <InfoRow label="学历" value="本科" />
+                      <InfoRow label="婚姻状况" value="已婚" />
+                      <InfoRow label="家庭地址" value="广东省深圳市福田区香蜜湖街道某某小区" maskedValue="广东省深圳市******************" hasMap />
+                      <InfoRow label="身高" value="165cm" />
+                      <InfoRow label="体重" value="55kg" />
+                      <InfoRow label="客户号" value="CUS202308150001" onCopy="CUS202308150001" />
+                      <InfoRow label="客户来源" value="线上获客" />
+                      <InfoRow label="客户添加日" value="2023-08-15" />
+                    </div>
+                  )}
                 </div>
               </div>
 
