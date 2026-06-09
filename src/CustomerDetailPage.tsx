@@ -1,8 +1,8 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
-import { ChevronLeft, MoreHorizontal, Copy, Eye, EyeOff, Edit3, Plus, MapPin, Info, CheckCircle2, Shield, Calendar, Heart, Activity, FileText, Briefcase, Users, MessageSquare, ChevronDown, ChevronRight, Menu, X, Phone, Cake, UserPlus, ShieldCheck, Clock, Send, ExternalLink, Search, Sparkles, Plane, Share2, RotateCcw, TrendingUp, MessageCircle } from 'lucide-react';
+import { ChevronLeft, MoreHorizontal, Copy, Eye, EyeOff, Edit3, Plus, MapPin, Info, CheckCircle2, Shield, Calendar, Heart, Activity, FileText, Briefcase, Users, MessageSquare, ChevronDown, ChevronRight, Menu, X, Phone, Cake, UserPlus, ShieldCheck, Clock, Send, ExternalLink, Search, Sparkles, Plane, Share2, RotateCcw, TrendingUp, MessageCircle, Layers } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
-export default function CustomerDetailPage({ customer, onBack, onSharedCustomerList, initialTab }: { customer: any, onBack: () => void, onSharedCustomerList?: () => void, initialTab?: string }) {
+export default function CustomerDetailPage({ customer, onBack, onSharedCustomerList, initialTab, onToggleVersion }: { customer: any, onBack: () => void, onSharedCustomerList?: () => void, initialTab?: string, onToggleVersion?: () => void }) {
   const [activeTab, setActiveTab] = useState(initialTab || '客户画像');
   const [showSensitive, setShowSensitive] = useState(false);
   const [showAllTabs, setShowAllTabs] = useState(false);
@@ -741,6 +741,17 @@ export default function CustomerDetailPage({ customer, onBack, onSharedCustomerL
                     >
                       <Users className="w-4 h-4 text-gray-500 mr-3" />
                       <span className="text-sm text-gray-700">传承客户</span>
+                    </button>
+                    <div className="border-t border-gray-100 my-1"></div>
+                    <button
+                      onClick={() => {
+                        setShowMenu(false);
+                        onToggleVersion?.();
+                      }}
+                      className="w-full px-4 py-3 flex items-center hover:bg-gray-50 transition-colors"
+                    >
+                      <Layers className="w-4 h-4 text-blue-500 mr-3" />
+                      <span className="text-sm text-blue-600 font-medium">切换到新版</span>
                     </button>
                   </div>
                 </motion.div>

@@ -8,6 +8,7 @@ import AgentProfilePage from './AgentProfilePage';
 import SchedulePage from './SchedulePage';
 import AIChatPage from './AIChatPage';
 import CustomerDetailPage from './CustomerDetailPage';
+import CustomerDetailPageNew from './CustomerDetailPageNew';
 import ScheduleCalendarPage from './ScheduleCalendarPage';
 import ScheduleEditPage from './ScheduleEditPage';
 import SharedCustomerListPage from './SharedCustomerListPage';
@@ -245,6 +246,7 @@ export default function App() {
   const [aiInitialMessage, setAiInitialMessage] = useState<string | undefined>(undefined);
   const [sharedCustomerDefaultTab, setSharedCustomerDefaultTab] = useState<'incoming' | 'outgoing'>('outgoing');
   const [customerDetailInitialTab, setCustomerDetailInitialTab] = useState<string | undefined>(undefined);
+  const [useNewCustomerDetail, setUseNewCustomerDetail] = useState(false);
   const [messages, setMessages] = useState<{role: 'user' | 'assistant', content: string, time: string}[]>([
     { role: 'assistant', content: '嘿！我是 AskBob，您的智能保险助手。有什么我可以帮您的吗？', time: '04-20 13:37' }
   ]);
@@ -376,12 +378,28 @@ export default function App() {
       setCurrentPage('customer-detail');
     }}
   />;
-  if (currentPage === 'customer-detail') return <CustomerDetailPage
-    customer={selectedCustomer}
-    onBack={() => { setCurrentPage('home'); setCustomerDetailInitialTab(undefined); }}
-    onSharedCustomerList={() => { setSharedCustomerDefaultTab('outgoing'); setCurrentPage('shared-customer-list'); }}
-    initialTab={customerDetailInitialTab}
-  />;
+if (currentPage === 'customer-detail') {
+    if (useNewCustomerDetail) {
+      return (
+          <CustomerDetailPageNew
+            customer={selectedCustomer}
+            onBack={() => { setCurrentPage('home'); setCustomerDetailInitialTab(undefined); }}
+            onSharedCustomerList={() => { setSharedCustomerDefaultTab('outgoing'); setCurrentPage('shared-customer-list'); }}
+            initialTab={customerDetailInitialTab}
+            onToggleVersion={() => { setUseNewCustomerDetail(false); }}
+          />
+      );
+    }
+    return (
+        <CustomerDetailPage
+          customer={selectedCustomer}
+          onBack={() => { setCurrentPage('home'); setCustomerDetailInitialTab(undefined); }}
+          onSharedCustomerList={() => { setSharedCustomerDefaultTab('outgoing'); setCurrentPage('shared-customer-list'); }}
+          initialTab={customerDetailInitialTab}
+          onToggleVersion={() => { setUseNewCustomerDetail(true); }}
+        />
+    );
+  }
   if (currentPage === 'schedule-calendar') return <ScheduleCalendarPage
     onBack={() => setCurrentPage('home')}
     onCustomerDetail={() => {
