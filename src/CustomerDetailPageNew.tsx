@@ -487,14 +487,25 @@ export default function CustomerDetailPageNew({ customer, onBack, onSharedCustom
     </div>
   );
 
-  // 客户洞察数据
+  // 客户洞察数据 - 绩优代理人视角，30秒看懂客户
   const customerInsights = {
     basicInfoTags: ['企业中坚', '年入50-100万', '已婚有子', '高净值', '理性决策'],
     familyTags: ['三代同堂'],
-    riskLevel: '中低风险',
-    growthPotential: '高潜力',
-    contactFrequency: '近30天接触4次',
-    nextAction: '建议安排养老社区参观',
+    // 画像摘要：一句话总结客户
+    profileSummary: '38岁企业高管，三口之家，家庭年收入100-200万，持有5份保单，家庭保障覆盖率85%。近期关注养老社区与高端医疗，高温邀约阶段。',
+    // 保单概况
+    policyCount: 5,
+    annualPremium: '55,000',
+    coverageGap: '配偶重疾缺口约20万',
+    // 状态
+    temperature: '高温',
+    conversionRate: '78%',
+    lastContact: '3天前 面谈讲解养老金方案',
+    upcomingEvent: '7月14日 40岁生日',
+    // 下一步行动
+    nextAction: '安排养老社区参观',
+    nextActionReason: '客户对个人养老金感兴趣，养老社区体验可加深信任',
+    priority: '高',
   };
 
   return (
@@ -715,41 +726,78 @@ export default function CustomerDetailPageNew({ customer, onBack, onSharedCustom
           {/* 客户信息 - 新的客户信息Tab */}
           {activeTab === '客户信息' && (
             <div className="space-y-3">
-              {/* 客户洞察模块 - 新增 */}
+              {/* 客户洞察 - 绩优代理人视角，30秒看懂 */}
               <div className="bg-white rounded-2xl p-4 shadow-sm">
-                <div className="flex items-center gap-2 mb-3">
-                  <Brain className="w-5 h-5 text-blue-500" />
-                  <h2 className="text-[15px] font-bold text-gray-900">客户洞察</h2>
+                {/* 画像摘要 - 核心 */}
+                <div className="mb-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <Sparkles className="w-4 h-4 text-blue-500" />
+                      <span className="text-[13px] font-bold text-gray-700">画像摘要</span>
+                    </div>
+                    <span className={`text-[11px] px-2 py-0.5 rounded-full font-bold ${
+                      customerInsights.temperature === '高温' ? 'bg-red-50 text-red-600' :
+                      customerInsights.temperature === '中温' ? 'bg-orange-50 text-orange-600' :
+                      'bg-blue-50 text-blue-600'
+                    }`}>
+                      {customerInsights.temperature}
+                    </span>
+                  </div>
+                  <p className="text-[13px] text-gray-700 leading-relaxed">
+                    {customerInsights.profileSummary}
+                  </p>
                 </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="bg-blue-50 rounded-xl p-3">
-                    <div className="flex items-center gap-1.5 mb-1">
-                      <Target className="w-3.5 h-3.5 text-blue-500" />
-                      <span className="text-[11px] text-gray-500">风险等级</span>
+
+                {/* 保单概况 */}
+                <div className="mb-3">
+                  <span className="text-[12px] font-bold text-gray-500 mb-1.5 block">保单概况</span>
+                  <div className="grid grid-cols-3 gap-2">
+                    <div className="bg-gray-50 rounded-lg p-2.5 text-center">
+                      <div className="text-[11px] text-gray-400 mb-0.5">有效保单</div>
+                      <div className="text-[16px] font-bold text-gray-800">{customerInsights.policyCount}<span className="text-[10px] text-gray-400 ml-0.5">份</span></div>
                     </div>
-                    <span className="text-[13px] font-semibold text-gray-800">{customerInsights.riskLevel}</span>
-                  </div>
-                  <div className="bg-emerald-50 rounded-xl p-3">
-                    <div className="flex items-center gap-1.5 mb-1">
-                      <TrendingUp className="w-3.5 h-3.5 text-emerald-500" />
-                      <span className="text-[11px] text-gray-500">增长潜力</span>
+                    <div className="bg-gray-50 rounded-lg p-2.5 text-center">
+                      <div className="text-[11px] text-gray-400 mb-0.5">年缴保费</div>
+                      <div className="text-[16px] font-bold text-gray-800">¥{customerInsights.annualPremium}<span className="text-[10px] text-gray-400 ml-0.5">/年</span></div>
                     </div>
-                    <span className="text-[13px] font-semibold text-gray-800">{customerInsights.growthPotential}</span>
-                  </div>
-                  <div className="bg-purple-50 rounded-xl p-3">
-                    <div className="flex items-center gap-1.5 mb-1">
-                      <Activity className="w-3.5 h-3.5 text-purple-500" />
-                      <span className="text-[11px] text-gray-500">接触频率</span>
+                    <div className="bg-orange-50 rounded-lg p-2.5 text-center">
+                      <div className="text-[11px] text-gray-400 mb-0.5">保障缺口</div>
+                      <div className="text-[11px] font-bold text-orange-600 leading-tight mt-0.5">{customerInsights.coverageGap}</div>
                     </div>
-                    <span className="text-[13px] font-semibold text-gray-800">{customerInsights.contactFrequency}</span>
                   </div>
-                  <div className="bg-amber-50 rounded-xl p-3">
-                    <div className="flex items-center gap-1.5 mb-1">
-                      <Zap className="w-3.5 h-3.5 text-amber-500" />
-                      <span className="text-[11px] text-gray-500">下一步行动</span>
+                </div>
+
+                {/* 状态与时间线 */}
+                <div className="mb-3">
+                  <span className="text-[12px] font-bold text-gray-500 mb-1.5 block">互动状态</span>
+                  <div className="bg-gray-50 rounded-xl p-3 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                        <span className="text-[12px] text-gray-500">上次互动</span>
+                      </div>
+                      <span className="text-[12px] text-gray-700 font-medium">{customerInsights.lastContact}</span>
                     </div>
-                    <span className="text-[13px] font-semibold text-gray-800">{customerInsights.nextAction}</span>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 bg-orange-400 rounded-full"></div>
+                        <span className="text-[12px] text-gray-500">即将到来</span>
+                      </div>
+                      <span className="text-[12px] text-gray-700 font-medium">{customerInsights.upcomingEvent}</span>
+                    </div>
                   </div>
+                </div>
+
+                {/* 下一步行动 - 重点 */}
+                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-3 border border-blue-100">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-[12px] font-bold text-blue-600">下一步行动</span>
+                    <span className="text-[10px] px-1.5 py-0.5 bg-red-500 text-white rounded font-bold">
+                      {customerInsights.priority}优先级
+                    </span>
+                  </div>
+                  <div className="text-[14px] font-bold text-gray-900 mb-0.5">{customerInsights.nextAction}</div>
+                  <p className="text-[12px] text-gray-500 leading-relaxed">{customerInsights.nextActionReason}</p>
                 </div>
               </div>
 
