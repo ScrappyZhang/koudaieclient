@@ -773,13 +773,8 @@ export default function CustomerDetailPageNew({ customer, onBack, onSharedCustom
                   <InfoRow label="其他手机" value="13998765432" maskedValue="1********32" onCopy="13998765432" />
                   <InfoRow label="证件号码" value="420123198707140024" maskedValue="420***********0024" onCopy="420123198707140024" />
                   <InfoRow label="联系地址" value="广东省深圳市南山区高新南九道太平洋保险大厦" maskedValue="广东省深圳市******************" hasMap />
-                  <InfoRow label="职业" value="企业高管" />
-                  <InfoRow label="工作单位" value="深圳市某科技有限公司" />
-                  <InfoRow label="公司岗位" value="市场总监" />
-                  <InfoRow label="年收入" value="50-100万" />
-                  <InfoRow label="资产规模" value="500-1000万" />
 
-                  {/* 查看更多按钮 */}
+                  {/* 查看全部字段按钮 */}
                   <button
                     onClick={() => { setShowMoreBasicInfo(!showMoreBasicInfo); setShowInfoSheet(true); }}
                     className="w-full py-2 flex items-center justify-center text-blue-500 text-[13px] font-medium hover:text-blue-600 transition-colors"
