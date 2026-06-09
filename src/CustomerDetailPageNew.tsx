@@ -757,9 +757,14 @@ export default function CustomerDetailPageNew({ customer, onBack, onSharedCustom
               <div className="bg-white rounded-2xl p-4 shadow-sm">
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-[15px] font-bold text-gray-900">基础信息</h2>
-                  <button className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-[12px] font-medium hover:bg-gray-200 transition-colors">
-                    编辑
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button onClick={() => setShowSensitive(!showSensitive)} className="text-gray-400 hover:text-gray-600 transition-colors">
+                      {showSensitive ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                    <button className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-[12px] font-medium hover:bg-gray-200 transition-colors">
+                      编辑
+                    </button>
+                  </div>
                 </div>
 
                 {/* 标签 */}
