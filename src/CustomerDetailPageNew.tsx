@@ -816,10 +816,10 @@ export default function CustomerDetailPageNew({ customer, onBack, onSharedCustom
                           <h2 className="text-[17px] font-bold text-gray-900">客户详情</h2>
                           <div className="flex items-center gap-2">
                             <button
-                              onClick={() => setShowMoreBasicInfo(!showMoreBasicInfo)}
+                              onClick={() => setShowSensitive(!showSensitive)}
                               className="p-1.5 text-gray-400 hover:text-gray-600 transition-colors"
                             >
-                              {showMoreBasicInfo ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                              {showSensitive ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                             </button>
                             <button className="px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-[12px] font-medium">
                               编辑
@@ -867,7 +867,7 @@ export default function CustomerDetailPageNew({ customer, onBack, onSharedCustom
                               <div className="flex-1">
                                 <div className="flex items-start justify-between">
                                   <span className="text-[15px] text-gray-900 font-medium break-all pr-2">
-                                    {showMoreBasicInfo ? '420123198707140024' : '420***********0024'}
+                                    {showSensitive ? '420123198707140024' : '420***********0024'}
                                   </span>
                                   <button onClick={() => copyToClipboard('420123198707140024')} className="text-blue-500 hover:text-blue-600 shrink-0 mt-0.5">
                                     <Copy className="w-4 h-4" />
