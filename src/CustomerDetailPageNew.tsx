@@ -771,7 +771,21 @@ export default function CustomerDetailPageNew({ customer, onBack, onSharedCustom
                 <div className="space-y-1">
                   <InfoRow label="保单手机" value="13812345691" maskedValue="1********91" onCopy="13812345691" />
                   <InfoRow label="其他手机" value="13998765432" maskedValue="1********32" onCopy="13998765432" />
-                  <InfoRow label="证件号码" value="420123198707140024" maskedValue="420***********0024" onCopy="420123198707140024" />
+                  <div className="flex items-start py-1.5">
+                    <span className="w-20 text-[14px] text-gray-500 shrink-0">证件号码</span>
+                    <div className="flex-1">
+                      <div className="flex items-start justify-between">
+                        <span className="text-[15px] text-gray-900 font-medium break-all pr-2">
+                          {showSensitive ? '420123198707140024' : '420***********0024'}
+                        </span>
+                        <button onClick={() => copyToClipboard('420123198707140024')} className="text-blue-500 hover:text-blue-600 shrink-0 mt-0.5">
+                          <Copy className="w-4 h-4" />
+                        </button>
+                      </div>
+                      <div className="text-[13px] text-gray-500 mt-1">证件类型：身份证</div>
+                      <div className="text-[13px] text-gray-500 mt-0.5">有效期：2025/10/17 - 2045/10/17</div>
+                    </div>
+                  </div>
                   <InfoRow label="联系地址" value="广东省深圳市南山区高新南九道太平洋保险大厦" maskedValue="广东省深圳市******************" hasMap />
 
                   {/* 查看全部字段按钮 */}
