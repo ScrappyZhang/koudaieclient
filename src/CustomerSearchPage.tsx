@@ -3,6 +3,7 @@ import { ChevronLeft, ChevronRight, Search, Trash2, Mic, Sparkles, ChevronDown, 
 import { motion, AnimatePresence } from 'motion/react';
 import { customers } from './data';
 import CustomerDetailPage from './CustomerDetailPage';
+import CustomerDetailPageNew from './CustomerDetailPageNew';
 import FilterSheet, { FilterState } from './FilterSheet';
 
 type SearchState = 'initial' | 'typing' | 'understanding' | 'results' | 'unrecognized' | 'locating';
@@ -19,12 +20,13 @@ const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: numbe
   return R * c;
 };
 
-export default function CustomerSearchPage({ onBack, onToggleVersion }: { onBack: () => void; onToggleVersion?: () => void }) {
+export default function CustomerSearchPage({ onBack }: { onBack: () => void }) {
   const [searchValue, setSearchValue] = useState('');
   const [isAISearch, setIsAISearch] = useState(true);
   const [searchState, setSearchState] = useState<SearchState>('initial');
   const [showAIReasoning, setShowAIReasoning] = useState(true);
   const [selectedCustomerId, setSelectedCustomerId] = useState<number | null>(null);
+  const [useNewDetailPage, setUseNewDetailPage] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [recordingText, setRecordingText] = useState('请说话...');
   const [feedbackState, setFeedbackState] = useState<'none' | 'accurate' | 'inaccurate' | 'submitted'>('none');
@@ -355,7 +357,18 @@ export default function CustomerSearchPage({ onBack, onToggleVersion }: { onBack
 
   if (selectedCustomerId !== null) {
     const selectedCustomer = customers.find(c => c.id === selectedCustomerId);
-    return <CustomerDetailPage customer={selectedCustomer} onBack={() => setSelectedCustomerId(null)} onToggleVersion={onToggleVersion} />;
+    if (useNewDetailPage) {
+      return <CustomerDetailPageNew
+        customer={selectedCustomer}
+        onBack={() => setSelectedCustomerId(null)}
+        onToggleVersion={() => setUseNewDetailPage(false)}
+      />;
+    }
+    return <CustomerDetailPage
+      customer={selectedCustomer}
+      onBack={() => setSelectedCustomerId(null)}
+      onToggleVersion={() => setUseNewDetailPage(true)}
+    />;
   }
 
   return (

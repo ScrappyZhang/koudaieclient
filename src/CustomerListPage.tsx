@@ -2,6 +2,7 @@ import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { ChevronLeft, Search, MoreHorizontal, Filter, ChevronDown, Phone, Edit3, Plus, Cake, UserPlus, BookOpen, ListChecks, ArchiveRestore, UserSearch, Share2, X, ChevronRight, Info, Users } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import CustomerDetailPage from './CustomerDetailPage';
+import CustomerDetailPageNew from './CustomerDetailPageNew';
 import { customers } from './data';
 
 // 筛选数据类型
@@ -46,10 +47,11 @@ interface FilterState {
   vehiclePriceRange?: string;
 }
 
-export default function CustomerListPage({ onBack, onSearch, onSharedCustomerList, onInheritanceCustomer, onToggleVersion }: { onBack: () => void; onSearch?: () => void; onSharedCustomerList?: () => void; onInheritanceCustomer?: () => void; onToggleVersion?: () => void }) {
+export default function CustomerListPage({ onBack, onSearch, onSharedCustomerList, onInheritanceCustomer }: { onBack: () => void; onSearch?: () => void; onSharedCustomerList?: () => void; onInheritanceCustomer?: () => void }) {
   const [activeTab, setActiveTab] = useState('客户列表');
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [selectedCustomerId, setSelectedCustomerId] = useState<number | null>(null);
+  const [useNewDetailPage, setUseNewDetailPage] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [showFilterSheet, setShowFilterSheet] = useState(false);
   const [showFieldDefinition, setShowFieldDefinition] = useState(false);
@@ -260,7 +262,20 @@ export default function CustomerListPage({ onBack, onSearch, onSharedCustomerLis
 
   if (selectedCustomerId !== null) {
     const selectedCustomer = customers.find(c => c.id === selectedCustomerId);
-    return <CustomerDetailPage customer={selectedCustomer} onBack={() => setSelectedCustomerId(null)} onSharedCustomerList={onSharedCustomerList} onToggleVersion={onToggleVersion} />;
+    if (useNewDetailPage) {
+      return <CustomerDetailPageNew
+        customer={selectedCustomer}
+        onBack={() => setSelectedCustomerId(null)}
+        onSharedCustomerList={onSharedCustomerList}
+        onToggleVersion={() => setUseNewDetailPage(false)}
+      />;
+    }
+    return <CustomerDetailPage
+      customer={selectedCustomer}
+      onBack={() => setSelectedCustomerId(null)}
+      onSharedCustomerList={onSharedCustomerList}
+      onToggleVersion={() => setUseNewDetailPage(true)}
+    />;
   }
 
   return (

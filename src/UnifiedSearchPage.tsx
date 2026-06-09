@@ -3,6 +3,7 @@ import { ChevronLeft, Search, Trash2, Mic, Camera, FileText, Sparkles, Users, Pa
 import { motion, AnimatePresence } from 'motion/react';
 import { customers } from './data';
 import CustomerDetailPage from './CustomerDetailPage';
+import CustomerDetailPageNew from './CustomerDetailPageNew';
 import AIChatPage from './AIChatPage';
 
 type SearchCategory = '全部' | '客户' | '产品' | '功能' | '资讯';
@@ -33,11 +34,12 @@ const mockArticles = [
   { id: 4, title: '代理人高效面访技巧', category: '销售技巧', time: '2025-01-08', views: 543 },
 ];
 
-export default function UnifiedSearchPage({ onBack, onAskBob, onToggleVersion }: { onBack: () => void; onAskBob?: () => void; onToggleVersion?: () => void }) {
+export default function UnifiedSearchPage({ onBack, onAskBob }: { onBack: () => void; onAskBob?: () => void }) {
   const [activeCategory, setActiveCategory] = useState<SearchCategory>('全部');
   const [searchValue, setSearchValue] = useState('');
   const [searchState, setSearchState] = useState<SearchState>('initial');
   const [selectedCustomerId, setSelectedCustomerId] = useState<number | null>(null);
+  const [useNewDetailPage, setUseNewDetailPage] = useState(false);
   const [showAIChat, setShowAIChat] = useState(false);
   const [deepSearch, setDeepSearch] = useState(false);
   const [recentSearches, setRecentSearches] = useState<string[]>(['曹嘉玲', '王建国', '医疗险', '保单', '养老规划', '面访']);
@@ -103,7 +105,18 @@ export default function UnifiedSearchPage({ onBack, onAskBob, onToggleVersion }:
 
   if (selectedCustomerId !== null) {
     const selectedCustomer = customers.find(c => c.id === selectedCustomerId);
-    return <CustomerDetailPage customer={selectedCustomer} onBack={() => setSelectedCustomerId(null)} onToggleVersion={onToggleVersion} />;
+    if (useNewDetailPage) {
+      return <CustomerDetailPageNew
+        customer={selectedCustomer}
+        onBack={() => setSelectedCustomerId(null)}
+        onToggleVersion={() => setUseNewDetailPage(false)}
+      />;
+    }
+    return <CustomerDetailPage
+      customer={selectedCustomer}
+      onBack={() => setSelectedCustomerId(null)}
+      onToggleVersion={() => setUseNewDetailPage(true)}
+    />;
   }
 
   const { customerResults, productResults, functionResults, articleResults } = getFilteredResults();

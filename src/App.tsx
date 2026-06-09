@@ -340,9 +340,9 @@ export default function App() {
   const metrics = getMetrics();
 
   if (currentPage === 'more-dimensions') return <MoreDimensionsPage onBack={() => setCurrentPage('home')} />;
-  if (currentPage === 'customer-list') return <CustomerListPage onBack={() => setCurrentPage('home')} onSearch={() => setCurrentPage('customer-search')} onSharedCustomerList={() => { setSharedCustomerDefaultTab('outgoing'); setCurrentPage('shared-customer-list'); }} onInheritanceCustomer={() => setCurrentPage('inheritance-customer')} onToggleVersion={() => { setUseNewCustomerDetail(true); }} />;
-  if (currentPage === 'customer-search') return <CustomerSearchPage onBack={() => setCurrentPage('home')} onToggleVersion={() => { setUseNewCustomerDetail(true); }} />;
-  if (currentPage === 'unified-search') return <UnifiedSearchPage onBack={() => setCurrentPage('home')} onToggleVersion={() => { setUseNewCustomerDetail(true); }} />;
+  if (currentPage === 'customer-list') return <CustomerListPage onBack={() => setCurrentPage('home')} onSearch={() => setCurrentPage('customer-search')} onSharedCustomerList={() => { setSharedCustomerDefaultTab('outgoing'); setCurrentPage('shared-customer-list'); }} onInheritanceCustomer={() => setCurrentPage('inheritance-customer')} />;
+  if (currentPage === 'customer-search') return <CustomerSearchPage onBack={() => setCurrentPage('home')} />;
+  if (currentPage === 'unified-search') return <UnifiedSearchPage onBack={() => setCurrentPage('home')} />;
   if (currentPage === 'agent-profile') return <AgentProfilePage onBack={() => setCurrentPage('home')} />;
   if (currentPage === 'schedule') return <SchedulePage onBack={() => setCurrentPage('home')} />;
   if (currentPage === 'ai-chat') return <AIChatPage
