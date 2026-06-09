@@ -733,7 +733,7 @@ export default function CustomerDetailPageNew({ customer, onBack, onSharedCustom
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
                       <Sparkles className="w-4 h-4 text-blue-500" />
-                      <span className="text-[13px] font-bold text-gray-700">画像摘要</span>
+                      <span className="text-[13px] font-bold text-gray-700">AI客户洞察</span>
                     </div>
                     <span className={`text-[11px] px-2 py-0.5 rounded-full font-bold ${
                       customerInsights.temperature === '高温' ? 'bg-red-50 text-red-600' :
