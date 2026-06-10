@@ -1126,6 +1126,7 @@ export default function CustomerDetailPage({ customer, onBack, onSharedCustomerL
                             <div className="text-[11px] text-gray-500 mt-0.5">预计2027年起保单交满，届时可考虑加保养老或传承规划</div>
                           </div>
                         </div>
+                      </div>
                     </div>
                   </div>
 
