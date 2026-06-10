@@ -1126,40 +1126,14 @@ export default function CustomerDetailPage({ customer, onBack, onSharedCustomerL
                             <div className="text-[11px] text-gray-500 mt-0.5">预计2027年起保单交满，届时可考虑加保养老或传承规划</div>
                           </div>
                         </div>
-                      </div>
-                      <div className="bg-blue-50 rounded-lg p-3 border border-blue-100">
-                        <div className="flex items-start gap-2">
-                          <span className="text-[11px] text-blue-500 font-bold mt-0.5">💡</span>
-                          <div>
-                            <div className="text-[12px] font-semibold text-gray-800">配偶重疾保障缺口约20万</div>
-                            <div className="text-[11px] text-gray-500 mt-0.5">建议补充配偶重疾保障</div>
-                          </div>
-                        </div>
-                      </div>
                     </div>
                   </div>
 
                   {/* 5.2 服务权益使用情况 */}
                   <div className="mb-4">
-                    <h3 className="text-[13px] font-semibold text-gray-700 mb-2">服务权益使用情况</h3>
-                    <div className="text-[12px] text-gray-500 mb-2">近30天使用情况</div>
-                    <div className="bg-gray-50 rounded-xl p-3 space-y-2">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <span className="text-[12px] font-medium text-gray-800">家庭医生服务</span>
-                        </div>
-                        <span className="text-[12px] font-bold text-blue-600">使用3次</span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <span className="text-[12px] font-medium text-gray-800">金管家权益</span>
-                        </div>
-                        <span className="text-[12px] font-bold text-blue-600">使用2次</span>
-                      </div>
-                      <div className="flex flex-wrap gap-1.5 pl-2">
-                        <span className="px-2 py-0.5 bg-blue-50 text-blue-600 rounded text-[11px]">洁牙权益</span>
-                        <span className="px-2 py-0.5 bg-blue-50 text-blue-600 rounded text-[11px]">机场VIP候机服务</span>
-                      </div>
+                    <div className="flex items-center gap-2 text-[12px] text-gray-500">
+                      <span className="font-semibold text-gray-700">服务权益使用情况</span>
+                      <span>近30天使用家庭医生3次、金管家权益2次（洁牙、机场VIP候机服务）</span>
                     </div>
                   </div>
 
