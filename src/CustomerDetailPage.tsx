@@ -1077,99 +1077,160 @@ export default function CustomerDetailPage({ customer, onBack, onSharedCustomerL
 
               {/* 5. 保障现状 */}
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                <div className="px-4 py-3 bg-gray-50 border-b border-gray-100 flex items-center justify-between">
-                  <h2 className="text-[15px] font-bold text-gray-800">保障现状</h2>
-                  <button onClick={() => setActiveTab('已购保单')} className="text-[11px] text-blue-600 flex items-center">
-                    详情 <ChevronRight className="w-3 h-3 ml-0.5" />
-                  </button>
-                </div>
-
-                {/* 3.1 购买保单情况 */}
-                <div className="px-4 py-3 border-b border-gray-100">
-                  <h3 className="text-[13px] font-semibold text-gray-700 mb-2">购买保单情况</h3>
-                  <div className="flex items-center justify-between bg-gray-50 rounded-xl p-3">
-                    <div>
-                      <div className="text-[13px] font-semibold text-gray-800">持有保单</div>
-                      <div className="text-[11px] text-gray-500 mt-0.5">长险3件 + 短险2件 + 综金1件</div>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-[16px] font-bold text-gray-800">6件</div>
-                      <div className="text-[11px] text-gray-400">年缴8.5万</div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* 3.2 服务权益使用情况 */}
-                <div className="px-4 py-3 border-b border-gray-100">
-                  <h3 className="text-[13px] font-semibold text-gray-700 mb-2">服务权益使用</h3>
-                  <div className="grid grid-cols-3 gap-2">
-                    <div className="bg-gray-50 rounded-lg p-2 text-center">
-                      <div className="text-[11px] text-gray-400">已使用</div>
-                      <div className="text-[14px] font-bold text-gray-800 mt-0.5">3项</div>
-                    </div>
-                    <div className="bg-gray-50 rounded-lg p-2 text-center">
-                      <div className="text-[11px] text-gray-400">待使用</div>
-                      <div className="text-[14px] font-bold text-gray-600 mt-0.5">2项</div>
-                    </div>
-                    <div className="bg-gray-50 rounded-lg p-2 text-center">
-                      <div className="text-[11px] text-gray-400">未激活</div>
-                      <div className="text-[14px] font-bold text-gray-400 mt-0.5">1项</div>
-                    </div>
-                  </div>
-                  <div className="flex flex-wrap gap-1.5 mt-2">
-                    <span className="px-2 py-0.5 bg-gray-100 text-gray-600 rounded-lg text-[11px]">✓ 高端体检已用</span>
-                    <span className="px-2 py-0.5 bg-gray-100 text-gray-600 rounded-lg text-[11px]">✓ 健康咨询已用</span>
-                    <span className="px-2 py-0.5 bg-blue-50 text-blue-600 rounded-lg text-[11px]">○ 康养权益待用</span>
-                    <span className="px-2 py-0.5 bg-gray-100 text-gray-400 rounded-lg text-[11px]">— 养老预约未激活</span>
-                  </div>
-                </div>
-
-                {/* 3.3 保障缺口分析 */}
                 <div className="px-4 py-3">
-                  <h3 className="text-[13px] font-semibold text-gray-700 mb-2">保障缺口分析</h3>
-                  <div className="bg-gray-50 rounded-xl p-3">
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="text-[12px] text-gray-600">家庭保障覆盖率</div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-[18px] font-bold text-gray-800">85%</span>
-                        <span className="px-1.5 py-0.5 bg-amber-50 text-amber-600 rounded text-[10px] font-medium">中等缺口</span>
+                  <h2 className="text-[15px] font-bold text-gray-800 mb-3">保障现状</h2>
+
+                  {/* 5.1 保障情况 */}
+                  <div className="mb-4">
+                    <h3 className="text-[13px] font-semibold text-gray-700 mb-2">保障情况</h3>
+                    <div className="flex flex-wrap gap-1.5 mb-3">
+                      <span className="px-2.5 py-1 bg-blue-50 text-blue-600 rounded-lg text-[12px] font-medium">已购保单5张</span>
+                      <span className="px-2.5 py-1 bg-blue-50 text-blue-600 rounded-lg text-[12px] font-medium">年缴保费5.5万</span>
+                      <span className="px-2.5 py-1 bg-emerald-50 text-emerald-600 rounded-lg text-[12px] font-medium">分红账户 12,800元</span>
+                    </div>
+                    {/* 关键保障提醒 */}
+                    <div className="space-y-2">
+                      <div className="bg-amber-50 rounded-lg p-3 border border-amber-100">
+                        <div className="flex items-start gap-2">
+                          <span className="text-[11px] text-amber-500 font-bold mt-0.5">⚠</span>
+                          <div>
+                            <div className="text-[12px] font-semibold text-gray-800">御享金越保单即将交满</div>
+                            <div className="text-[11px] text-gray-500 mt-0.5">预计2027年起保单交满，届时可考虑加保养老或传承规划</div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="bg-blue-50 rounded-lg p-3 border border-blue-100">
+                        <div className="flex items-start gap-2">
+                          <span className="text-[11px] text-blue-500 font-bold mt-0.5">💡</span>
+                          <div>
+                            <div className="text-[12px] font-semibold text-gray-800">配偶重疾保障缺口约20万</div>
+                            <div className="text-[11px] text-gray-500 mt-0.5">建议补充配偶重疾保障</div>
+                          </div>
+                        </div>
                       </div>
                     </div>
+                  </div>
+
+                  {/* 5.2 服务权益使用情况 */}
+                  <div className="mb-4">
+                    <h3 className="text-[13px] font-semibold text-gray-700 mb-2">服务权益使用情况</h3>
+                    <div className="text-[12px] text-gray-500 mb-2">近30天使用情况</div>
+                    <div className="bg-gray-50 rounded-xl p-3 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <span className="text-[12px] font-medium text-gray-800">家庭医生服务</span>
+                        </div>
+                        <span className="text-[12px] font-bold text-blue-600">使用3次</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <span className="text-[12px] font-medium text-gray-800">金管家权益</span>
+                        </div>
+                        <span className="text-[12px] font-bold text-blue-600">使用2次</span>
+                      </div>
+                      <div className="flex flex-wrap gap-1.5 pl-2">
+                        <span className="px-2 py-0.5 bg-blue-50 text-blue-600 rounded text-[11px]">洁牙权益</span>
+                        <span className="px-2 py-0.5 bg-blue-50 text-blue-600 rounded text-[11px]">机场VIP候机服务</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 5.3 保障缺口分析 */}
+                  <div>
+                    <h3 className="text-[13px] font-semibold text-gray-700 mb-2">保障缺口分析</h3>
                     <div className="space-y-2">
-                      <div className="flex items-center justify-between text-[11px]">
-                        <span className="text-gray-600">重疾保障</span>
-                        <div className="flex items-center gap-1">
-                          <div className="w-20 h-1.5 bg-gray-200 rounded-full overflow-hidden">
-                            <div className="w-[90%] h-full bg-blue-500 rounded-full"></div>
+                      {/* 健康保障 */}
+                      <div className="bg-gray-50 rounded-xl overflow-hidden">
+                        <div className="px-3 py-2 bg-blue-50/50 border-b border-gray-100">
+                          <div className="text-[12px] font-bold text-gray-800">健康保障</div>
+                        </div>
+                        <div className="p-3 space-y-2">
+                          <div className="flex items-center justify-between text-[12px]">
+                            <span className="text-gray-600">疾病保障</span>
+                            <div className="flex items-center gap-2">
+                              <span className="text-gray-500">已有50万</span>
+                              <span className="text-orange-600 font-medium">缺20万</span>
+                              <span className="text-[10px] px-1.5 py-0.5 bg-red-50 text-red-600 rounded font-bold">建议优先</span>
+                            </div>
                           </div>
-                          <span className="text-blue-600 font-medium">充足</span>
+                          <div className="flex items-center justify-between text-[12px]">
+                            <span className="text-gray-600">医疗保障</span>
+                            <div className="flex items-center gap-2">
+                              <span className="text-gray-500">已有100万</span>
+                              <span className="text-gray-500">缺0万</span>
+                              <span className="text-[10px] px-1.5 py-0.5 bg-emerald-50 text-emerald-600 rounded font-bold">充足</span>
+                            </div>
+                          </div>
+                          <div className="flex items-center justify-between text-[12px]">
+                            <span className="text-gray-600">伤残保障</span>
+                            <div className="flex items-center gap-2">
+                              <span className="text-gray-500">已有10万</span>
+                              <span className="text-gray-500">缺5万</span>
+                            </div>
+                          </div>
+                          <div className="flex items-center justify-between text-[12px]">
+                            <span className="text-gray-600">护理保障</span>
+                            <div className="flex items-center gap-2">
+                              <span className="text-gray-500">已有0万</span>
+                              <span className="text-gray-500">缺30万</span>
+                            </div>
+                          </div>
+                          <div className="flex items-center justify-between text-[12px]">
+                            <span className="text-gray-600">身故保障</span>
+                            <div className="flex items-center gap-2">
+                              <span className="text-gray-500">已有100万</span>
+                              <span className="text-gray-500">缺50万</span>
+                            </div>
+                          </div>
                         </div>
                       </div>
-                      <div className="flex items-center justify-between text-[11px]">
-                        <span className="text-gray-600">意外保障</span>
-                        <div className="flex items-center gap-1">
-                          <div className="w-20 h-1.5 bg-gray-200 rounded-full overflow-hidden">
-                            <div className="w-[80%] h-full bg-blue-400 rounded-full"></div>
+
+                      {/* 财富保障 */}
+                      <div className="bg-gray-50 rounded-xl overflow-hidden">
+                        <div className="px-3 py-2 bg-amber-50/50 border-b border-gray-100">
+                          <div className="text-[12px] font-bold text-gray-800">财富保障</div>
+                        </div>
+                        <div className="p-3 space-y-2">
+                          <div className="flex items-center justify-between text-[12px]">
+                            <span className="text-gray-600">财富管理</span>
+                            <div className="flex items-center gap-2">
+                              <span className="text-gray-500">已有50万</span>
+                              <span className="text-gray-500">缺50万</span>
+                            </div>
                           </div>
-                          <span className="text-blue-500 font-medium">良好</span>
                         </div>
                       </div>
-                      <div className="flex items-center justify-between text-[11px]">
-                        <span className="text-gray-600">高端医疗</span>
-                        <div className="flex items-center gap-1">
-                          <div className="w-20 h-1.5 bg-gray-200 rounded-full overflow-hidden">
-                            <div className="w-[20%] h-full bg-amber-500 rounded-full"></div>
+
+                      {/* 养老保障 */}
+                      <div className="bg-gray-50 rounded-xl overflow-hidden">
+                        <div className="px-3 py-2 bg-purple-50/50 border-b border-gray-100">
+                          <div className="text-[12px] font-bold text-gray-800">养老保障</div>
+                        </div>
+                        <div className="p-3 space-y-2">
+                          <div className="flex items-center justify-between text-[12px]">
+                            <span className="text-gray-600">养老储备</span>
+                            <div className="flex items-center gap-2">
+                              <span className="text-gray-500">已有100万</span>
+                              <span className="text-orange-600 font-medium">缺200万</span>
+                              <span className="text-[10px] px-1.5 py-0.5 bg-red-50 text-red-600 rounded font-bold">建议优先</span>
+                            </div>
                           </div>
-                          <span className="text-amber-600 font-medium">缺失</span>
                         </div>
                       </div>
-                      <div className="flex items-center justify-between text-[11px]">
-                        <span className="text-gray-600">养老规划</span>
-                        <div className="flex items-center gap-1">
-                          <div className="w-20 h-1.5 bg-gray-200 rounded-full overflow-hidden">
-                            <div className="w-[40%] h-full bg-amber-400 rounded-full"></div>
+
+                      {/* 传承储备 */}
+                      <div className="bg-gray-50 rounded-xl overflow-hidden">
+                        <div className="px-3 py-2 bg-indigo-50/50 border-b border-gray-100">
+                          <div className="text-[12px] font-bold text-gray-800">传承储备</div>
+                        </div>
+                        <div className="p-3 space-y-2">
+                          <div className="flex items-center justify-between text-[12px]">
+                            <span className="text-gray-600">传承储备</span>
+                            <div className="flex items-center gap-2">
+                              <span className="text-gray-500">已有50万</span>
+                              <span className="text-gray-500">缺200万</span>
+                            </div>
                           </div>
-                          <span className="text-amber-500 font-medium">不足</span>
                         </div>
                       </div>
                     </div>
