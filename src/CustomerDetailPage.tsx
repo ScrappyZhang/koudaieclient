@@ -1198,73 +1198,50 @@ export default function CustomerDetailPage({ customer, onBack, onSharedCustomerL
                     <span className="px-2 py-0.5 bg-blue-50 text-blue-600 rounded text-[10px] font-medium">AI生成</span>
                   </div>
 
-                  {/* 契机卡片 */}
+                  {/* 整体建议 */}
+                  <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-3 mb-3 border border-blue-100">
+                    <p className="text-[13px] text-gray-800 leading-relaxed">
+                      客户为高价值分红老客，保单即将交满，建议结合居家2.0政策与生日节点，通过权益体验+养老社区参观，推进养老规划加保。
+                    </p>
+                  </div>
+
+                  {/* 推荐卡片 */}
                   <div className="space-y-2">
-                    {/* 契机1 */}
-                    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-3 border border-blue-100">
+                    {/* 推荐1 */}
+                    <div className="bg-gray-50 rounded-xl p-3 border border-gray-100">
                       <div className="flex items-start gap-2">
-                        <div className="w-6 h-6 bg-blue-500 rounded-lg flex items-center justify-center shrink-0 mt-0.5">
+                        <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center shrink-0 mt-0.5">
                           <span className="text-[10px] font-bold text-white">1</span>
                         </div>
                         <div className="flex-1">
-                          <div className="text-[12px] font-bold text-gray-800 mb-1">分红老客居家2.0临界营销</div>
-                          <div className="flex flex-wrap gap-1 mb-2">
-                            <span className="px-1.5 py-0.5 bg-blue-100 text-blue-700 rounded text-[10px] font-medium">契机</span>
-                            <span className="px-1.5 py-0.5 bg-gray-100 text-gray-600 rounded text-[10px]">分红老客名单</span>
-                          </div>
-                          <div className="text-[12px] text-gray-600 leading-relaxed">
-                            客户持有分红型保单，可借助居家2.0上线政策，进行居家权益临界营销，引导客户体验新增权益。
-                          </div>
-                          <div className="mt-2 bg-white rounded-lg p-2 border border-blue-50">
-                            <div className="text-[11px] font-semibold text-blue-700 mb-0.5">推荐动作</div>
-                            <div className="text-[11px] text-gray-600">发送居家2.0权益介绍，预约面访讲解权益升级方案</div>
-                          </div>
+                          <div className="text-[13px] font-bold text-gray-800 mb-1">居家2.0权益营销</div>
+                          <div className="text-[12px] text-gray-500 leading-relaxed">客户持有分红型保单，可借助居家2.0上线政策，进行居家权益临界营销，引导客户体验新增权益并预约面访讲解升级方案。</div>
                         </div>
                       </div>
                     </div>
 
-                    {/* 契机2 */}
-                    <div className="bg-gradient-to-r from-orange-50 to-amber-50 rounded-xl p-3 border border-orange-100">
+                    {/* 推荐2 */}
+                    <div className="bg-gray-50 rounded-xl p-3 border border-gray-100">
                       <div className="flex items-start gap-2">
-                        <div className="w-6 h-6 bg-orange-500 rounded-lg flex items-center justify-center shrink-0 mt-0.5">
+                        <div className="w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center shrink-0 mt-0.5">
                           <span className="text-[10px] font-bold text-white">2</span>
                         </div>
                         <div className="flex-1">
-                          <div className="text-[12px] font-bold text-gray-800 mb-1">御享金越保单即将交满</div>
-                          <div className="flex flex-wrap gap-1 mb-2">
-                            <span className="px-1.5 py-0.5 bg-orange-100 text-orange-700 rounded text-[10px] font-medium">契机</span>
-                            <span className="px-1.5 py-0.5 bg-gray-100 text-gray-600 rounded text-[10px]">保单交满</span>
-                          </div>
-                          <div className="text-[12px] text-gray-600 leading-relaxed">
-                            御享金越保单预计2027年交满，交满后客户有资金回流需求，是加保养老或传承规划的最佳时机。
-                          </div>
-                          <div className="mt-2 bg-white rounded-lg p-2 border border-orange-50">
-                            <div className="text-[11px] font-semibold text-orange-700 mb-0.5">推荐动作</div>
-                            <div className="text-[11px] text-gray-600">提前预约面访，准备养老金方案对比，结合养老社区参观进行体验式营销</div>
-                          </div>
+                          <div className="text-[13px] font-bold text-gray-800 mb-1">养老社区参观+养老金方案</div>
+                          <div className="text-[12px] text-gray-500 leading-relaxed">御享金越保单预计2027年交满，客户有资金回流需求。提前预约养老社区参观，配合养老金方案对比，体验式营销促成加保。</div>
                         </div>
                       </div>
                     </div>
 
-                    {/* 契机3 */}
-                    <div className="bg-gradient-to-r from-emerald-50 to-teal-50 rounded-xl p-3 border border-emerald-100">
+                    {/* 推荐3 */}
+                    <div className="bg-gray-50 rounded-xl p-3 border border-gray-100">
                       <div className="flex items-start gap-2">
-                        <div className="w-6 h-6 bg-emerald-500 rounded-lg flex items-center justify-center shrink-0 mt-0.5">
+                        <div className="w-6 h-6 bg-emerald-500 rounded-full flex items-center justify-center shrink-0 mt-0.5">
                           <span className="text-[10px] font-bold text-white">3</span>
                         </div>
                         <div className="flex-1">
-                          <div className="text-[12px] font-bold text-gray-800 mb-1">7月生日节点营销</div>
-                          <div className="flex flex-wrap gap-1 mb-2">
-                            <span className="px-1.5 py-0.5 bg-emerald-100 text-emerald-700 rounded text-[10px] font-medium">契机</span>
-                            <span className="px-1.5 py-0.5 bg-gray-100 text-gray-600 rounded text-[10px]">生日提醒</span>
-                          </div>
-                          <div className="text-[12px] text-gray-600 leading-relaxed">
-                            客户7月14日过生日，是增进关系、促成加保的重要时间节点。
-                          </div>
-                          <div className="mt-2 bg-white rounded-lg p-2 border border-emerald-50">
-                            <div className="text-[11px] font-semibold text-emerald-700 mb-0.5">推荐动作</div>
-                            <div className="text-[11px] text-gray-600">提前准备生日贺卡与礼品，6月底联系邀约生日面访</div>
-                          </div>
+                          <div className="text-[13px] font-bold text-gray-800 mb-1">7月生日节点跟进</div>
+                          <div className="text-[12px] text-gray-500 leading-relaxed">客户7月14日过生日，是增进关系的重要节点。提前准备生日贺卡与礼品，6月底联系邀约生日面访，促成保单检视。</div>
                         </div>
                       </div>
                     </div>
