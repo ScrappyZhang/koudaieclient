@@ -957,7 +957,67 @@ export default function CustomerDetailPage({ customer, onBack, onSharedCustomerL
                 </div>
               </div>
 
-              {/* 3. 保障现状 */}
+              {/* 3. 客户购买力 */}
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                <div className="px-4 py-3">
+                  <h2 className="text-[15px] font-bold text-gray-800 mb-3">客户购买力</h2>
+
+                  {/* 3.1 收入情况 */}
+                  <div className="mb-3">
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="w-1 h-3.5 bg-blue-500 rounded-full"></div>
+                      <h3 className="text-[13px] font-semibold text-gray-700">收入情况</h3>
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      <span className="px-2.5 py-1 bg-emerald-50 text-emerald-600 rounded-lg text-[12px] font-medium">个人年收入 50-100万</span>
+                      <span className="px-2.5 py-1 bg-emerald-50 text-emerald-600 rounded-lg text-[12px] font-medium">家庭年收入 100-200万</span>
+                      <span className="px-2.5 py-1 bg-gray-100 text-gray-600 rounded-lg text-[12px]">收入稳定</span>
+                    </div>
+                  </div>
+
+                  {/* 3.2 资产状况 */}
+                  <div className="mb-3">
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="w-1 h-3.5 bg-amber-500 rounded-full"></div>
+                      <h3 className="text-[13px] font-semibold text-gray-700">资产状况</h3>
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      <span className="px-2.5 py-1 bg-amber-50 text-amber-600 rounded-lg text-[12px] font-medium">有房</span>
+                      <span className="px-2.5 py-1 bg-amber-50 text-amber-600 rounded-lg text-[12px] font-medium">有车</span>
+                      <span className="px-2.5 py-1 bg-gray-100 text-gray-600 rounded-lg text-[12px]">大额定存</span>
+                      <span className="px-2.5 py-1 bg-gray-100 text-gray-600 rounded-lg text-[12px]">资产规模 500-1000万</span>
+                    </div>
+                  </div>
+
+                  {/* 3.3 负债情况 */}
+                  <div className="mb-3">
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="w-1 h-3.5 bg-red-500 rounded-full"></div>
+                      <h3 className="text-[13px] font-semibold text-gray-700">负债情况</h3>
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      <span className="px-2.5 py-1 bg-red-50 text-red-600 rounded-lg text-[12px] font-medium">月房贷 1.5万</span>
+                      <span className="px-2.5 py-1 bg-gray-100 text-gray-600 rounded-lg text-[12px]">无其他负债</span>
+                    </div>
+                  </div>
+
+                  {/* 3.4 家庭责任 */}
+                  <div>
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="w-1 h-3.5 bg-purple-500 rounded-full"></div>
+                      <h3 className="text-[13px] font-semibold text-gray-700">家庭责任</h3>
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      <span className="px-2.5 py-1 bg-purple-50 text-purple-600 rounded-lg text-[12px] font-medium">已婚</span>
+                      <span className="px-2.5 py-1 bg-purple-50 text-purple-600 rounded-lg text-[12px] font-medium">有子（10岁）</span>
+                      <span className="px-2.5 py-1 bg-gray-100 text-gray-600 rounded-lg text-[12px]">三代同堂</span>
+                      <span className="px-2.5 py-1 bg-gray-100 text-gray-600 rounded-lg text-[12px]">家庭责任重</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* 4. 保障现状 */}
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                 <div className="px-4 py-3 bg-gray-50 border-b border-gray-100 flex items-center justify-between">
                   <h2 className="text-[15px] font-bold text-gray-800">保障现状</h2>
