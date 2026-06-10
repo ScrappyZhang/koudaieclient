@@ -689,6 +689,37 @@ export default function CustomerDetailPage({ customer, onBack, onSharedCustomerL
     </div>
   );
 
+  // 保障缺口横向进度条组件
+  const GapBar = ({ label, have, need, priority, status }: { label: string; have: number; need: number; priority?: boolean; status?: string }) => {
+    const ratio = Math.min(have / need * 100, 100);
+    const gap = Math.max(need - have, 0);
+    const isFull = have >= need;
+
+    return (
+      <div>
+        <div className="flex items-center justify-between mb-1">
+          <span className="text-[12px] text-gray-600">{label}</span>
+          <div className="flex items-center gap-2">
+            {isFull ? (
+              <span className="text-[10px] px-1.5 py-0.5 bg-emerald-50 text-emerald-600 rounded font-bold">{status || '充足'}</span>
+            ) : (
+              <>
+                <span className="text-[11px] text-gray-500">已有 {have}万</span>
+                <span className="text-[11px] text-orange-600 font-medium">缺 {gap}万</span>
+                {priority && <span className="text-[10px] px-1.5 py-0.5 bg-red-50 text-red-600 rounded font-bold">建议优先</span>}
+              </>
+            )}
+          </div>
+        </div>
+        <div className="flex gap-1 h-2">
+          <div className="flex-1 bg-gray-100 rounded-full overflow-hidden h-full">
+            <div className="h-full bg-gradient-to-r from-blue-400 to-blue-500 rounded-full transition-all" style={{ width: `${ratio}%` }} />
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 flex justify-center font-sans">
       <div className="w-full max-w-md bg-gray-50 min-h-screen shadow-2xl flex flex-col relative pb-20">
@@ -1144,44 +1175,12 @@ export default function CustomerDetailPage({ customer, onBack, onSharedCustomerL
                         <div className="px-3 py-2 bg-blue-50/50 border-b border-gray-100">
                           <div className="text-[12px] font-bold text-gray-800">健康保障</div>
                         </div>
-                        <div className="p-3 space-y-2">
-                          <div className="flex items-center justify-between text-[12px]">
-                            <span className="text-gray-600">疾病保障</span>
-                            <div className="flex items-center gap-2">
-                              <span className="text-gray-500">已有50万</span>
-                              <span className="text-orange-600 font-medium">缺20万</span>
-                              <span className="text-[10px] px-1.5 py-0.5 bg-red-50 text-red-600 rounded font-bold">建议优先</span>
-                            </div>
-                          </div>
-                          <div className="flex items-center justify-between text-[12px]">
-                            <span className="text-gray-600">医疗保障</span>
-                            <div className="flex items-center gap-2">
-                              <span className="text-gray-500">已有100万</span>
-                              <span className="text-gray-500">缺0万</span>
-                              <span className="text-[10px] px-1.5 py-0.5 bg-emerald-50 text-emerald-600 rounded font-bold">充足</span>
-                            </div>
-                          </div>
-                          <div className="flex items-center justify-between text-[12px]">
-                            <span className="text-gray-600">伤残保障</span>
-                            <div className="flex items-center gap-2">
-                              <span className="text-gray-500">已有10万</span>
-                              <span className="text-gray-500">缺5万</span>
-                            </div>
-                          </div>
-                          <div className="flex items-center justify-between text-[12px]">
-                            <span className="text-gray-600">护理保障</span>
-                            <div className="flex items-center gap-2">
-                              <span className="text-gray-500">已有0万</span>
-                              <span className="text-gray-500">缺30万</span>
-                            </div>
-                          </div>
-                          <div className="flex items-center justify-between text-[12px]">
-                            <span className="text-gray-600">身故保障</span>
-                            <div className="flex items-center gap-2">
-                              <span className="text-gray-500">已有100万</span>
-                              <span className="text-gray-500">缺50万</span>
-                            </div>
-                          </div>
+                        <div className="p-3 space-y-2.5">
+                          <GapBar label="疾病保障" have={50} need={70} priority />
+                          <GapBar label="医疗保障" have={100} need={100} status="充足" />
+                          <GapBar label="伤残保障" have={10} need={15} />
+                          <GapBar label="护理保障" have={0} need={30} />
+                          <GapBar label="身故保障" have={100} need={150} />
                         </div>
                       </div>
 
@@ -1190,14 +1189,8 @@ export default function CustomerDetailPage({ customer, onBack, onSharedCustomerL
                         <div className="px-3 py-2 bg-amber-50/50 border-b border-gray-100">
                           <div className="text-[12px] font-bold text-gray-800">财富保障</div>
                         </div>
-                        <div className="p-3 space-y-2">
-                          <div className="flex items-center justify-between text-[12px]">
-                            <span className="text-gray-600">财富管理</span>
-                            <div className="flex items-center gap-2">
-                              <span className="text-gray-500">已有50万</span>
-                              <span className="text-gray-500">缺50万</span>
-                            </div>
-                          </div>
+                        <div className="p-3 space-y-2.5">
+                          <GapBar label="财富管理" have={50} need={100} />
                         </div>
                       </div>
 
@@ -1206,15 +1199,8 @@ export default function CustomerDetailPage({ customer, onBack, onSharedCustomerL
                         <div className="px-3 py-2 bg-purple-50/50 border-b border-gray-100">
                           <div className="text-[12px] font-bold text-gray-800">养老保障</div>
                         </div>
-                        <div className="p-3 space-y-2">
-                          <div className="flex items-center justify-between text-[12px]">
-                            <span className="text-gray-600">养老储备</span>
-                            <div className="flex items-center gap-2">
-                              <span className="text-gray-500">已有100万</span>
-                              <span className="text-orange-600 font-medium">缺200万</span>
-                              <span className="text-[10px] px-1.5 py-0.5 bg-red-50 text-red-600 rounded font-bold">建议优先</span>
-                            </div>
-                          </div>
+                        <div className="p-3 space-y-2.5">
+                          <GapBar label="养老储备" have={100} need={300} priority />
                         </div>
                       </div>
 
@@ -1223,14 +1209,8 @@ export default function CustomerDetailPage({ customer, onBack, onSharedCustomerL
                         <div className="px-3 py-2 bg-indigo-50/50 border-b border-gray-100">
                           <div className="text-[12px] font-bold text-gray-800">传承储备</div>
                         </div>
-                        <div className="p-3 space-y-2">
-                          <div className="flex items-center justify-between text-[12px]">
-                            <span className="text-gray-600">传承储备</span>
-                            <div className="flex items-center gap-2">
-                              <span className="text-gray-500">已有50万</span>
-                              <span className="text-gray-500">缺200万</span>
-                            </div>
-                          </div>
+                        <div className="p-3 space-y-2.5">
+                          <GapBar label="传承储备" have={50} need={250} />
                         </div>
                       </div>
                     </div>
