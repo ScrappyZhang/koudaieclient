@@ -1190,102 +1190,82 @@ export default function CustomerDetailPage({ customer, onBack, onSharedCustomerL
                 </div>
               </div>
 
-              {/* 4. 经营策略 */}
+              {/* 4. 经营建议 */}
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                <div className="px-4 py-3 bg-gray-50 border-b border-gray-100 flex items-center justify-between">
-                  <h2 className="text-[15px] font-bold text-gray-800">经营策略</h2>
-                  <span className="px-2 py-0.5 bg-blue-50 text-blue-600 rounded-lg text-[11px] font-medium">AI生成</span>
-                </div>
-
-                {/* 4.1 当季经营建议 */}
-                <div className="px-4 py-3 border-b border-gray-100">
-                  <h3 className="text-[13px] font-semibold text-gray-700 mb-2">当季经营建议</h3>
-                  <div className="bg-gray-50 rounded-xl p-3">
-                    <div className="text-[12px] font-medium text-gray-800 mb-1">二季度重点：养老社区专题</div>
-                    <div className="text-[11px] text-gray-500 leading-relaxed">客户近期多次浏览养老资讯，建议安排养老社区参观活动，结合高端医疗保障方案进行综合推荐。</div>
-                  </div>
-                </div>
-
-                {/* 4.2 购买意愿预测 */}
-                <div className="px-4 py-3 border-b border-gray-100">
-                  <h3 className="text-[13px] font-semibold text-gray-700 mb-2">购买意愿预测</h3>
-                  <div className="grid grid-cols-2 gap-2">
-                    <div className="bg-gray-50 rounded-xl p-3">
-                      <div className="text-[11px] text-gray-400 mb-1">高端医疗</div>
-                      <div className="flex items-center gap-2">
-                        <div className="flex gap-0.5">
-                          {[1,2,3,4,5].map(i => (
-                            <div key={i} className={`w-2 h-2 rounded-full ${i <= 4 ? 'bg-blue-500' : 'bg-gray-200'}`}></div>
-                          ))}
-                        </div>
-                        <span className="text-[12px] font-medium text-gray-800">意愿强</span>
-                      </div>
-                    </div>
-                    <div className="bg-gray-50 rounded-xl p-3">
-                      <div className="text-[11px] text-gray-400 mb-1">养老规划</div>
-                      <div className="flex items-center gap-2">
-                        <div className="flex gap-0.5">
-                          {[1,2,3,4,5].map(i => (
-                            <div key={i} className={`w-2 h-2 rounded-full ${i <= 4 ? 'bg-blue-500' : 'bg-gray-200'}`}></div>
-                          ))}
-                        </div>
-                        <span className="text-[12px] font-medium text-gray-800">意愿强</span>
-                      </div>
-                    </div>
-                    <div className="bg-gray-50 rounded-xl p-3">
-                      <div className="text-[11px] text-gray-400 mb-1">年金加保</div>
-                      <div className="flex items-center gap-2">
-                        <div className="flex gap-0.5">
-                          {[1,2,3,4,5].map(i => (
-                            <div key={i} className={`w-2 h-2 rounded-full ${i <= 3 ? 'bg-blue-400' : 'bg-gray-200'}`}></div>
-                          ))}
-                        </div>
-                        <span className="text-[12px] font-medium text-gray-600">意愿中</span>
-                      </div>
-                    </div>
-                    <div className="bg-gray-50 rounded-xl p-3">
-                      <div className="text-[11px] text-gray-400 mb-1">教育金</div>
-                      <div className="flex items-center gap-2">
-                        <div className="flex gap-0.5">
-                          {[1,2,3,4,5].map(i => (
-                            <div key={i} className={`w-2 h-2 rounded-full ${i <= 2 ? 'bg-gray-400' : 'bg-gray-200'}`}></div>
-                          ))}
-                        </div>
-                        <span className="text-[12px] font-medium text-gray-500">意愿低</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* 4.3 下一步经营建议 */}
                 <div className="px-4 py-3">
-                  <h3 className="text-[13px] font-semibold text-gray-700 mb-2">下一步经营建议</h3>
+                  <div className="flex items-center justify-between mb-3">
+                    <h2 className="text-[15px] font-bold text-gray-800">经营建议</h2>
+                    <span className="px-2 py-0.5 bg-blue-50 text-blue-600 rounded text-[10px] font-medium">AI生成</span>
+                  </div>
+
+                  {/* 契机卡片 */}
                   <div className="space-y-2">
-                    <div className="flex items-start gap-2 bg-blue-50 rounded-xl p-3">
-                      <div className="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center shrink-0 mt-0.5">
-                        <span className="text-[10px] font-bold text-white">1</span>
-                      </div>
-                      <div className="flex-1">
-                        <div className="text-[12px] font-medium text-gray-800">预约养老社区参观</div>
-                        <div className="text-[11px] text-gray-500 mt-0.5">建议本周联系，安排下周参观行程</div>
+                    {/* 契机1 */}
+                    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-3 border border-blue-100">
+                      <div className="flex items-start gap-2">
+                        <div className="w-6 h-6 bg-blue-500 rounded-lg flex items-center justify-center shrink-0 mt-0.5">
+                          <span className="text-[10px] font-bold text-white">1</span>
+                        </div>
+                        <div className="flex-1">
+                          <div className="text-[12px] font-bold text-gray-800 mb-1">分红老客居家2.0临界营销</div>
+                          <div className="flex flex-wrap gap-1 mb-2">
+                            <span className="px-1.5 py-0.5 bg-blue-100 text-blue-700 rounded text-[10px] font-medium">契机</span>
+                            <span className="px-1.5 py-0.5 bg-gray-100 text-gray-600 rounded text-[10px]">分红老客名单</span>
+                          </div>
+                          <div className="text-[12px] text-gray-600 leading-relaxed">
+                            客户持有分红型保单，可借助居家2.0上线政策，进行居家权益临界营销，引导客户体验新增权益。
+                          </div>
+                          <div className="mt-2 bg-white rounded-lg p-2 border border-blue-50">
+                            <div className="text-[11px] font-semibold text-blue-700 mb-0.5">推荐动作</div>
+                            <div className="text-[11px] text-gray-600">发送居家2.0权益介绍，预约面访讲解权益升级方案</div>
+                          </div>
+                        </div>
                       </div>
                     </div>
-                    <div className="flex items-start gap-2 bg-gray-50 rounded-xl p-3">
-                      <div className="w-5 h-5 bg-gray-400 rounded-full flex items-center justify-center shrink-0 mt-0.5">
-                        <span className="text-[10px] font-bold text-white">2</span>
-                      </div>
-                      <div className="flex-1">
-                        <div className="text-[12px] font-medium text-gray-800">发送高端医疗方案</div>
-                        <div className="text-[11px] text-gray-500 mt-0.5">结合参观行程，提供对比方案</div>
+
+                    {/* 契机2 */}
+                    <div className="bg-gradient-to-r from-orange-50 to-amber-50 rounded-xl p-3 border border-orange-100">
+                      <div className="flex items-start gap-2">
+                        <div className="w-6 h-6 bg-orange-500 rounded-lg flex items-center justify-center shrink-0 mt-0.5">
+                          <span className="text-[10px] font-bold text-white">2</span>
+                        </div>
+                        <div className="flex-1">
+                          <div className="text-[12px] font-bold text-gray-800 mb-1">御享金越保单即将交满</div>
+                          <div className="flex flex-wrap gap-1 mb-2">
+                            <span className="px-1.5 py-0.5 bg-orange-100 text-orange-700 rounded text-[10px] font-medium">契机</span>
+                            <span className="px-1.5 py-0.5 bg-gray-100 text-gray-600 rounded text-[10px]">保单交满</span>
+                          </div>
+                          <div className="text-[12px] text-gray-600 leading-relaxed">
+                            御享金越保单预计2027年交满，交满后客户有资金回流需求，是加保养老或传承规划的最佳时机。
+                          </div>
+                          <div className="mt-2 bg-white rounded-lg p-2 border border-orange-50">
+                            <div className="text-[11px] font-semibold text-orange-700 mb-0.5">推荐动作</div>
+                            <div className="text-[11px] text-gray-600">提前预约面访，准备养老金方案对比，结合养老社区参观进行体验式营销</div>
+                          </div>
+                        </div>
                       </div>
                     </div>
-                    <div className="flex items-start gap-2 bg-gray-50 rounded-xl p-3">
-                      <div className="w-5 h-5 bg-gray-400 rounded-full flex items-center justify-center shrink-0 mt-0.5">
-                        <span className="text-[10px] font-bold text-white">3</span>
-                      </div>
-                      <div className="flex-1">
-                        <div className="text-[12px] font-medium text-gray-800">激活康养权益使用</div>
-                        <div className="text-[11px] text-gray-500 mt-0.5">引导体验服务，增强黏性</div>
+
+                    {/* 契机3 */}
+                    <div className="bg-gradient-to-r from-emerald-50 to-teal-50 rounded-xl p-3 border border-emerald-100">
+                      <div className="flex items-start gap-2">
+                        <div className="w-6 h-6 bg-emerald-500 rounded-lg flex items-center justify-center shrink-0 mt-0.5">
+                          <span className="text-[10px] font-bold text-white">3</span>
+                        </div>
+                        <div className="flex-1">
+                          <div className="text-[12px] font-bold text-gray-800 mb-1">7月生日节点营销</div>
+                          <div className="flex flex-wrap gap-1 mb-2">
+                            <span className="px-1.5 py-0.5 bg-emerald-100 text-emerald-700 rounded text-[10px] font-medium">契机</span>
+                            <span className="px-1.5 py-0.5 bg-gray-100 text-gray-600 rounded text-[10px]">生日提醒</span>
+                          </div>
+                          <div className="text-[12px] text-gray-600 leading-relaxed">
+                            客户7月14日过生日，是增进关系、促成加保的重要时间节点。
+                          </div>
+                          <div className="mt-2 bg-white rounded-lg p-2 border border-emerald-50">
+                            <div className="text-[11px] font-semibold text-emerald-700 mb-0.5">推荐动作</div>
+                            <div className="text-[11px] text-gray-600">提前准备生日贺卡与礼品，6月底联系邀约生日面访</div>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
