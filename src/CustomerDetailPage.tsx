@@ -941,131 +941,18 @@ export default function CustomerDetailPage({ customer, onBack, onSharedCustomerL
                 </p>
               </div>
 
-              {/* 2. 客户洞察 */}
+              {/* 2. 基础特征 */}
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                <div className="px-4 py-3 bg-gray-50 border-b border-gray-100">
-                  <h2 className="text-[15px] font-bold text-gray-800">客户洞察</h2>
-                </div>
-
-                {/* 2.1 客户特征 */}
-                <div className="px-4 py-3 border-b border-gray-100">
-                  <h3 className="text-[13px] font-semibold text-gray-700 mb-2">客户特征</h3>
-                  <div className="flex flex-wrap gap-1.5">
-                    <span className="px-2.5 py-1 bg-blue-50 text-blue-600 rounded-lg text-[12px] font-medium">成交概率78%</span>
-                    <span className="px-2.5 py-1 bg-blue-50 text-blue-600 rounded-lg text-[12px] font-medium">60天转化率65%</span>
-                    <span className="px-2.5 py-1 bg-gray-100 text-gray-600 rounded-lg text-[12px]">已婚</span>
-                    <span className="px-2.5 py-1 bg-gray-100 text-gray-600 rounded-lg text-[12px]">有房</span>
-                    <span className="px-2.5 py-1 bg-gray-100 text-gray-600 rounded-lg text-[12px]">有车</span>
-                    <span className="px-2.5 py-1 bg-gray-100 text-gray-600 rounded-lg text-[12px]">企业高管</span>
-                    <span className="px-2.5 py-1 bg-gray-100 text-gray-600 rounded-lg text-[12px]">本科学历</span>
-                    <span className="px-2.5 py-1 bg-gray-100 text-gray-600 rounded-lg text-[12px]">社会中坚</span>
-                  </div>
-                </div>
-
-                {/* 2.2 偏好与需求 */}
-                <div className="px-4 py-3 border-b border-gray-100">
-                  <h3 className="text-[13px] font-semibold text-gray-700 mb-3">偏好与需求</h3>
-
-                  {/* 产品偏好与需求 */}
-                  <div className="bg-gray-50 rounded-xl p-3 mb-3">
-                    <div className="text-[12px] text-gray-500 mb-2">产品偏好与需求</div>
-                    <div className="space-y-2">
-                      <div className="flex items-start gap-2">
-                        <CheckCircle2 className="w-4 h-4 text-gray-400 mt-0.5" />
-                        <div className="flex-1">
-                          <div className="text-[12px] font-medium text-gray-800">已购产品</div>
-                          <div className="text-[11px] text-gray-500">重疾险、意外险、年金险（基础配置完整）</div>
-                        </div>
-                      </div>
-                      <div className="flex items-start gap-2">
-                        <Info className="w-4 h-4 text-amber-500 mt-0.5" />
-                        <div className="flex-1">
-                          <div className="text-[12px] font-medium text-gray-800">缺口结论</div>
-                          <div className="flex flex-wrap gap-1 mt-1">
-                            <span className="px-2 py-0.5 bg-amber-50 text-amber-600 rounded text-[11px]">高端医疗缺失</span>
-                            <span className="px-2 py-0.5 bg-amber-50 text-amber-600 rounded text-[11px]">终身养老金不足</span>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="flex items-start gap-2">
-                        <Heart className="w-4 h-4 text-gray-400 mt-0.5" />
-                        <div className="flex-1">
-                          <div className="text-[12px] font-medium text-gray-800">服务缺口</div>
-                          <div className="text-[11px] text-gray-500">康养权益未充分使用、体检权益待激活</div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* 兴趣爱好 */}
-                  <div className="bg-gray-50 rounded-xl p-3">
-                    <div className="text-[12px] text-gray-500 mb-2">兴趣爱好</div>
-                    <div className="flex flex-wrap gap-1.5">
-                      <span className="px-2.5 py-1 bg-gray-100 text-gray-600 rounded-lg text-[12px]">偏好线下活动</span>
-                      <span className="px-2.5 py-1 bg-gray-100 text-gray-600 rounded-lg text-[12px]">关注健康资讯</span>
-                      <span className="px-2.5 py-1 bg-gray-100 text-gray-600 rounded-lg text-[12px]">周末互动活跃</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* 2.3 消费决策习惯 */}
-                <div className="px-4 py-3 border-b border-gray-100">
-                  <h3 className="text-[13px] font-semibold text-gray-700 mb-2">消费决策习惯</h3>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="bg-gray-50 rounded-xl p-3">
-                      <div className="text-[12px] font-medium text-gray-800 mb-1">决策风格</div>
-                      <div className="text-[11px] text-gray-500">理性决策型，需多次沟通确认</div>
-                    </div>
-                    <div className="bg-gray-50 rounded-xl p-3">
-                      <div className="text-[12px] font-medium text-gray-800 mb-1">接触偏好</div>
-                      <div className="text-[11px] text-gray-500">偏好面访、图文资讯</div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* 2.4 购买力判断 */}
-                <div className="px-4 py-3 border-b border-gray-100">
-                  <h3 className="text-[13px] font-semibold text-gray-700 mb-2">购买力判断</h3>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="bg-gray-50 rounded-xl p-3">
-                      <div className="text-[12px] text-gray-500 mb-2">家庭结构</div>
-                      <div className="text-[11px] text-gray-700">已婚有子（配偶+1孩）</div>
-                    </div>
-                    <div className="bg-gray-50 rounded-xl p-3">
-                      <div className="text-[12px] text-gray-500 mb-2">财务状况</div>
-                      <div className="flex flex-wrap gap-1">
-                        <span className="px-1.5 py-0.5 bg-gray-200 text-gray-600 rounded text-[10px]">年入50-100万</span>
-                        <span className="px-1.5 py-0.5 bg-gray-200 text-gray-600 rounded text-[10px]">客户价值A4</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex flex-wrap gap-1.5 mt-2">
-                    <span className="px-2 py-0.5 bg-blue-50 text-blue-600 rounded-lg text-[11px] font-medium">近期有资金</span>
-                    <span className="px-2 py-0.5 bg-blue-50 text-blue-600 rounded-lg text-[11px] font-medium">旺财有余额</span>
-                    <span className="px-2 py-0.5 bg-gray-100 text-gray-500 rounded-lg text-[11px]">无生存金到账</span>
-                  </div>
-                </div>
-
-                {/* 2.5 客户风险 */}
                 <div className="px-4 py-3">
-                  <h3 className="text-[13px] font-semibold text-gray-700 mb-2">客户风险</h3>
-                  <div className="grid grid-cols-2 gap-2">
-                    <div className="flex items-center gap-2 bg-gray-50 rounded-lg p-2">
-                      <span className="text-[12px] text-gray-600">理赔记录</span>
-                      <span className="text-[12px] font-medium text-gray-800 ml-auto">无</span>
-                    </div>
-                    <div className="flex items-center gap-2 bg-gray-50 rounded-lg p-2">
-                      <span className="text-[12px] text-gray-600">续保风险</span>
-                      <span className="text-[12px] font-medium text-gray-800 ml-auto">低</span>
-                    </div>
-                    <div className="flex items-center gap-2 bg-gray-50 rounded-lg p-2">
-                      <span className="text-[12px] text-gray-600">退保风险</span>
-                      <span className="text-[12px] font-medium text-gray-800 ml-auto">低</span>
-                    </div>
-                    <div className="flex items-center gap-2 bg-gray-50 rounded-lg p-2">
-                      <span className="text-[12px] text-gray-600">投诉记录</span>
-                      <span className="text-[12px] font-medium text-gray-800 ml-auto">无</span>
-                    </div>
+                  <h2 className="text-[15px] font-bold text-gray-800 mb-3">基础特征</h2>
+                  <div className="flex flex-wrap gap-2">
+                    <span className="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg text-[13px] font-medium">38岁</span>
+                    <span className="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg text-[13px] font-medium">女</span>
+                    <span className="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg text-[13px] font-medium">社会中坚</span>
+                    <span className="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg text-[13px] font-medium">已婚</span>
+                    <span className="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg text-[13px] font-medium">有房有车</span>
+                    <span className="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg text-[13px] font-medium">企业高管</span>
+                    <span className="px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg text-[13px] font-bold">近期成交概率70%</span>
                   </div>
                 </div>
               </div>
