@@ -1017,7 +1017,65 @@ export default function CustomerDetailPage({ customer, onBack, onSharedCustomerL
                 </div>
               </div>
 
-              {/* 4. 保障现状 */}
+              {/* 4. 客户偏好 */}
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                <div className="px-4 py-3">
+                  <h2 className="text-[15px] font-bold text-gray-800 mb-3">客户偏好</h2>
+
+                  {/* 4.1 接触方式偏好 */}
+                  <div className="mb-3">
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="w-1 h-3.5 bg-blue-500 rounded-full"></div>
+                      <h3 className="text-[13px] font-semibold text-gray-700">接触方式偏好</h3>
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      <span className="px-2.5 py-1 bg-blue-50 text-blue-600 rounded-lg text-[12px] font-medium">偏好线下交流</span>
+                      <span className="px-2.5 py-1 bg-gray-100 text-gray-600 rounded-lg text-[12px]">微信沟通积极</span>
+                    </div>
+                  </div>
+
+                  {/* 4.2 产品偏好 */}
+                  <div className="mb-3">
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="w-1 h-3.5 bg-blue-500 rounded-full"></div>
+                      <h3 className="text-[13px] font-semibold text-gray-700">产品偏好</h3>
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      <span className="px-2.5 py-1 bg-blue-50 text-blue-600 rounded-lg text-[12px] font-medium">关注养老社区</span>
+                      <span className="px-2.5 py-1 bg-blue-50 text-blue-600 rounded-lg text-[12px] font-medium">关注高端医疗</span>
+                      <span className="px-2.5 py-1 bg-gray-100 text-gray-600 rounded-lg text-[12px]">偏好长期型产品</span>
+                    </div>
+                  </div>
+
+                  {/* 4.3 兴趣爱好 */}
+                  <div className="mb-3">
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="w-1 h-3.5 bg-blue-500 rounded-full"></div>
+                      <h3 className="text-[13px] font-semibold text-gray-700">兴趣爱好</h3>
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      <span className="px-2.5 py-1 bg-gray-100 text-gray-600 rounded-lg text-[12px]">关注健康资讯</span>
+                      <span className="px-2.5 py-1 bg-gray-100 text-gray-600 rounded-lg text-[12px]">周末互动活跃</span>
+                      <span className="px-2.5 py-1 bg-gray-100 text-gray-600 rounded-lg text-[12px]">关注教育</span>
+                    </div>
+                  </div>
+
+                  {/* 4.4 消费决策习惯 */}
+                  <div>
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="w-1 h-3.5 bg-blue-500 rounded-full"></div>
+                      <h3 className="text-[13px] font-semibold text-gray-700">消费决策习惯</h3>
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      <span className="px-2.5 py-1 bg-blue-50 text-blue-600 rounded-lg text-[12px] font-medium">典型家庭责任型决策者</span>
+                      <span className="px-2.5 py-1 bg-gray-100 text-gray-600 rounded-lg text-[12px]">理性决策型</span>
+                      <span className="px-2.5 py-1 bg-gray-100 text-gray-600 rounded-lg text-[12px]">需多次沟通确认</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* 5. 保障现状 */}
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                 <div className="px-4 py-3 bg-gray-50 border-b border-gray-100 flex items-center justify-between">
                   <h2 className="text-[15px] font-bold text-gray-800">保障现状</h2>
