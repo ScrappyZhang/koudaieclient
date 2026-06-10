@@ -700,19 +700,18 @@ export default function CustomerDetailPage({ customer, onBack, onSharedCustomerL
         {/* 左侧：名称 */}
         <span className="text-[12px] text-gray-600 w-16 shrink-0">{label}</span>
         {/* 中间：进度条，已有额度显示在进度条内 */}
-        <div className="flex-1 relative h-6 bg-gray-100 rounded-full overflow-hidden">
-          <div className="h-full bg-gradient-to-r from-blue-400 to-blue-500 rounded-full transition-all flex items-center" style={{ width: `${ratio}%` }}>
-            <span className="text-[10px] text-white font-bold ml-2 truncate">已有 {have}万</span>
+        <div className="flex-1 relative h-7 bg-gray-100 rounded-full overflow-hidden border border-gray-200">
+          <div className="h-full bg-gradient-to-r from-blue-500 to-blue-600 rounded-full transition-all flex items-center" style={{ width: `${ratio}%` }}>
+            <span className="text-[11px] text-white font-bold ml-2">{have}万</span>
           </div>
           {ratio < 20 && (
-            <span className="absolute left-2 top-1/2 -translate-y-1/2 text-[10px] text-gray-400 font-medium">已有 {have}万</span>
+            <span className="absolute left-2 top-1/2 -translate-y-1/2 text-[11px] text-gray-400 font-medium">{have}万</span>
           )}
         </div>
         {/* 右侧：缺口 */}
         <div className="flex items-center gap-1.5 shrink-0 w-24 justify-end">
           {!isFull && <span className="text-[11px] text-orange-600 font-medium">缺 {gap}万</span>}
           {isFull && <span className="text-[10px] px-1.5 py-0.5 bg-emerald-50 text-emerald-600 rounded font-bold">{status || '充足'}</span>}
-          {priority && !isFull && <span className="text-[10px] px-1.5 py-0.5 bg-red-50 text-red-600 rounded font-bold">优先</span>}
         </div>
       </div>
     );
